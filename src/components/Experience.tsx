@@ -3,12 +3,6 @@ import { useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3, Group } from "three";
 import { Scene } from "./scene/Scene";
-import {
-  Selection,
-  Select,
-  EffectComposer,
-  Outline,
-} from "@react-three/postprocessing";
 
 export const Experience = () => {
   const characterRef = useRef<Group>(null);
@@ -93,9 +87,7 @@ export const Experience = () => {
       <ambientLight intensity={0.8} />
       <Environment preset="city" />
       <Sky />
-
       <Scene />
-
       <group position={[-165, 0, -59]} ref={characterRef}>
         <mesh castShadow>
           <boxGeometry args={[1, 1, 1]} />
@@ -103,18 +95,6 @@ export const Experience = () => {
         </mesh>
       </group>
 
-      <Selection>
-        <EffectComposer autoClear={false} multisampling={8}>
-          <Outline
-            blur
-            edgeStrength={5} // Lower edge strength
-            visibleEdgeColor={0xffffff}
-            hiddenEdgeColor={0x00ff00}
-          />
-        </EffectComposer>
-
-        <Select enabled></Select>
-      </Selection>
     </>
   );
 };
