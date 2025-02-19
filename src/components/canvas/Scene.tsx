@@ -1,7 +1,7 @@
 import { GroupProps } from "@react-three/fiber";
 import { Model } from "../Model";
-import { Floor } from "./Floor";
-import { Doors } from "./Doors";
+import { Floor } from "./models/Floor";
+import { Doors } from "./models/Doors";
 import {
   Selection,
   Select,
@@ -10,6 +10,7 @@ import {
 } from "@react-three/postprocessing";
 import { useState } from "react";
 import { Annotation } from "../Annotation";
+
 
 type ModelConfig = {
   id: string;
@@ -38,7 +39,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "suits",
     name: "Men's Suits",
-    path: "/men/suits-wardrobe",
+    path: "/displays/wardrobes/suits-wardrobe",
     position: [-146, -0.46, -51.1],
     rotation: [0, 0, 0],
   },
@@ -46,7 +47,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "pants",
     name: "Men's Pants",
-    path: "/men/pants-wardrobe",
+    path: "/displays/wardrobes/pants-wardrobe",
     position: [-152, -0.46, -51.1],
     rotation: [0, 0, 0],
   },
@@ -54,7 +55,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "shirts",
     name: "Men's Shirts",
-    path: "/men/shirts-wardrobe",
+    path: "/displays/wardrobes/shirts-wardrobe",
     position: [-158, -0.46, -51.1],
     rotation: [0, 0, 0],
   },
@@ -62,7 +63,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "hats",
     name: "Men's Hats",
-    path: "/men/hats-display",
+    path: "/displays/tables/hats-table",
     position: [-148, -0.46, -55.6],
     rotation: [0, 0, 0],
   },
@@ -70,7 +71,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "menShoes",
     name: "Men's Shoes",
-    path: "/men/men-shoes-display",
+    path: "/displays/tables/men-shoes-table",
     position: [-153.8, -0.46, -55.6],
     rotation: [0, 0, 0],
   },
@@ -78,7 +79,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "menAccessories",
     name: "Men's Accessories",
-    path: "/men/men-accesories-display",
+    path: "/displays/tables/men-accesories-table",
     position: [-157, -0.46, -55.6],
     rotation: [0, 0, 0],
   },
@@ -86,7 +87,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "blouses",
     name: "Women's Blouses",
-    path: "/women/blouses-wardrobe",
+    path: "/displays/wardrobes/blouses-wardrobe",
     position: [-158, -0.46, -66.9],
     rotation: [0, 0, 0],
   },
@@ -94,7 +95,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "dresses",
     name: "Women's Dresses",
-    path: "/women/dresses-wardrobe",
+    path: "/displays/wardrobes/dresses-wardrobe",
     position: [-152, -0.46, -66.9],
     rotation: [0, 0, 0],
   },
@@ -102,7 +103,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "skirts",
     name: "Women's Skirts",
-    path: "/women/skirts-wardrobe",
+    path: "/displays/wardrobes/skirts-wardrobe",
     position: [-146, -0.46, -66.9],
     rotation: [0, 0, 0],
   },
@@ -110,7 +111,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "womenAccessories",
     name: "Women's Accessories",
-    path: "/women/women-accesories-display",
+    path: "/displays/tables/women-accesories-table",
     position: [-157, -0.46, -62.6],
     rotation: [0, 0, 0],
   },
@@ -118,7 +119,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "womenShoes",
     name: "Women's Shoes",
-    path: "/women/women-shoes-display",
+    path: "/displays/tables/women-shoes-table",
     position: [-151.8, -0.46, -64.1],
     rotation: [0, -Math.PI / 1, 0],
   },
@@ -126,7 +127,7 @@ const MODELS: ModelConfig[] = [
     ...defaultModelConfig,
     id: "bags",
     name: "Women's Bags",
-    path: "/women/bags-display",
+    path: "/displays/tables/bags-table",
     position: [-146.1, -0.46, -64.1],
     rotation: [0, -Math.PI / 1, 0],
   },
@@ -157,12 +158,12 @@ export const Scene = (props: GroupProps) => {
       </EffectComposer>
 
       <group {...props}>
-        <Model modelName="scene" />
+        <Model modelPath="scene" />
 
         {MODELS.map(({ id, path, position, label, rotation }) => (
           <Select key={id} enabled={hoveredModel === id}>
             <Model
-              modelName={path}
+              modelPath={path}
               position={position}
               rotation={rotation}
               onPointerOver={() => handlePointerOver(id)}

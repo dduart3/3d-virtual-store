@@ -2,7 +2,7 @@ import { Environment, Sky, useKeyboardControls } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3, Group } from "three";
-import { Scene } from "./scene/Scene";
+import { Scene } from "./Scene";
 
 export const Experience = () => {
   const characterRef = useRef<Group>(null);

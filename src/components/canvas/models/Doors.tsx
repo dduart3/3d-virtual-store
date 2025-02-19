@@ -1,5 +1,5 @@
 import { GroupProps } from "@react-three/fiber"
-import { Model } from "../Model"
+import { Model } from "../../Model"
 import { useState } from "react"
 import { Euler, Vector3 } from "three"
 
@@ -24,7 +24,7 @@ const useHoverCursor = () => ({
 const Door = ({ side, status }: { side: 'left' | 'right', status: DoorsStatus }) => (
   <Model
     name={`${side}Door`}
-    modelName="/misc/door"
+    modelPath="/misc/door"
     position={new Vector3(...DOOR_POSITIONS[status][side].position)}
     rotation={new Euler(...DOOR_POSITIONS[status][side].rotation)}
   />
