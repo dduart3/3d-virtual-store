@@ -10,6 +10,10 @@ import {
 } from "@react-three/postprocessing";
 import { useState } from "react";
 import { Annotation } from "../Annotation";
+import { getCatalogForModel } from "../../modules/catalog/data/catalog";
+import { ViewerScene } from '../../modules/product-viewer/components/ViewerScene'
+import { useAtom } from 'jotai'
+import { viewerStateAtom } from '../../modules/product-viewer/state/viewer'
 
 
 type ModelConfig = {
@@ -136,6 +140,17 @@ const MODELS: ModelConfig[] = [
 export const Scene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
+  const [, setViewerState] = useAtom(viewerStateAtom)
+
+  const handleModelClick = (id: string) => {
+    const catalog = getCatalogForModel(id)
+    setViewerState({
+      isOpen: true,
+      currentProduct: catalog[0],
+      catalog: catalog,
+      currentIndex: 0
+    })
+  }
   const handlePointerOver = (id: string) => {
     setHoveredModel(id);
     document.body.style.cursor = "pointer";
@@ -177,7 +192,11 @@ export const Scene = (props: GroupProps) => {
 
         <Doors />
         <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -1, -60]} />
+        <ViewerScene />
       </group>
     </Selection>
   );
 };
+
+
+

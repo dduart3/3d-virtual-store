@@ -3,9 +3,12 @@ import { useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3, Group } from "three";
 import { Scene } from "./Scene";
+import { viewerStateAtom } from "../../modules/product-viewer/state/viewer";
+import { useAtom } from "jotai";
 
 export const Experience = () => {
   const characterRef = useRef<Group>(null);
+  const [viewerState] = useAtom(viewerStateAtom)
   const [, get] = useKeyboardControls();
   const [cameraDistance, setCameraDistance] = useState(15);
   const [cameraRotation, setCameraRotation] = useState(-Math.PI / 2);
@@ -54,8 +57,8 @@ export const Experience = () => {
   }, [gl, isDragging]);
 
   useFrame((state) => {
-    if (!characterRef.current) return;
-
+    if (!characterRef.current || viewerState.isOpen) return;
+    
     const { forward, backward, left, right } = get();
     const character = characterRef.current;
 
@@ -94,7 +97,6 @@ export const Experience = () => {
           <meshStandardMaterial color="blue" />
         </mesh>
       </group>
-
     </>
   );
 };
