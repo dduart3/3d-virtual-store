@@ -18,10 +18,10 @@ export const ProductStage = () => {
   
   
   return (
-    <group ref={groupRef} position={[0, -0.05, 2]}>
+    <group ref={groupRef} position={[0, 0, -3]} scale={[0.5, 0.5, 0.5]}>
       <Model 
         modelPath={'/products/men/shoes/oxford'}
-        position={[0, 0, 0]}
+        position={[0, -0.5, 0]}
       />
     </group>
   )
