@@ -1,7 +1,7 @@
 import { GroupProps } from "@react-three/fiber";
-import { Model } from "../Model";
-import { Floor } from "./models/Floor";
-import { Doors } from "./models/Doors";
+import { Model } from "../../../components/Model";
+import { Floor } from "./Floor";
+import { Doors } from "./Doors";
 import {
   Selection,
   Select,
@@ -9,11 +9,11 @@ import {
   Outline,
 } from "@react-three/postprocessing";
 import { useState } from "react";
-import { Annotation } from "../Annotation";
-import { getCatalogForModel } from "../../modules/catalog/data/catalog";
-import { ViewerScene } from '../../modules/product-viewer/components/ViewerScene'
+import { Annotation } from "../../../components/Annotation";
+import { getCatalogForModel } from "../../catalog/data/catalog";
+import { ViewerScene } from '../../product-viewer/components/ViewerScene'
 import { useAtom } from 'jotai'
-import { viewerStateAtom } from '../../modules/product-viewer/state/viewer'
+import { viewerStateAtom } from '../../product-viewer/state/viewer'
 
 
 type ModelConfig = {

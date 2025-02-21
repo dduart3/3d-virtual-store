@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Experience } from "./components/canvas/Experience";
+import { Experience } from "./modules/experience/Experience";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 enum Controls {

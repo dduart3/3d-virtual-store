@@ -3,9 +3,9 @@ import { useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3, Group } from "three";
 import { useAtom } from "jotai";
-import { viewerStateAtom } from "../../modules/product-viewer/state/viewer";
-import { Scene } from "./Scene";
-import { ViewerScene } from "../../modules/product-viewer/components/ViewerScene";
+import { viewerStateAtom } from "../product-viewer/state/viewer";
+import { Scene } from "./components/Scene";
+import { ViewerScene } from "../product-viewer/components/ViewerScene";
 
 enum Controls {
   forward = "forward",
