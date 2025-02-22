@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Experience } from "./modules/experience/Experience";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
+import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";
 enum Controls {
   forward = "forward",
   backward = "backward",
@@ -27,12 +28,13 @@ function App() {
         shadows
         camera={{
           near: 0.1,
-          far: 100,
+          far: 9000000000000000,
           fov: 30,
         }}
       >
         <Experience />
       </Canvas>
+      <ViewerUI />
     </KeyboardControls>
   );
 }
