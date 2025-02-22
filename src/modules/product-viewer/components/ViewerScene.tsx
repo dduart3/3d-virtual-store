@@ -1,84 +1,84 @@
-import { useFrame, useThree } from "@react-three/fiber";
-import { useAtom } from "jotai";
-import { viewerStateAtom } from "../state/viewer";
-import { Html } from "@react-three/drei";
-import { useEffect, useRef } from "react";
-import { Group, Vector3 } from "three";
-import { Model } from "../../../components/Model";
+import { useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Background } from "./Background";
+import { ContactShadows, Environment } from "@react-three/drei";
+import {
+  Bloom,
+  DepthOfField,
+  EffectComposer,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
+import { ProductStage } from "./ProductStage";
 
 export const ViewerScene = () => {
-  const [viewerState, setViewerState] = useAtom(viewerStateAtom);
+  const [isDragging, setIsDragging] = useState(false);
+  const [rotationSpeed, setRotationSpeed] = useState(0);
+  const lastX = useRef(0);
+
   const { camera } = useThree();
-  const productRef = useRef<Group>(null);
-  const viewerRef = useRef<Group>(null);
 
-  // Position the viewer relative to the camera
-  useFrame((state) => {
-    if (viewerRef.current && viewerState.isOpen) {
-      // Calculate a position 3 units in front of the camera
-      const offset = new Vector3(0, 0, -3);
-      offset.applyQuaternion(camera.quaternion); // Adjust for camera rotation
-      viewerRef.current.position.copy(camera.position).add(offset);
+  // Set up the camera for the viewer scene
+  useEffect(() => {
+    camera.position.set(0, 0, 10);
 
-      // Align the viewer with the camera's rotation
-      viewerRef.current.quaternion.copy(camera.quaternion);
-    }
-
-    // Rotate the product slowly
-    if (productRef.current) {
-      productRef.current.rotation.y += 0.01;
-    }
-  });
-
-  // Close the viewer
-  const handleClose = () => {
-    setViewerState((prev) => ({ ...prev, isOpen: false }));
-  };
-
-  // Navigate to the next product
-  const handleNext = () => {
-    setViewerState((prev) => ({
-      ...prev,
-      currentIndex: (prev.currentIndex + 1) % prev.catalog.length,
-      currentProduct: prev.catalog[(prev.currentIndex + 1) % prev.catalog.length],
-    }));
-  };
-
-  // Navigate to the previous product
-  const handlePrev = () => {
-    setViewerState((prev) => ({
-      ...prev,
-      currentIndex: (prev.currentIndex - 1 + prev.catalog.length) % prev.catalog.length,
-      currentProduct: prev.catalog[(prev.currentIndex - 1 + prev.catalog.length) % prev.catalog.length],
-    }));
-  };
-
-  if (!viewerState.isOpen) return null;
+    camera.lookAt(0, 0, 0);
+  }, [camera]);
 
   return (
-    <group ref={viewerRef}>
-      {/* Dark overlay */}
-      <mesh position={[0, 0, -0.2]}>
+    <group>
+      <mesh
+        position={[0, 0, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          setIsDragging(true);
+          lastX.current = e.clientX;
+        }}
+        onPointerMove={(e) => {
+          e.stopPropagation();
+          if (isDragging) {
+            const delta = (e.clientX - lastX.current) * 0.005;
+            setRotationSpeed(delta);
+            lastX.current = e.clientX;
+          }
+        }}
+        onPointerUp={(e) => {
+          e.stopPropagation();
+          setIsDragging(false);
+          setTimeout(() => setRotationSpeed(0), 150);
+        }}
+        onPointerLeave={(e) => {
+          e.stopPropagation();
+          setIsDragging(false);
+          setTimeout(() => setRotationSpeed(0), 150);
+        }}
+      >
         <planeGeometry args={[20, 20]} />
-        <meshBasicMaterial color="black" transparent opacity={0.6} />
+        <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
-      {/* Product display */}
-      <group ref={productRef} position={[0, 0, 0]}>
-        <Model
-          modelPath={'/products/men/shoes/oxford'}
-          position={[0, 0, 0]}
-        />
-      </group>
+      <ambientLight intensity={0.7} />
+      <Background position={[0, 0, 3.7]} />
+      <spotLight
+        intensity={0.5}
+        angle={0.1}
+        penumbra={1}
+        position={[10, 15, -5]}
+        castShadow
+      />
+      <Environment preset="city" background blur={1} />
 
-      {/* Controls */}
-      <Html center>
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
-          <button onClick={handlePrev} style={{ marginRight: "10px" }}>Previous</button>
-          <button onClick={handleNext} style={{ marginRight: "10px" }}>Next</button>
-          <button onClick={handleClose}>Close</button>
-        </div>
-      </Html>
+      <ProductStage
+        position={[0, -.5, 5]}
+        isDragging={isDragging}
+        rotationSpeed={rotationSpeed}
+      />
+      <EffectComposer>
+        <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
+        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+        <Noise opacity={0.02} />
+        <Vignette eskil={false} offset={0.1} darkness={1.3} />
+      </EffectComposer>
     </group>
   );
 };
