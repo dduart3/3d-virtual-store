@@ -192,7 +192,6 @@ export const Scene = (props: GroupProps) => {
 
         <Doors />
         <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -1, -60]} />
-        <ViewerScene />
       </group>
     </Selection>
   );
