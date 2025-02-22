@@ -1,8 +1,8 @@
-import { GroupProps, useFrame } from "@react-three/fiber"
-import { useKeyboardControls } from "@react-three/drei"
-import { Group } from "three"
-import { useRef } from "react"
-import { useAvatarControls } from "../hooks/useAvatarControls"
+import { GroupProps, useFrame } from "@react-three/fiber";
+import { useKeyboardControls } from "@react-three/drei";
+import { Group } from "three";
+import { useRef } from "react";
+import { useAvatarControls } from "../hooks/useAvatarControls";
 
 enum Controls {
   forward = "forward",
@@ -23,11 +23,11 @@ export const Avatar = (props: GroupProps) => {
   });
 
   return (
-    <group position={[-165, 0, -59]} ref={characterRef} {...props} >
+    <group position={[-165, 0, -59]} ref={characterRef} {...props}>
       <mesh castShadow>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="blue" />
       </mesh>
     </group>
-  )
-}
+  );
+};
