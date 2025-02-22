@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../modules/product-viewer/state/viewer";
 import { Scene } from "../../modules/experience/components/Scene";
 import { ViewerScene } from "../../modules/product-viewer/components/ViewerScene";
+import { Fade, FadeHandle } from "./components/Fade";
 
 enum Controls {
   forward = "forward",
@@ -31,10 +32,16 @@ export const Experience = () => {
   const ZOOM_SPEED = 0.3;
   const MOUSE_SENSITIVITY = 0.003;
 
-  // Toggle the viewer open/closed
+
+
+  const fadeRef = useRef<FadeHandle>(null!)
   const toggleViewer = () => {
-    setViewerState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
-  };
+    fadeRef.current.fadeToBlack()
+    setTimeout(() => {
+      setViewerState(prev => ({ ...prev, isOpen: !prev.isOpen }))
+      fadeRef.current.fadeFromBlack()
+    }, 1200)
+  }
 
   // Set up mouse events and zoom only when the viewer is NOT open.
   useEffect(() => {
@@ -128,6 +135,7 @@ export const Experience = () => {
 
       {/* Render the ViewerScene only when viewer is open */}
       {viewerState.isOpen && <ViewerScene />}
+      <Fade ref={fadeRef} />
     </>
   );
 };
