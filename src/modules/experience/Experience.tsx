@@ -1,11 +1,11 @@
-import { Environment, Sky, useKeyboardControls, Html } from "@react-three/drei";
+import { Environment,  useKeyboardControls } from "@react-three/drei";
 import { useRef, useState, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Vector3, Group } from "three";
 import { useAtom } from "jotai";
-import { viewerStateAtom } from "../product-viewer/state/viewer";
-import { Scene } from "./components/Scene";
-import { ViewerScene } from "../product-viewer/components/ViewerScene";
+import { viewerStateAtom } from "../../modules/product-viewer/state/viewer";
+import { Scene } from "../../modules/experience/components/Scene";
+import { ViewerScene } from "../../modules/product-viewer/components/ViewerScene";
 
 enum Controls {
   forward = "forward",
@@ -21,7 +21,7 @@ export const Experience = () => {
   const [cameraDistance, setCameraDistance] = useState(15);
   const [cameraRotation, setCameraRotation] = useState(-Math.PI / 2);
   const [isDragging, setIsDragging] = useState(false);
-  const { gl, camera } = useThree();
+  const { gl } = useThree();
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
 
   const MOVEMENT_SPEED = 0.1;
@@ -54,7 +54,10 @@ export const Experience = () => {
     const handleWheel = (event: WheelEvent) => {
       const zoomDirection = event.deltaY > 0 ? 1 : -1;
       setCameraDistance((prev) =>
-        Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + zoomDirection * ZOOM_SPEED))
+        Math.max(
+          MIN_ZOOM,
+          Math.min(MAX_ZOOM, prev + zoomDirection * ZOOM_SPEED)
+        )
       );
     };
     gl.domElement.addEventListener("mousedown", handleMouseDown);
@@ -88,8 +91,13 @@ export const Experience = () => {
         moveDirection.normalize();
         // Rotate movement relative to current camera rotation.
         moveDirection.applyAxisAngle(new Vector3(0, 1, 0), cameraRotation);
-        characterRef.current.position.add(moveDirection.multiplyScalar(MOVEMENT_SPEED));
-        characterRef.current.rotation.y = Math.atan2(moveDirection.x, moveDirection.z);
+        characterRef.current.position.add(
+          moveDirection.multiplyScalar(MOVEMENT_SPEED)
+        );
+        characterRef.current.rotation.y = Math.atan2(
+          moveDirection.x,
+          moveDirection.z
+        );
       }
 
       // Update the camera so that it follows the character using your rotation/zoom logic.
@@ -98,7 +106,9 @@ export const Experience = () => {
         CAMERA_HEIGHT * (cameraDistance / MAX_ZOOM),
         Math.cos(cameraRotation) * cameraDistance
       );
-      state.camera.position.copy(characterRef.current.position).add(cameraOffset);
+      state.camera.position
+        .copy(characterRef.current.position)
+        .add(cameraOffset);
       state.camera.lookAt(characterRef.current.position);
     }
   });
@@ -106,8 +116,8 @@ export const Experience = () => {
   return (
     <>
       <ambientLight intensity={0.8} />
-      <Environment preset="city" />
-      <Sky />
+      <Environment preset="dawn" />
+
       <Scene />
       <group position={[-165, 0, -59]} ref={characterRef}>
         <mesh castShadow>
@@ -115,8 +125,6 @@ export const Experience = () => {
           <meshStandardMaterial color="blue" />
         </mesh>
       </group>
-
-
 
       {/* Render the ViewerScene only when viewer is open */}
       {viewerState.isOpen && <ViewerScene />}
