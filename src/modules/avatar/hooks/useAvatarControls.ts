@@ -1,11 +1,16 @@
 import { useThree } from "@react-three/fiber";
+import { useAtom } from "jotai";
 import { useState, useEffect } from "react";
 import { Vector3 } from "three";
+import {
+  avatarCameraDistanceAtom,
+  avatarCameraRotationAtom,
+} from "../state/avatar";
 
 export const useAvatarControls = (characterRef: any) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [cameraRotation, setCameraRotation] = useState(-Math.PI / 2);
-  const [cameraDistance, setCameraDistance] = useState(15);
+  const [cameraRotation, setCameraRotation] = useAtom(avatarCameraRotationAtom);
+  const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
   const { gl } = useThree();
 
   const MOVEMENT_SPEED = 0.1;
