@@ -30,9 +30,21 @@ export const ViewerScene = () => {
 
   return (
     <group>
-      {isDevMode && <OrbitControls enableZoom={true} enablePan={true} enableDamping={true} enableRotate={true} />}
+      {isDevMode && (
+        <OrbitControls
+          enableZoom={true}
+          enablePan={false}
+          enableRotate={true}
+          enableDamping={true}
+          dampingFactor={0.1}
+          rotateSpeed={0.4}
+          minPolarAngle={Math.PI / 2}
+          maxAzimuthAngle={Math.PI / 4}
+          maxPolarAngle={Math.PI / 2}
+        />
+      )}
       <ambientLight intensity={0.7} />
-      {!isDevMode &&<Background position={[0, 0, 3.7]} />}
+      {!isDevMode && <Background position={[0, 0, 3.7]} />}
       <spotLight
         intensity={0.5}
         angle={0.1}
@@ -43,17 +55,19 @@ export const ViewerScene = () => {
       <Environment preset="city" background blur={1} />
 
       <ProductStage isDragging={isDragging} rotationSpeed={rotationSpeed} />
-      {!isDevMode && <EffectComposer>
-        <DepthOfField
-          focusDistance={0}
-          focalLength={0.02}
-          bokehScale={2}
-          height={480}
-        />
-        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
-        <Noise opacity={0.02} />
-        <Vignette eskil={false} offset={0.1} darkness={1.3} />
-      </EffectComposer>}
+      {!isDevMode && (
+        <EffectComposer>
+          <DepthOfField
+            focusDistance={0}
+            focalLength={0.02}
+            bokehScale={2}
+            height={480}
+          />
+          <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+          <Noise opacity={0.02} />
+          <Vignette eskil={false} offset={0.1} darkness={1.3} />
+        </EffectComposer>
+      )}
     </group>
   );
 };
