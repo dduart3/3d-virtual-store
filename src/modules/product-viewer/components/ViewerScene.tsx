@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { Background } from "./Background";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import {
   Bloom,
   DepthOfField,
@@ -69,7 +69,7 @@ export const ViewerScene = () => {
       <Environment preset="city" background blur={1} />
 
       <ProductStage
-        position={[0, -.5, 5]}
+  
         isDragging={isDragging}
         rotationSpeed={rotationSpeed}
       />

@@ -26,8 +26,8 @@ export const ProductStage = ({
   });
 
   return (
-    <group ref={groupRef} scale={8} {...props}>
-      <Model modelPath={"/products/men/shoes/oxford"} />
+    <group ref={groupRef} position={[0, -0.2, 5]} scale={0.8}  {...props}>
+      <Model modelPath={"/products/men/shoes/shoe"} />
     </group>
   );
 };

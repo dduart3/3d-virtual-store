@@ -1,6 +1,5 @@
-import { atom } from "jotai";
-import { Product } from "../../../types/Product";
+import { atom } from 'jotai'
+import { Catalog } from '../types/catalog'
 
-export const catalogAtom = atom<Product[]>([]);
-export const selectedProductAtom = atom<Product | null>(null);
-export const cartAtom = atom<Product[]>([]);
+export const currentCatalogAtom = atom<Catalog | null>(null)
+export const currentProductIndexAtom = atom<number>(0)
