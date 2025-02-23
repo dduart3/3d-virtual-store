@@ -1,33 +1,42 @@
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../state/viewer";
+import { fadeRefAtom } from "../../../shared/state/fade";
 
 export const ViewerUI = () => {
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
-
-  const handleNext = () => {
-    setViewerState((prev) => ({
-      ...prev,
-      currentIndex: (prev.currentIndex + 1) % prev.catalog.length,
-      currentProduct: prev.catalog[(prev.currentIndex + 1) % prev.catalog.length],
-    }));
-  };
+  const isFirstProduct = viewerState.currentIndex === 0;
+  const isLastProduct =
+    viewerState.currentIndex ===
+    (viewerState.catalog?.products?.length ?? 0) - 1;
+  const [fadeRef] = useAtom(fadeRefAtom);
+  const product = viewerState.currentProduct;
 
   const handlePrev = () => {
     setViewerState((prev) => ({
-      ...prev,
-      currentIndex: (prev.currentIndex - 1 + prev.catalog.length) % prev.catalog.length,
-      currentProduct: prev.catalog[(prev.currentIndex - 1 + prev.catalog.length) % prev.catalog.length],
+      ...prev,currentIndex: prev.catalog ? (prev.currentIndex - 1 + prev.catalog.products.length) % prev.catalog.products.length: 0,
+      currentProduct: prev.catalog ? prev.catalog.products[(prev.currentIndex - 1 + prev.catalog.products.length) % prev.catalog.products.length] : null,
+    }));
+  };
+
+  const handleNext = () => {
+    setViewerState((prev) => ({
+      ...prev, currentIndex: prev.catalog ? (prev.currentIndex + 1) % prev.catalog.products.length: 0,
+      currentProduct: prev.catalog ? prev.catalog.products[(prev.currentIndex + 1) % prev.catalog.products.length] : null,
     }));
   };
 
   const handleClose = () => {
-    setViewerState((prev) => ({ ...prev, isOpen: false }));
+    fadeRef?.fadeToBlack();
+    setTimeout(() => {
+      setViewerState((prev) => ({ ...prev, isOpen: false }));
+      fadeRef?.fadeFromBlack();
+    }, 1000);
   };
 
   return (
     <>
-      {viewerState.isOpen && (
-        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center">
+      {viewerState.isOpen && product && (
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center select-none">
           <div className="relative w-full h-full">
             {/* Close Button */}
             <button
@@ -46,56 +55,59 @@ export const ViewerUI = () => {
             </button>
 
             {/* Product Name */}
-            <h1 className="absolute top-[10%] left-1/2 -translate-x-1/2 text-white text-[3.5rem] font-extralight tracking-[0.2em] m-0">
-              OXFORD CLASSIC
+            <h1 className="absolute top-[10%] left-1/2 -translate-x-1/2 text-white text-[3.5rem] font-extralight tracking-[0.2em] m-0 uppercase">
+              {product.name}
             </h1>
 
             {/* Description */}
             <p className="absolute bottom-[5%] left-1/2 -translate-x-1/2 text-white text-lg font-light tracking-wider w-[600px] text-center leading-relaxed">
-              Naguara papá, esto lo que está es bello. Llevate esa verga de una vez chico que mas vais a seguir viendo.
+              {product.description}
             </p>
 
             {/* Price */}
             <div className="absolute right-[5%] bottom-[25%] text-white text-[2.5rem] font-medium">
-              $299.99
+              ${product.price}
             </div>
 
             {/* Button */}
-            <button
-              className="absolute right-[5%] bottom-[15%] bg-transparent border border-white/30 px-8 py-4 text-white text-sm tracking-[0.2em] uppercase font-light cursor-pointer transition-all duration-400 hover:bg-white/10 hover:scale-105 hover:tracking-[0.25em]"
-            >
+            <button className="absolute right-[5%] bottom-[15%] bg-transparent border border-white/30 px-8 py-4 text-white text-sm tracking-[0.2em] uppercase font-light cursor-pointer transition-all duration-400 hover:bg-white/10 hover:scale-105 hover:tracking-[0.25em]">
               Agregar al carrito
             </button>
 
             {/* Navigation Arrows */}
-            <button
-              onClick={handlePrev}
-              className="transition-all duration-200 hover:scale-125 hover:opacity-100 opacity-80 cursor-pointer absolute left-[5%] top-1/2"
-            >
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="drop-shadow-lg hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+            {!isFirstProduct && (
+              <button
+                onClick={handlePrev}
+                className="transition-all duration-200 hover:scale-125 hover:opacity-100 opacity-80 cursor-pointer absolute left-[5%] top-1/2"
               >
-                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleNext}
-              className="transition-all duration-200 hover:scale-125 hover:opacity-100 opacity-80 cursor-pointer absolute right-[5%] top-1/2"
-            >
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="drop-shadow-lg hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  className="drop-shadow-lg hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                >
+                  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                </svg>
+              </button>
+            )}
+
+            {!isLastProduct && (
+              <button
+                onClick={handleNext}
+                className="transition-all duration-200 hover:scale-125 hover:opacity-100 opacity-80 cursor-pointer absolute right-[5%] top-1/2"
               >
-                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-              </svg>
-            </button>
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  className="drop-shadow-lg hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                >
+                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       )}

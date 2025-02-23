@@ -3,13 +3,15 @@ import { useEffect, useRef } from "react";
 import { Fade, FadeHandle } from "./shared/components/Fade";
 import { Avatar } from "./modules/avatar/components/Avatar";
 import { ViewerScene } from "./modules/product-viewer/components/ViewerScene";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { viewerStateAtom } from "./modules/product-viewer/state/viewer";
 import { StoreScene } from "./modules/store/components/StoreScene";
+import { fadeRefAtom } from "./shared/state/fade";
 
 export const Experience = () => {
-  const fadeRef = useRef<FadeHandle>(null!);
+  const fadeRef = useRef<FadeHandle>(null!)
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
+  const setFadeRef = useSetAtom(fadeRefAtom);
 
   const toggleViewer = () => {
     fadeRef.current.fadeToBlack();
@@ -24,8 +26,9 @@ export const Experience = () => {
     if (button) {
       button.onclick = toggleViewer;
     }
-  }, []);
-  
+    setFadeRef(fadeRef.current);
+  }, [])
+
   return (
     <group>
       <ambientLight intensity={0.8} />

@@ -14,11 +14,14 @@ import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { storeModels } from "../data/store-models";
+import { getCatalogForSection } from "../../catalog/utils/getCatalogForSection";
+import { SectionId } from "../../../shared/types/section";
+import { fadeRefAtom } from "../../../shared/state/fade";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
-
   const [, setViewerState] = useAtom(viewerStateAtom);
+  const [fadeRef] = useAtom(fadeRefAtom);
 
   const handlePointerOver = (id: string) => {
     setHoveredModel(id);
@@ -28,6 +31,22 @@ export const StoreScene = (props: GroupProps) => {
   const handlePointerOut = () => {
     setHoveredModel(null);
     document.body.style.cursor = "default";
+  };
+
+  const handleModelClick = (id: SectionId) => {
+    fadeRef?.fadeToBlack();
+
+    setTimeout(() => {
+      const catalog = getCatalogForSection(id);
+      setViewerState({
+        isOpen: true,
+        currentProduct: catalog?.products[0] ?? null,
+        catalog: catalog ?? null,
+        currentIndex: 0,
+      });
+      
+      fadeRef?.fadeFromBlack();
+    }, 1000);
   };
 
   const models = Object.values(storeModels);
@@ -54,6 +73,7 @@ export const StoreScene = (props: GroupProps) => {
               rotation={rotation}
               onPointerOver={() => handlePointerOver(id)}
               onPointerOut={handlePointerOut}
+              onClick={() => handleModelClick(id)}
             />
             {hoveredModel === id && (
               <Annotation
