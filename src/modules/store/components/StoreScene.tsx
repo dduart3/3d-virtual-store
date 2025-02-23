@@ -10,146 +10,16 @@ import {
 } from "@react-three/postprocessing";
 import { useState } from "react";
 import { Annotation } from "../../../shared/components/Annotation";
-import { getCatalogForModel } from "../../catalog/data/catalog";
-import { useAtom } from 'jotai'
-import { viewerStateAtom } from '../../product-viewer/state/viewer'
-
-
-type ModelConfig = {
-  id: string;
-  name: string;
-  path: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  label: string;
-};
-
-const defaultModelConfig = {
-  label: "Ver articulos",
-};
-
-const MODELS: ModelConfig[] = [
-  {
-    ...defaultModelConfig,
-    id: "checkout",
-    name: "Checkout Counter",
-    path: "/misc/checkout-counter",
-    position: [-139.5, 0, -56.5],
-    rotation: [0, 0, 0],
-    label: "Pagar",
-  },
-  {
-    ...defaultModelConfig,
-    id: "suits",
-    name: "Men's Suits",
-    path: "/displays/wardrobes/suits-wardrobe",
-    position: [-146, -0.46, -51.1],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "pants",
-    name: "Men's Pants",
-    path: "/displays/wardrobes/pants-wardrobe",
-    position: [-152, -0.46, -51.1],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "shirts",
-    name: "Men's Shirts",
-    path: "/displays/wardrobes/shirts-wardrobe",
-    position: [-158, -0.46, -51.1],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "hats",
-    name: "Men's Hats",
-    path: "/displays/tables/hats-table",
-    position: [-148, -0.46, -55.6],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "menShoes",
-    name: "Men's Shoes",
-    path: "/displays/tables/men-shoes-table",
-    position: [-153.8, -0.46, -55.6],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "menAccessories",
-    name: "Men's Accessories",
-    path: "/displays/tables/men-accesories-table",
-    position: [-157, -0.46, -55.6],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "blouses",
-    name: "Women's Blouses",
-    path: "/displays/wardrobes/blouses-wardrobe",
-    position: [-158, -0.46, -66.9],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "dresses",
-    name: "Women's Dresses",
-    path: "/displays/wardrobes/dresses-wardrobe",
-    position: [-152, -0.46, -66.9],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "skirts",
-    name: "Women's Skirts",
-    path: "/displays/wardrobes/skirts-wardrobe",
-    position: [-146, -0.46, -66.9],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "womenAccessories",
-    name: "Women's Accessories",
-    path: "/displays/tables/women-accesories-table",
-    position: [-157, -0.46, -62.6],
-    rotation: [0, 0, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "womenShoes",
-    name: "Women's Shoes",
-    path: "/displays/tables/women-shoes-table",
-    position: [-151.8, -0.46, -64.1],
-    rotation: [0, -Math.PI / 1, 0],
-  },
-  {
-    ...defaultModelConfig,
-    id: "bags",
-    name: "Women's Bags",
-    path: "/displays/tables/bags-table",
-    position: [-146.1, -0.46, -64.1],
-    rotation: [0, -Math.PI / 1, 0],
-  },
-];
+import { useAtom } from "jotai";
+import { viewerStateAtom } from "../../product-viewer/state/viewer";
+import { CheckoutCounter } from "./CheckoutCounter";
+import { storeModels } from "../data/store-models";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
-  const [, setViewerState] = useAtom(viewerStateAtom)
+  const [, setViewerState] = useAtom(viewerStateAtom);
 
-  const handleModelClick = (id: string) => {
-    const catalog = getCatalogForModel(id)
-    setViewerState({
-      isOpen: true,
-      currentProduct: catalog[0],
-      catalog: catalog,
-      currentIndex: 0
-    })
-  }
   const handlePointerOver = (id: string) => {
     setHoveredModel(id);
     document.body.style.cursor = "pointer";
@@ -159,6 +29,8 @@ export const StoreScene = (props: GroupProps) => {
     setHoveredModel(null);
     document.body.style.cursor = "default";
   };
+
+  const models = Object.values(storeModels);
 
   return (
     <Selection>
@@ -174,7 +46,7 @@ export const StoreScene = (props: GroupProps) => {
       <group {...props}>
         <Model modelPath="scene" />
 
-        {MODELS.map(({ id, path, position, label, rotation }) => (
+        {models.map(({ id, path, position, label, rotation }) => (
           <Select key={id} enabled={hoveredModel === id}>
             <Model
               modelPath={path}
@@ -184,10 +56,24 @@ export const StoreScene = (props: GroupProps) => {
               onPointerOut={handlePointerOut}
             />
             {hoveredModel === id && (
-              <Annotation position={position} content={label} />
+              <Annotation
+                position={position}
+                content={label ? label : "Ver articulos"}
+              />
             )}
           </Select>
         ))}
+
+        <Select enabled={hoveredModel === "checkout-counter"}>
+          <CheckoutCounter
+            position={[-139.5, 0, -56.5]}
+            onPointerOver={() => handlePointerOver("checkout-counter")}
+            onPointerOut={handlePointerOut}
+          />
+          {hoveredModel === "checkout-counter" && (
+            <Annotation position={[-139.5, 0, -56.5]} content={"Pagar"} />
+          )}
+        </Select>
 
         <Doors />
         <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -1, -60]} />
@@ -195,6 +81,3 @@ export const StoreScene = (props: GroupProps) => {
     </Selection>
   );
 };
-
-
-
