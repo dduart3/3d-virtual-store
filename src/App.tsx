@@ -1,8 +1,11 @@
 import { Canvas } from "@react-three/fiber";
-import { Experience } from "./Experience";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";
+import { Experience } from "./Experience";
+import { devModeAtom } from "./shared/state/dev";
+import { useAtom } from "jotai";
+
 enum Controls {
   forward = "forward",
   backward = "backward",
@@ -12,6 +15,7 @@ enum Controls {
 }
 
 function App() {
+  const [isDevMode] = useAtom(devModeAtom);
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(
     () => [
       { name: Controls.forward, keys: ["ArrowUp", "KeyW"] },
@@ -34,6 +38,7 @@ function App() {
       >
         <Experience />
       </Canvas>
+      {!isDevMode && <ViewerUI />}
     </KeyboardControls>
   );
 }

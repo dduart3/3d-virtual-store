@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { Background } from "./Background";
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import {
   Bloom,
   DepthOfField,
@@ -10,11 +10,14 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 import { ProductStage } from "./ProductStage";
+import { useProductRotation } from "../hooks/useProductRotation";
+import { devModeAtom } from "../../../shared/state/dev";
+import { useAtom } from "jotai";
 
 export const ViewerScene = () => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [rotationSpeed, setRotationSpeed] = useState(0);
-  const lastX = useRef(0);
+  const { isDragging, rotationSpeed } = useProductRotation();
+
+  const [isDevMode] = useAtom(devModeAtom);
 
   const { camera } = useThree();
 
@@ -27,38 +30,9 @@ export const ViewerScene = () => {
 
   return (
     <group>
-      <mesh
-        position={[0, 0, 0]}
-        onPointerDown={(e) => {
-          e.stopPropagation();
-          setIsDragging(true);
-          lastX.current = e.clientX;
-        }}
-        onPointerMove={(e) => {
-          e.stopPropagation();
-          if (isDragging) {
-            const delta = (e.clientX - lastX.current) * 0.005;
-            setRotationSpeed(delta);
-            lastX.current = e.clientX;
-          }
-        }}
-        onPointerUp={(e) => {
-          e.stopPropagation();
-          setIsDragging(false);
-          setTimeout(() => setRotationSpeed(0), 150);
-        }}
-        onPointerLeave={(e) => {
-          e.stopPropagation();
-          setIsDragging(false);
-          setTimeout(() => setRotationSpeed(0), 150);
-        }}
-      >
-        <planeGeometry args={[20, 20]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
-
+      {isDevMode && <OrbitControls enableZoom={true} enablePan={true} enableDamping={true} enableRotate={true} />}
       <ambientLight intensity={0.7} />
-      <Background position={[0, 0, 3.7]} />
+      {!isDevMode &&<Background position={[0, 0, 3.7]} />}
       <spotLight
         intensity={0.5}
         angle={0.1}
@@ -68,17 +42,18 @@ export const ViewerScene = () => {
       />
       <Environment preset="city" background blur={1} />
 
-      <ProductStage
-  
-        isDragging={isDragging}
-        rotationSpeed={rotationSpeed}
-      />
-      <EffectComposer>
-        <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
+      <ProductStage isDragging={isDragging} rotationSpeed={rotationSpeed} />
+      {!isDevMode && <EffectComposer>
+        <DepthOfField
+          focusDistance={0}
+          focalLength={0.02}
+          bokehScale={2}
+          height={480}
+        />
         <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.1} darkness={1.3} />
-      </EffectComposer>
+      </EffectComposer>}
     </group>
   );
 };
