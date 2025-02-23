@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Experience } from "./modules/experience/Experience";
+import { Experience } from "./Experience";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";

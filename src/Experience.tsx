@@ -1,11 +1,11 @@
 import { Environment } from "@react-three/drei";
 import { useEffect, useRef } from "react";
-import { Fade, FadeHandle } from "../../components/Fade";
-import { Scene } from "../store/Scene";
-import { Avatar } from "../avatar/components/Avatar";
-import { ViewerScene } from "../product-viewer/components/ViewerScene";
+import { Fade, FadeHandle } from "./components/Fade";
+import { Scene } from "./modules/store/Scene";
+import { Avatar } from "./modules/avatar/components/Avatar";
+import { ViewerScene } from "./modules/product-viewer/components/ViewerScene";
 import { useAtom } from "jotai";
-import { viewerStateAtom } from "../product-viewer/state/viewer";
+import { viewerStateAtom } from "./modules/product-viewer/state/viewer";
 
 export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!);
