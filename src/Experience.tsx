@@ -7,11 +7,13 @@ import { useAtom, useSetAtom } from "jotai";
 import { viewerStateAtom } from "./modules/product-viewer/state/viewer";
 import { StoreScene } from "./modules/store/components/StoreScene";
 import { fadeRefAtom } from "./shared/state/fade";
+import { devModeAtom } from "./shared/state/dev";
 
 export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!)
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
   const setFadeRef = useSetAtom(fadeRefAtom);
+  const  [isDevMode, setDevMode] = useAtom(devModeAtom);
 
   const toggleViewer = () => {
     fadeRef.current.fadeToBlack();
@@ -21,10 +23,17 @@ export const Experience = () => {
     }, 1000);
   }
 
+  const toggleDevMode = () => {
+    setDevMode(prev => !prev);
+  }
+
   useEffect(() => {
-    const button = document.getElementById("toggle-viewer-button");
-    if (button) {
+    const button = document.getElementById("viewer");
+    const button2 = document.getElementById("dev");
+
+    if (button && button2) {
       button.onclick = toggleViewer;
+      button2.onclick = toggleDevMode;
     }
     setFadeRef(fadeRef.current);
   }, [])
