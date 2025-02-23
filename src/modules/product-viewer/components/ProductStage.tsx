@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../state/viewer";
-import { Model } from "../../../components/Model";
+import { Model } from "../../../shared/components/Model";
 import { GroupProps, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Group } from "three";

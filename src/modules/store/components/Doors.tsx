@@ -1,5 +1,5 @@
 import { GroupProps } from "@react-three/fiber"
-import { Model } from "../../../components/Model"
+import { Model } from "../../../shared/components/Model"
 import { useState } from "react"
 import { Euler, Vector3 } from "three"
 

@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { ViewerState } from "../../../types/Product";
+import { ViewerState } from "../../../types/product";
 
 export const viewerStateAtom = atom<ViewerState>({
   isOpen: false, // Start with the viewer closed

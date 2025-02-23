@@ -1,6 +1,6 @@
 import { Environment } from "@react-three/drei";
 import { useEffect, useRef } from "react";
-import { Fade, FadeHandle } from "./components/Fade";
+import { Fade, FadeHandle } from "./shared/components/Fade";
 import { Avatar } from "./modules/avatar/components/Avatar";
 import { ViewerScene } from "./modules/product-viewer/components/ViewerScene";
 import { useAtom } from "jotai";

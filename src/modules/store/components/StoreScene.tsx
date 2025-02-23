@@ -1,5 +1,5 @@
 import { GroupProps } from "@react-three/fiber";
-import { Model } from "../../../components/Model";
+import { Model } from "../../../shared/components/Model";
 import { Floor } from "./Floor";
 import { Doors } from "./Doors";
 import {
@@ -9,7 +9,7 @@ import {
   Outline,
 } from "@react-three/postprocessing";
 import { useState } from "react";
-import { Annotation } from "../../../components/Annotation";
+import { Annotation } from "../../../shared/components/Annotation";
 import { getCatalogForModel } from "../../catalog/data/catalog";
 import { useAtom } from 'jotai'
 import { viewerStateAtom } from '../../product-viewer/state/viewer'
