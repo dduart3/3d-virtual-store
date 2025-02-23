@@ -35,7 +35,7 @@ export const ProductStage = ({
       ref={groupRef}
       position={position}
       rotation={rotation}
-      scale={scale}
+      scale={scale? scale : 1}
       {...props}
     >
       <Model modelPath={path} />
