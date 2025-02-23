@@ -1,16 +1,10 @@
-import { SectionId } from "../../../shared/types/section"
+import { Product } from "../../../shared/types/product";
+import { SectionId, Sections } from "../../../shared/types/section";
 
-export interface Product {
-  id: string
-  name: string
-  price: number
-  description: string
-  modelPath: string
-  thumbnailPath: string
-}
+export type Catalogs = Sections & {
+  [key in SectionId]: {
+    products: Product[];
+  };
+};
 
-export interface Catalog {
-  id: SectionId
-  name: string
-  products: Product[]
-}
+export type Catalog = Catalogs[keyof Catalogs]

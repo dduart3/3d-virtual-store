@@ -37,7 +37,6 @@ export const sections: Sections = {
     name: "Faldas",
     id: SECTION_IDS.WOMEN_SKIRTS,
   },
-
   [SECTION_IDS.WOMEN_SHOES]: {
     name: "Zapatos de mujer",
     id: SECTION_IDS.WOMEN_SHOES,

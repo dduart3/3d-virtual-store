@@ -1,9 +1,9 @@
+import { GroupProps, useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../state/viewer";
-import { Model } from "../../../shared/components/Model";
-import { GroupProps, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { Group } from "three";
+import { Model } from "../../../shared/components/Model";
 
 export const ProductStage = ({
   isDragging,
@@ -13,8 +13,11 @@ export const ProductStage = ({
   isDragging: boolean;
   rotationSpeed: number;
 } & GroupProps) => {
-  //const [viewerState] = useAtom(viewerStateAtom);
+  const [viewerState] = useAtom(viewerStateAtom);
   const groupRef = useRef<Group>(null);
+  const model = viewerState.currentProduct?.model;
+
+  if (!model) return null;
 
   useFrame(() => {
     if (groupRef.current === null) return;
@@ -25,9 +28,17 @@ export const ProductStage = ({
     }
   });
 
+  const { path, position, rotation, scale } = model;
+
   return (
-    <group ref={groupRef} position={[0, -0.2, 5]} scale={0.8}  {...props}>
-      <Model modelPath={"/products/men/shoes/shoe"} />
+    <group
+      ref={groupRef}
+      position={position}
+      rotation={rotation}
+      scale={scale}
+      {...props}
+    >
+      <Model modelPath={path} />
     </group>
   );
 };

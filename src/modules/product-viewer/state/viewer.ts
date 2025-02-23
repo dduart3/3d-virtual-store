@@ -1,9 +1,12 @@
 import { atom } from "jotai";
-import { ViewerState } from "../../../types/product";
+import { ViewerState } from "../types/viewer";
+import { getCatalogForSection } from "../../catalog/utils/getCatalogForSection";
+
+const catalog = getCatalogForSection("men-shoes");
 
 export const viewerStateAtom = atom<ViewerState>({
-  isOpen: false, // Start with the viewer closed
-  currentProduct: null,
-  catalog: [], // Populate this with your product data
+  isOpen: true,
+  currentProduct: catalog?.products[0] ?? null,
+  catalog: catalog ?? null,
   currentIndex: 0,
 });
