@@ -1,7 +1,7 @@
 import { GroupProps } from "@react-three/fiber";
-import { Model } from "../../components/Model";
-import { Floor } from "./components/Floor";
-import { Doors } from "./components/Doors";
+import { Model } from "../../../components/Model";
+import { Floor } from "./Floor";
+import { Doors } from "./Doors";
 import {
   Selection,
   Select,
@@ -9,10 +9,10 @@ import {
   Outline,
 } from "@react-three/postprocessing";
 import { useState } from "react";
-import { Annotation } from "../../components/Annotation";
-import { getCatalogForModel } from "../catalog/data/catalog";
+import { Annotation } from "../../../components/Annotation";
+import { getCatalogForModel } from "../../catalog/data/catalog";
 import { useAtom } from 'jotai'
-import { viewerStateAtom } from '../product-viewer/state/viewer'
+import { viewerStateAtom } from '../../product-viewer/state/viewer'
 
 
 type ModelConfig = {
@@ -136,7 +136,7 @@ const MODELS: ModelConfig[] = [
   },
 ];
 
-export const Scene = (props: GroupProps) => {
+export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
   const [, setViewerState] = useAtom(viewerStateAtom)
