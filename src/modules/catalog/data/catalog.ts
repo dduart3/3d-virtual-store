@@ -1,20 +1,26 @@
-import { Product } from "../../../types/product";
+import { Catalog } from '../types/catalog'
 
-const CATALOGS: Record<string, Product[]> = {
-  menShoes: [
-    {
-      id: 'oxford',
-      name: 'Oxford Brown Leather',
-      description: 'Classic brown leather oxford shoes',
-      price: 149.99,
-      modelPath: '/products/men/shoes/oxford',
-      category: 'menShoes',
-    },
-    // Add more shoes
-  ],
-  // Add more catalogs for other categories
-}
-
-export const getCatalogForModel = (modelId: string): Product[] => {
-  return CATALOGS[modelId] || []
-}
+export const catalogs: Catalog[] = [
+  {
+    id: 'men-shoes',
+    name: 'Men\'s Shoes',
+    products: [
+      {
+        id: 'oxford-classic',
+        name: 'Oxford Classic',
+        price: 299.99,
+        description: 'Premium leather Oxford shoes with classic design',
+        modelPath: '/models/men-shoes/oxford.glb',
+        thumbnailPath: '/images/men-shoes/oxford.jpg'
+      },
+      {
+        id: 'loafer-brown',
+        name: 'Brown Loafers',
+        price: 249.99,
+        description: 'Comfortable brown leather loafers',
+        modelPath: '/models/men-shoes/loafer.glb',
+        thumbnailPath: '/images/men-shoes/loafer.jpg'
+      }
+    ]
+  }
+]

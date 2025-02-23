@@ -1,10 +1,4 @@
-export type CatalogType = 
-  | 'men-shoes'
-  | 'women-shoes'
-  | 'men-accessories'
-  | 'women-accessories'
-  | 'men-shirts'
-  | 'men-pants'
+import { SectionId } from "../../../shared/types/section"
 
 export interface Product {
   id: string
@@ -16,7 +10,7 @@ export interface Product {
 }
 
 export interface Catalog {
-  id: CatalogType
+  id: SectionId
   name: string
   products: Product[]
 }
