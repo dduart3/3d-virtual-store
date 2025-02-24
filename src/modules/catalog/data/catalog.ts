@@ -42,6 +42,52 @@ export const catalogs: Catalog[] = [
     ],
   },
   {
+    ...sections[SECTION_IDS.MEN_HATS],
+    products: [
+      {
+        id: "fedora",
+        name: "Fedora",
+        price: 99.99,
+        description: "De Mafia I",
+        model:{
+          path: `products/${SECTION_IDS.MEN_HATS}/fedora`,
+          position: [0, 0.2, 5],
+          rotation: [0.1, 0, 0],
+          scale: 0.058
+          
+        }
+      },
+
+      {
+        id: "summer-fedora",
+        name: "Fedora de verano",
+        price: 99.99,
+        description: "De Mafia I",
+        model:{
+          path: `products/${SECTION_IDS.MEN_HATS}/summer-fedora`,
+          position: [0, 0.6,7 ],
+        }
+      },
+      {
+        id: "flat-cap",
+        name: "Gorra inglesa",
+        price: 99.99,
+        description: "la q sale en los piki blainder",
+        model:{
+          path: `products/${SECTION_IDS.MEN_HATS}/flat-cap`,
+          position: [0, -0.17, 3.8],
+          scale: 0.085
+
+          
+          
+        }
+      },
+
+
+
+    ],
+  },
+  {
     ...sections[SECTION_IDS.WOMEN_SHOES],
     products: [
       {
@@ -117,6 +163,43 @@ export const catalogs: Catalog[] = [
           
         }
       },
+
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.WOMEN_BAGS],
+    products: [
+      {
+        id: "valentino",
+        name: "Bolso Valentino",
+        price: 99.99,
+        description: "si",
+        model:{
+          path: `products/${SECTION_IDS.WOMEN_BAGS}/valentino`,
+          position: [0,-.17,8.7],
+        }
+      },
+      {
+        id: "saint",
+        name: "Bolso Saint",
+        price: 99.99,
+        description: "si",
+        model:{
+          path: `products/${SECTION_IDS.WOMEN_BAGS}/saint`,
+          position: [0,-.1,8.9],
+        }
+      },
+      {
+        id: "gucci",
+        name: "Bolso Gucci",
+        price: 99.99,
+        description: "si",
+        model:{
+          path: `products/${SECTION_IDS.WOMEN_BAGS}/gucci`,
+          position: [0,0,4.3],
+          scale: 0.75
+        }
+      }
 
     ],
   },
