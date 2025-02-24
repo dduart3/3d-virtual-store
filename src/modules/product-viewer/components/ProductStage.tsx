@@ -34,7 +34,7 @@ export const ProductStage = ({
     <group
       ref={groupRef}
       position={position}
-      rotation={rotation}
+      rotation={rotation?  rotation : [0, 0, 0]}
       scale={scale? scale : 1}
       {...props}
     >

@@ -59,10 +59,11 @@ export const catalogs: Catalog[] = [
         id: "low-heel",
         name: "Tacones bajos",
         price: 99.99,
-        description: "Para los transfors y prepagos ",
+        description: "Si ",
         model:{
           path: `products/${SECTION_IDS.WOMEN_SHOES}/low-heels`,
           position: [0,-.15,4.7],
+          rotation: [0,0,-25]
         }
       },
       {
@@ -76,6 +77,47 @@ export const catalogs: Catalog[] = [
           scale: 0.8
         }
       },
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.MEN_ACCESSORIES],
+    products: [
+      {
+        id: "aviator-sunglasses",
+        name: "Lentes Aviador ",
+        price: 99.99,
+        description: "Naguevona de cacheroso",
+        model:{
+          path: `products/${SECTION_IDS.MEN_ACCESSORIES}/aviator-sunglasses`,
+          position: [0,-.5,5],
+          scale: .1
+
+        }
+      },
+      {
+        id: "wallet",
+        name: "Cartera",
+        price: 99.99,
+        description: "La mejor cartera del mundo",
+        model:{
+          path: `products/${SECTION_IDS.MEN_ACCESSORIES}/wallet`,
+          position: [0,-.15,6],
+          scale: 0.5
+        }
+      },
+      {
+        id: "seiko",
+        name: "Reloj Seiko",
+        price: 99.99,
+        description: "Naguevona de cacheroso",
+        model:{
+          path: `products/${SECTION_IDS.MEN_ACCESSORIES}/seiko`,
+          position: [0,-.7,5],
+          scale: 10
+          
+        }
+      },
+
     ],
   },
 ];
