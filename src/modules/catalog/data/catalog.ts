@@ -11,21 +11,21 @@ export const catalogs: Catalog[] = [
         name: "Magnanni",
         price: 99.99,
         description: "Los mas o menos, puede ser ",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_SHOES}/magnanni`,
-          position: [0, -.02, 9.1],
+          position: [0, -0.02, 9.1],
           scale: 0.001,
-        }
+        },
       },
       {
         id: "oxford",
         name: "Oxford",
         price: 150.99,
         description: "Estamos mejorando",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_SHOES}/oxford`,
-          position: [0, -.2, 7.5],
-          scale: 3
+          position: [0, -0.2, 7.5],
+          scale: 3,
         },
       },
       {
@@ -33,7 +33,7 @@ export const catalogs: Catalog[] = [
         name: "Rossi",
         price: 299.99,
         description: "Los definitivos",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_SHOES}/rossi`,
           position: [0, 0, 6.5],
           scale: 0.4,
@@ -49,13 +49,12 @@ export const catalogs: Catalog[] = [
         name: "Fedora",
         price: 99.99,
         description: "De Mafia I",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_HATS}/fedora`,
           position: [0, 0.2, 5],
           rotation: [0.1, 0, 0],
-          scale: 0.058
-          
-        }
+          scale: 0.058,
+        },
       },
 
       {
@@ -63,28 +62,62 @@ export const catalogs: Catalog[] = [
         name: "Fedora de verano",
         price: 99.99,
         description: "De Mafia I",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_HATS}/summer-fedora`,
-          position: [0, 0.6,7 ],
-        }
+          position: [0, 0.6, 7],
+        },
       },
       {
         id: "flat-cap",
         name: "Gorra inglesa",
         price: 99.99,
         description: "la q sale en los piki blainder",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_HATS}/flat-cap`,
           position: [0, -0.17, 3.8],
-          scale: 0.085
-
-          
-          
-        }
+          scale: 0.085,
+        },
       },
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.MEN_SHIRTS],
+    products: [
+      {
+        id: "sweater",
+        name: "Sueter",
+        price: 99.99,
+        description: "un sueter",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SHIRTS}/sweater`,
+          position: [0, -3, 6],
+          scale: 0.5
+        },
+      },
+      {
+        id: "shirt",
+        name: "Franela",
+        price: 99.99,
+        description: "una franela",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SHIRTS}/shirt`,
+          position: [0,-0.1,4.5],
+          scale: 0.07
+
+        },
+      },
+      {
+        id: "long-shirt",
+        name: "Camisa",
+        price: 99.99,
+        description: "una camisa",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SHIRTS}/long-shirt`,
+          position: [0,-1.42,8],
 
 
-
+        },
+      },
     ],
   },
   {
@@ -95,33 +128,33 @@ export const catalogs: Catalog[] = [
         name: "Tacones altos",
         price: 99.99,
         description: "Para los transfors y prepagos ",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_SHOES}/high-heels`,
-          position: [0,-.15,4.7],
-          scale: 0.08
-        }
+          position: [0, -0.15, 4.7],
+          scale: 0.08,
+        },
       },
       {
         id: "low-heel",
         name: "Tacones bajos",
         price: 99.99,
         description: "Si ",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_SHOES}/low-heels`,
-          position: [0,-.15,4.7],
-          rotation: [0,0,-25]
-        }
+          position: [0, -0.15, 4.7],
+          rotation: [0, 0, -25],
+        },
       },
       {
         id: "boot",
         name: "Botas",
         price: 99.99,
         description: "Para los transfors y prepagos ",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_SHOES}/boot`,
-          position: [0,.45,4.4],
-          scale: 0.8
-        }
+          position: [0, 0.45, 4.4],
+          scale: 0.8,
+        },
       },
     ],
   },
@@ -133,37 +166,34 @@ export const catalogs: Catalog[] = [
         name: "Lentes Aviador ",
         price: 99.99,
         description: "Naguevona de cacheroso",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_ACCESSORIES}/aviator-sunglasses`,
-          position: [0,-.5,5],
-          scale: .1
-
-        }
+          position: [0, -0.5, 5],
+          scale: 0.1,
+        },
       },
       {
         id: "wallet",
         name: "Cartera",
         price: 99.99,
         description: "La mejor cartera del mundo",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_ACCESSORIES}/wallet`,
-          position: [0,-.15,6],
-          scale: 0.5
-        }
+          position: [0, -0.15, 6],
+          scale: 0.5,
+        },
       },
       {
         id: "seiko",
         name: "Reloj Seiko",
         price: 99.99,
         description: "Naguevona de cacheroso",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.MEN_ACCESSORIES}/seiko`,
-          position: [0,-.7,5],
-          scale: 10
-          
-        }
+          position: [0, -0.7, 5],
+          scale: 10,
+        },
       },
-
     ],
   },
   {
@@ -174,33 +204,32 @@ export const catalogs: Catalog[] = [
         name: "Bolso Valentino",
         price: 99.99,
         description: "si",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_BAGS}/valentino`,
-          position: [0,-.17,8.7],
-        }
+          position: [0, -0.17, 8.7],
+        },
       },
       {
         id: "saint",
         name: "Bolso Saint",
         price: 99.99,
         description: "si",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_BAGS}/saint`,
-          position: [0,-.1,8.9],
-        }
+          position: [0, -0.1, 8.9],
+        },
       },
       {
         id: "gucci",
         name: "Bolso Gucci",
         price: 99.99,
         description: "si",
-        model:{
+        model: {
           path: `products/${SECTION_IDS.WOMEN_BAGS}/gucci`,
-          position: [0,0,4.3],
-          scale: 0.75
-        }
-      }
-
+          position: [0, 0, 4.3],
+          scale: 0.75,
+        },
+      },
     ],
   },
 ];
