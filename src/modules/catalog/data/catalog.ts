@@ -114,10 +114,49 @@ export const catalogs: Catalog[] = [
         model: {
           path: `products/${SECTION_IDS.MEN_SHIRTS}/long-shirt`,
           position: [0,-1.42,8],
-
+        },
+      },
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.MEN_PANTS],
+    products: [
+      {
+        id: "pants",
+        name: "Pantalones",
+        price: 99.99,
+        description: "pantalones",
+        model: {
+          path: `products/${SECTION_IDS.MEN_PANTS}/pants`,
+          position: [0, -1.5, 6],
+          scale: 0.025
+        },
+      },
+      {
+        id: "jeans",
+        name: "Jeans",
+        price: 99.99,
+        description: "son unos levi papa, los culito parao",
+        model: {
+          path: `products/${SECTION_IDS.MEN_PANTS}/jeans`,
+          position: [0, -1.5, 5],
+          scale: 0.4
 
         },
       },
+      {
+        id: "dark-jeans",
+        name: "Jeans oscuros",
+        price: 99.99,
+        description: "son unos levi papa, los culito parao",
+        model: {
+          path: `products/${SECTION_IDS.MEN_PANTS}/dark-jeans`,
+          position: [0, -0.8, 8],
+          scale: 0.001
+
+        },
+      },
+      
     ],
   },
   {
