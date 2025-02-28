@@ -42,6 +42,43 @@ export const catalogs: Catalog[] = [
     ],
   },
   {
+    ...sections[SECTION_IDS.MEN_SUITS],
+    products: [
+      {
+        id: "suit",
+        name: "Suit",
+        price: 99.99,
+        description: "Los mas o menos, puede ser ",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SUITS}/suit`,
+          position: [0,-1.15,8],
+          scale: 0.01
+        },
+      },
+      {
+        id: "suit",
+        name: "Suit",
+        price: 99.99,
+        description: "Los mas o menos, puede ser ",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SUITS}/black-suit`,
+          position: [0,-.35,7.5],
+          scale: 0.01
+        },
+      },
+      {
+        id: "suit",
+        name: "Suit",
+        price: 99.99,
+        description: "Los mas o menos, puede ser ",
+        model: {
+          path: `products/${SECTION_IDS.MEN_SUITS}/tailcoat-suit`,
+          position: [0,-0.5,7]
+        },
+      },
+    ],
+  },
+  {
     ...sections[SECTION_IDS.MEN_HATS],
     products: [
       {
@@ -269,6 +306,85 @@ export const catalogs: Catalog[] = [
           scale: 0.75,
         },
       },
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.WOMEN_ACCESSORIES],
+    products: [
+      {
+        id: "ring",
+        name: "Anillo de diamante",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/ring`,
+          position: [0,0.2,5],
+          rotation: [-12, 0, 0],
+          scale: 0.3
+        },
+      },
+      {
+        id: "watch",
+        name: "Reloj Cadisen",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/watch`,
+          position: [0,-.4,6],
+          rotation: [0, 0, -.3],
+          scale: 0.1
+
+        },
+      },
+      {
+        id: "necklace",
+        name: "Collar de rubí",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/necklace`,
+          position: [0,0.6,7],
+          scale: 0.012
+        },
+      },
+
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.WOMEN_DRESSES],
+    products: [
+      {
+        id: "ring",
+        name: "Vestido manga larga",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_DRESSES}/long-sleeve-dress`,
+          position: [0,-1.3,7.7],  
+          scale: 0.01
+        },
+      },
+      {
+        id: "ring",
+        name: "Vestido",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_DRESSES}/blue-dress`,
+          position: [0,-0.3,7.7],  
+        },
+      },
+      {
+        id: "ring",
+        name: "Vestido",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_DRESSES}/dress`,
+          position: [0,-1.35,7.7],  
+        },
+      },
+      
     ],
   },
 ];

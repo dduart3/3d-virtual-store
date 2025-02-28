@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { ViewerState } from "../types/viewer";
 import { getCatalogForSection } from "../../catalog/utils/getCatalogForSection";
 
-const catalog = getCatalogForSection("men-pants");
+const catalog = getCatalogForSection("women-skirts");
 
 export const viewerStateAtom = atom<ViewerState>({
   isOpen: true,
