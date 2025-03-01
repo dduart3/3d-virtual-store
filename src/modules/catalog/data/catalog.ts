@@ -387,4 +387,80 @@ export const catalogs: Catalog[] = [
       
     ],
   },
+  {
+    ...sections[SECTION_IDS.WOMEN_SKIRTS],
+    products: [
+      {
+        id: "ring",
+        name: "Falda azul",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_SKIRTS}/blue-skirt`,
+          position: [0,-.5,8],  
+          scale: 0.001
+        },
+      },
+      {
+        id: "skirt",
+        name: "Falda",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_SKIRTS}/skirt`,
+          position: [0, -.9, 7.5],
+        },
+      },
+      {
+        id: "skirt",
+        name: "Falda",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_SKIRTS}/long-skirt`,
+          position: [0, -.9, 7.5],
+          scale: 0.001
+        },
+      },
+    ],
+  },
+  {
+    ...sections[SECTION_IDS.WOMEN_BLOUSES],
+    products: [
+      {
+        id: "ring",
+        name: "Blusa",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_BLOUSES}/blouse`,
+          position: [0,-0.05,8.5],  
+
+        },
+      },
+      {
+        id: "ring",
+        name: "Blusa",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_BLOUSES}/white-blouse`,
+          position: [0,-1.3,8],  
+
+        },
+      },
+      {
+        id: "pink-blouse",
+        name: "Blusa",
+        price: 99.99,
+        description: "si",
+        model: {
+          path: `products/${SECTION_IDS.WOMEN_BLOUSES}/pink-blouse`,
+          position: [0,-0.2,4.2],  
+
+        },
+      },
+      
+    ],
+  },
 ];
