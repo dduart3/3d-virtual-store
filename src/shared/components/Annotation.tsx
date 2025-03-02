@@ -2,7 +2,7 @@ import { Html, Line } from "@react-three/drei"
 import { Vector3 } from "three"
 
 type AnnotationProps = {
-  position: [number, number, number]
+  position: [number, number, number] | Vector3
   content: string
   offset?: [number, number, number]
 }

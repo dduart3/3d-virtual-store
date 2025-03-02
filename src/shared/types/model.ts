@@ -4,6 +4,6 @@ export type Model = {
   path: string;
   position: [number, number, number] | Vector3;
   rotation?: [number, number, number] | Euler;
-  scale?: number;
+  scale?: number | [number, number, number];
   label?: string;
 };
