@@ -1,4 +1,4 @@
-import { SECTION_IDS } from "../../../../shared/types/section";
+import { SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const menAccessoriesSection = {
