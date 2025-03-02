@@ -1,5 +1,5 @@
-import { SECTION_IDS } from "../../../../shared/types/section";
-import { ProductData, SectionData } from "../store-sections";
+import { SECTION_IDS } from "../../types/store";
+import { SectionData } from "../store-sections";
 
 export const womenSkirtsSection = {
   id: SECTION_IDS.WOMEN_SKIRTS,
