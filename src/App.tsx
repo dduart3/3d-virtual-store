@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";
 import { Experience } from "./Experience";
-import { devModeAtom } from "./shared/state/dev";
-import { useAtom } from "jotai";
+import { CartPanel } from "./modules/cart/components/CartPanel";
+import { UILayout } from "./modules/ui/components/UILayout";
+import { ToastProvider } from "./shared/context/ToastContext";
 
 enum Controls {
   forward = "forward",
@@ -15,7 +16,6 @@ enum Controls {
 }
 
 function App() {
-  const [isDevMode] = useAtom(devModeAtom);
   const map = useMemo<KeyboardControlsEntry<Controls>[]>(
     () => [
       { name: Controls.forward, keys: ["ArrowUp", "KeyW"] },
@@ -27,19 +27,24 @@ function App() {
     []
   );
   return (
-    <KeyboardControls map={map}>
-      <Canvas
-        shadows
-        camera={{
-          near: 0.1,
-          far: 9000000000000000,
-          fov: 30,
-        }}
-      >
-        <Experience />
-      </Canvas>
-      {!isDevMode && <ViewerUI />}
-    </KeyboardControls>
+    <ToastProvider>
+      <KeyboardControls map={map}>
+        <Canvas
+          shadows
+          camera={{
+            near: 0.1,
+            far: 1000,
+            fov: 30,
+          }}
+        >
+          <Experience />
+        </Canvas>
+        <ViewerUI />
+        <UILayout>
+          <CartPanel />
+        </UILayout>
+      </KeyboardControls>
+    </ToastProvider>
   );
 }
 
