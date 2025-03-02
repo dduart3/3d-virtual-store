@@ -16,6 +16,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.02, 9.1],
           scale: 0.001,
         },
+        stock: 10
       },
       {
         id: "oxford",
@@ -27,6 +28,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.2, 7.5],
           scale: 3,
         },
+        stock:20
       },
       {
         id: "rossi",
@@ -38,6 +40,7 @@ export const catalogs: Catalog[] = [
           position: [0, 0, 6.5],
           scale: 0.4,
         },
+        stock: 0
       },
     ],
   },
@@ -51,9 +54,10 @@ export const catalogs: Catalog[] = [
         description: "Los mas o menos, puede ser ",
         model: {
           path: `products/${SECTION_IDS.MEN_SUITS}/suit`,
-          position: [0,-1.15,8],
+          position: [0, -1.15, 8],
           scale: 0.01
         },
+        stock: 0
       },
       {
         id: "suit",
@@ -62,9 +66,10 @@ export const catalogs: Catalog[] = [
         description: "Los mas o menos, puede ser ",
         model: {
           path: `products/${SECTION_IDS.MEN_SUITS}/black-suit`,
-          position: [0,-.35,7.5],
+          position: [0, -.35, 7.5],
           scale: 0.01
         },
+        stock: 0
       },
       {
         id: "suit",
@@ -73,8 +78,9 @@ export const catalogs: Catalog[] = [
         description: "Los mas o menos, puede ser ",
         model: {
           path: `products/${SECTION_IDS.MEN_SUITS}/tailcoat-suit`,
-          position: [0,-0.5,7]
+          position: [0, -0.5, 7]
         },
+        stock: 0
       },
     ],
   },
@@ -92,6 +98,7 @@ export const catalogs: Catalog[] = [
           rotation: [0.1, 0, 0],
           scale: 0.058,
         },
+        stock: 0
       },
 
       {
@@ -103,6 +110,7 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.MEN_HATS}/summer-fedora`,
           position: [0, 0.6, 7],
         },
+        stock: 0
       },
       {
         id: "flat-cap",
@@ -114,6 +122,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.17, 3.8],
           scale: 0.085,
         },
+        stock: 0
       },
     ],
   },
@@ -130,6 +139,7 @@ export const catalogs: Catalog[] = [
           position: [0, -3, 6],
           scale: 0.5
         },
+        stock: 0
       },
       {
         id: "shirt",
@@ -138,10 +148,10 @@ export const catalogs: Catalog[] = [
         description: "una franela",
         model: {
           path: `products/${SECTION_IDS.MEN_SHIRTS}/shirt`,
-          position: [0,-0.1,4.5],
+          position: [0, -0.1, 4.5],
           scale: 0.07
-
         },
+        stock: 0
       },
       {
         id: "long-shirt",
@@ -150,8 +160,9 @@ export const catalogs: Catalog[] = [
         description: "una camisa",
         model: {
           path: `products/${SECTION_IDS.MEN_SHIRTS}/long-shirt`,
-          position: [0,-1.42,8],
+          position: [0, -1.42, 8],
         },
+        stock: 0
       },
     ],
   },
@@ -168,6 +179,7 @@ export const catalogs: Catalog[] = [
           position: [0, -1.5, 6],
           scale: 0.025
         },
+        stock: 0
       },
       {
         id: "jeans",
@@ -178,8 +190,8 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.MEN_PANTS}/jeans`,
           position: [0, -1.5, 5],
           scale: 0.4
-
         },
+        stock: 0
       },
       {
         id: "dark-jeans",
@@ -190,8 +202,8 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.MEN_PANTS}/dark-jeans`,
           position: [0, -0.8, 8],
           scale: 0.001
-
         },
+        stock: 0
       },
       
     ],
@@ -209,6 +221,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.15, 4.7],
           scale: 0.08,
         },
+        stock: 0
       },
       {
         id: "low-heel",
@@ -220,6 +233,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.15, 4.7],
           rotation: [0, 0, -25],
         },
+        stock: 0
       },
       {
         id: "boot",
@@ -231,6 +245,7 @@ export const catalogs: Catalog[] = [
           position: [0, 0.45, 4.4],
           scale: 0.8,
         },
+        stock: 0
       },
     ],
   },
@@ -247,6 +262,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.5, 5],
           scale: 0.1,
         },
+        stock: 0
       },
       {
         id: "wallet",
@@ -258,6 +274,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.15, 6],
           scale: 0.5,
         },
+        stock: 0
       },
       {
         id: "seiko",
@@ -269,6 +286,7 @@ export const catalogs: Catalog[] = [
           position: [0, -0.7, 5],
           scale: 10,
         },
+        stock: 0
       },
     ],
   },
@@ -284,6 +302,7 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.WOMEN_BAGS}/valentino`,
           position: [0, -0.17, 8.7],
         },
+        stock: 0
       },
       {
         id: "saint",
@@ -294,6 +313,7 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.WOMEN_BAGS}/saint`,
           position: [0, -0.1, 8.9],
         },
+        stock: 0
       },
       {
         id: "gucci",
@@ -305,6 +325,7 @@ export const catalogs: Catalog[] = [
           position: [0, 0, 4.3],
           scale: 0.75,
         },
+        stock: 0
       },
     ],
   },
@@ -318,10 +339,11 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/ring`,
-          position: [0,0.2,5],
+          position: [0, 0.2, 5],
           rotation: [-12, 0, 0],
           scale: 0.3
         },
+        stock: 0
       },
       {
         id: "watch",
@@ -330,11 +352,11 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/watch`,
-          position: [0,-.4,6],
+          position: [0, -.4, 6],
           rotation: [0, 0, -.3],
           scale: 0.1
-
         },
+        stock: 0
       },
       {
         id: "necklace",
@@ -343,9 +365,10 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_ACCESSORIES}/necklace`,
-          position: [0,0.6,7],
+          position: [0, 0.6, 7],
           scale: 0.012
         },
+        stock: 0
       },
 
     ],
@@ -360,9 +383,10 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_DRESSES}/long-sleeve-dress`,
-          position: [0,-1.3,7.7],  
+          position: [0, -1.3, 7.7],
           scale: 0.01
         },
+        stock: 0
       },
       {
         id: "ring",
@@ -371,8 +395,9 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_DRESSES}/blue-dress`,
-          position: [0,-0.3,7.7],  
+          position: [0, -0.3, 7.7],
         },
+        stock: 0
       },
       {
         id: "ring",
@@ -381,8 +406,9 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_DRESSES}/dress`,
-          position: [0,-1.35,7.7],  
+          position: [0, -1.35, 7.7],
         },
+        stock: 0
       },
       
     ],
@@ -397,9 +423,10 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_SKIRTS}/blue-skirt`,
-          position: [0,-.5,8],  
+          position: [0, -.5, 8],
           scale: 0.001
         },
+        stock: 0
       },
       {
         id: "skirt",
@@ -410,6 +437,7 @@ export const catalogs: Catalog[] = [
           path: `products/${SECTION_IDS.WOMEN_SKIRTS}/skirt`,
           position: [0, -.9, 7.5],
         },
+        stock: 0
       },
       {
         id: "skirt",
@@ -421,6 +449,7 @@ export const catalogs: Catalog[] = [
           position: [0, -.9, 7.5],
           scale: 0.001
         },
+        stock: 0
       },
     ],
   },
@@ -434,9 +463,9 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_BLOUSES}/blouse`,
-          position: [0,-0.05,8.5],  
-
+          position: [0, -0.05, 8.5],
         },
+        stock: 0
       },
       {
         id: "ring",
@@ -445,9 +474,9 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_BLOUSES}/white-blouse`,
-          position: [0,-1.3,8],  
-
+          position: [0, -1.3, 8],
         },
+        stock: 0
       },
       {
         id: "pink-blouse",
@@ -456,9 +485,9 @@ export const catalogs: Catalog[] = [
         description: "si",
         model: {
           path: `products/${SECTION_IDS.WOMEN_BLOUSES}/pink-blouse`,
-          position: [0,-0.2,4.2],  
-
+          position: [0, -0.2, 4.2],
         },
+        stock: 0
       },
       
     ],
