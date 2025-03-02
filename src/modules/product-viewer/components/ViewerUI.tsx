@@ -10,7 +10,7 @@ export const ViewerUI = () => {
   const isFirstProduct = viewerState.currentIndex === 0;
   const isLastProduct =
     viewerState.currentIndex ===
-    (viewerState.catalog?.products?.length ?? 0) - 1;
+    (viewerState.products?.length ?? 0) - 1;
   const [fadeRef] = useAtom(fadeRefAtom);
   const product = viewerState.currentProduct;
   const { showToast } = useToast();
@@ -83,14 +83,14 @@ export const ViewerUI = () => {
   const handlePrev = () => {
     setViewerState((prev) => ({
       ...prev,
-      currentIndex: prev.catalog
-        ? (prev.currentIndex - 1 + prev.catalog.products.length) %
-          prev.catalog.products.length
+      currentIndex: prev.products
+        ? (prev.currentIndex - 1 + prev?.products?.length) %
+          prev.products.length
         : 0,
-      currentProduct: prev.catalog
-        ? prev.catalog.products[
-            (prev.currentIndex - 1 + prev.catalog.products.length) %
-              prev.catalog.products.length
+      currentProduct: prev.products
+        ? prev.products[
+            (prev.currentIndex - 1 + prev.products.length) %
+              prev.products.length
           ]
         : null,
     }));
@@ -101,12 +101,12 @@ export const ViewerUI = () => {
   const handleNext = () => {
     setViewerState((prev) => ({
       ...prev,
-      currentIndex: prev.catalog
-        ? (prev.currentIndex + 1) % prev.catalog.products.length
+      currentIndex: prev.products
+        ? (prev.currentIndex + 1) % prev.products.length
         : 0,
-      currentProduct: prev.catalog
-        ? prev.catalog.products[
-            (prev.currentIndex + 1) % prev.catalog.products.length
+      currentProduct: prev.products
+        ? prev.products[
+            (prev.currentIndex + 1) % prev.products.length
           ]
         : null,
     }));

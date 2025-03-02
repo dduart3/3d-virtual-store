@@ -4,6 +4,6 @@ import { ViewerState } from "../types/viewer";
 export const viewerStateAtom = atom<ViewerState>({
   isOpen: false,
   currentProduct: null,
-  catalog: null,
+  products: null,
   currentIndex: 0,
 });
