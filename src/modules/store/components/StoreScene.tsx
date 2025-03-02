@@ -13,10 +13,9 @@ import { Annotation } from "../../../shared/components/Annotation";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { CheckoutCounter } from "./CheckoutCounter";
-import { storeModels } from "../data/store-models";
-import { getCatalogForSection } from "../../catalog/utils/getCatalogForSection";
-import { SectionId } from "../../../shared/types/section";
 import { fadeRefAtom } from "../../../shared/state/fade";
+import { getAllSectionModels } from "../data/store-sections";
+import { SectionId } from "../types/store";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -34,10 +33,11 @@ export const StoreScene = (props: GroupProps) => {
   };
 
   const handleModelClick = (id: SectionId) => {
+    /* 
     fadeRef?.fadeToBlack();
 
     setTimeout(() => {
-      const catalog = getCatalogForSection(id);
+      const products = getCatalogForSection(id);
       setViewerState({
         isOpen: true,
         currentProduct: catalog?.products[0] ?? null,
@@ -47,9 +47,10 @@ export const StoreScene = (props: GroupProps) => {
       
       fadeRef?.fadeFromBlack();
     }, 1000);
+    */
   };
 
-  const models = Object.values(storeModels);
+  const models = getAllSectionModels()
 
   return (
     <Selection>
