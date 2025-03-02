@@ -1,11 +1,11 @@
-import { SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const womenBlousesSection = {
-  id: SECTION_IDS.WOMEN_BLOUSES,
+  id: STORE_SECTION_IDS.WOMEN_BLOUSES,
   name: "Blusas para mujer",
   model: {
-    path: `displays/${SECTION_IDS.WOMEN_BLOUSES}`,
+    path: `displays/${STORE_SECTION_IDS.WOMEN_BLOUSES}`,
     position: [-158, -0.46, -66.9],
   },
   products: [
@@ -14,7 +14,7 @@ export const womenBlousesSection = {
       description: "Blusa versátil para uso diario con diseño moderno y cómodo.",
       price: 49.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_BLOUSES}/blouse`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_BLOUSES}/blouse`,
         position: [0, -0.05, 8.5],
       },
     },
@@ -23,7 +23,7 @@ export const womenBlousesSection = {
       description: "Elegante blusa blanca para entornos profesionales y eventos formales.",
       price: 59.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_BLOUSES}/white-blouse`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_BLOUSES}/white-blouse`,
         position: [0, -1.3, 8],
       },
     },
@@ -32,7 +32,7 @@ export const womenBlousesSection = {
       description: "Blusa ligera en tono rosa con detalles delicados y acabado premium.",
       price: 54.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_BLOUSES}/pink-blouse`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_BLOUSES}/pink-blouse`,
         position: [0, -0.2, 4.2],
       },
     },

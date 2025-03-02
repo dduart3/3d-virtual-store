@@ -1,11 +1,11 @@
-import { SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const menShirtsSection = {
-  id: SECTION_IDS.MEN_SHIRTS,
+  id: STORE_SECTION_IDS.MEN_SHIRTS,
   name: "Camisas y suéteres para hombre",
   model: {
-    path: `displays/${SECTION_IDS.MEN_SHIRTS}`,
+    path: `displays/${STORE_SECTION_IDS.MEN_SHIRTS}`,
     position: [-158, -0.46, -51.1],
   },
   products: [
@@ -14,7 +14,7 @@ export const menShirtsSection = {
       description: "Suéter confortable y moderno para un estilo casual elegante.",
       price: 59.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHIRTS}/sweater`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHIRTS}/sweater`,
         position: [0, -3, 6],
         scale: 0.5
       },
@@ -24,7 +24,7 @@ export const menShirtsSection = {
       description: "Camisa ligera y versátil para un look relajado pero presentable.",
       price: 45.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHIRTS}/shirt`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHIRTS}/shirt`,
         position: [0, -0.1, 4.5],
         scale: 0.07
       },
@@ -34,7 +34,7 @@ export const menShirtsSection = {
       description: "Camisa elegante de corte ajustado, ideal para ocasiones formales.",
       price: 69.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHIRTS}/long-shirt`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHIRTS}/long-shirt`,
         position: [0, -1.42, 8],
       },
     },

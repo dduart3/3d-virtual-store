@@ -1,11 +1,11 @@
-import { SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const womenSkirtsSection = {
-  id: SECTION_IDS.WOMEN_SKIRTS,
+  id: STORE_SECTION_IDS.WOMEN_SKIRTS,
   name: "Faldas para mujer",
   model: {
-    path: `displays/${SECTION_IDS.WOMEN_SKIRTS}`,
+    path: `displays/${STORE_SECTION_IDS.WOMEN_SKIRTS}`,
     position: [-146, -0.46, -66.9],
   },
   products: [
@@ -14,7 +14,7 @@ export const womenSkirtsSection = {
       description: "Falda azul versátil que combina con diversos estilos y ocasiones.",
       price: 69.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_SKIRTS}/blue-skirt`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_SKIRTS}/blue-skirt`,
         position: [0, -.5, 8],
         scale: 0.001
       },
@@ -24,7 +24,7 @@ export const womenSkirtsSection = {
       description: "Falda de diseño casual para uso cotidiano con corte moderno.",
       price: 59.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_SKIRTS}/skirt`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_SKIRTS}/skirt`,
         position: [0, -.9, 7.5],
       },
     },
@@ -33,7 +33,7 @@ export const womenSkirtsSection = {
       description: "Falda de longitud maxi con caída elegante y tejido premium.",
       price: 79.99,
       model: {
-        path: `products/${SECTION_IDS.WOMEN_SKIRTS}/long-skirt`,
+        path: `products/${STORE_SECTION_IDS.WOMEN_SKIRTS}/long-skirt`,
         position: [0, -.9, 7.5],
         scale: 0.001
       },

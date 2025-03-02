@@ -1,11 +1,11 @@
-import { SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const menShoesSection = {
-  id: SECTION_IDS.MEN_SHOES,
+  id: STORE_SECTION_IDS.MEN_SHOES,
   name: "Zapatos de hombre",
   model: {
-    path: `displays/${SECTION_IDS.MEN_SHOES}`,
+    path: `displays/${STORE_SECTION_IDS.MEN_SHOES}`,
     position: [-153.8, -0.46, -55.6],
   },
   products: [
@@ -14,7 +14,7 @@ export const menShoesSection = {
       description: "",
       price: 99.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHOES}/oxford`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/oxford`,
         position: [0, -0.2, 7.5],
         scale: 3,
       },
@@ -24,7 +24,7 @@ export const menShoesSection = {
       description: "",
       price: 299.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHOES}/magnanni`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/magnanni`,
         position: [0, -0.02, 9.1],
         scale: 0.001,
       },
@@ -34,7 +34,7 @@ export const menShoesSection = {
       description: "",
       price: 249.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SHOES}/rossi`,
+        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/rossi`,
         position: [0, 0, 6.5],
         scale: 0.4,
       },

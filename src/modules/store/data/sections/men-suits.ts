@@ -1,11 +1,11 @@
-import { SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/store";
 import { SectionData } from "../store-sections";
 
 export const menSuitsSection = {
-  id: SECTION_IDS.MEN_SUITS,
+  id: STORE_SECTION_IDS.MEN_SUITS,
   name: "Trajes para hombre",
   model: {
-    path: `displays/${SECTION_IDS.MEN_SUITS}`,
+    path: `displays/${STORE_SECTION_IDS.MEN_SUITS}`,
     position: [-146, -0.46, -51.1],
   },
   products: [
@@ -14,7 +14,7 @@ export const menSuitsSection = {
       description: "Elegante traje negro para ocasiones formales y eventos especiales.",
       price: 349.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SUITS}/suit`,
+        path: `products/${STORE_SECTION_IDS.MEN_SUITS}/suit`,
         position: [0, -1.15, 8],
         scale: 0.01
       },
@@ -24,7 +24,7 @@ export const menSuitsSection = {
       description: "Traje azul marino de corte moderno, ideal para el ambiente corporativo.",
       price: 399.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SUITS}/black-suit`,
+        path: `products/${STORE_SECTION_IDS.MEN_SUITS}/black-suit`,
         position: [0, -.35, 7.5],
         scale: 0.01
       },
@@ -34,7 +34,7 @@ export const menSuitsSection = {
       description: "Sofisticado traje de gala con acabados premium para eventos de etiqueta.",
       price: 499.99,
       model: {
-        path: `products/${SECTION_IDS.MEN_SUITS}/tailcoat-suit`,
+        path: `products/${STORE_SECTION_IDS.MEN_SUITS}/tailcoat-suit`,
         position: [0, -0.5, 7]
       },
     },
