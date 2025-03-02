@@ -1,6 +1,7 @@
 import { Model } from "../../../shared/types/model";
+import { Product } from "../../../shared/types/product";
 
-export const STORE_SECTIONS = {
+export const STORE_SECTION_IDS = {
   MEN_SUITS: "men-suits",
   MEN_PANTS: "men-pants",
   MEN_SHIRTS: "men-shirts",
@@ -15,22 +16,11 @@ export const STORE_SECTIONS = {
   WOMEN_BAGS: "women-bags",
 } as const;
 
-export type StoreSectionId = (typeof STORE_SECTIONS)[keyof typeof STORE_SECTIONS];
-
-export interface Product {
-  id: string
-  name: string
-  price: number
-  description: string
-  priceId?: string
-  model: Model
-  stock: number
-}
+export type SectionId = (typeof STORE_SECTION_IDS)[keyof typeof STORE_SECTION_IDS];
 
 export interface StoreSection {
-  id: StoreSectionId;
+  id: SectionId;
   name: string;
-  displayName: string;
   model: Model;
   products: Product[];
 }
