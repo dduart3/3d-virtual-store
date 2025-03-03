@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { CartButton } from "../../cart/components/CartButton";
-import { Chat } from "./Chat";
+import { Chat } from "../../chat/components/Chat";
 
 interface UILayoutProps {
   children?: ReactNode;
