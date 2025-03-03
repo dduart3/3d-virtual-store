@@ -1,4 +1,6 @@
+import { useAtom } from "jotai";
 import { useState, useEffect } from "react";
+import { chatInputFocusedAtom } from "../state/chat";
 
 // In a real implementation, this would come from your socket connection
 const mockMessages = [
@@ -26,6 +28,8 @@ const mockMessages = [
 ];
 export const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
+  
   const [messages, setMessages] = useState(mockMessages);
   const [unreadCount, setUnreadCount] = useState(
     mockMessages.filter((msg) => !msg.read).length
@@ -129,6 +133,8 @@ export const Chat = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            onFocus={() => setChatInputFocused(true)}
+            onBlur={() => setChatInputFocused(false)}
           />
           <button
             className="ml-2 bg-white/10 px-3 rounded hover:bg-white/20 text-white"

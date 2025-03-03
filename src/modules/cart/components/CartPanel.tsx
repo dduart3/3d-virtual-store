@@ -40,8 +40,16 @@ export const CartPanel = () => {
                 key={item.product.id}
                 className="flex items-center gap-4 mb-4 text-white"
               >
-                <div className="w-20 h-20 bg-white/10 rounded flex items-center justify-center">
-                  <span className="text-sm">{item.product.name[0]}</span>
+                <div className="w-20 h-20 bg-white/10 rounded flex items-center justify-center overflow-hidden">
+                  {item.product.thumbnail_path ? (
+                    <img
+                      src={`/thumbnails/${item.product.thumbnail_path}`}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm">{item.product.name[0]}</span>
+                  )}
                 </div>
                 <div>
                   <h3>{item.product.name}</h3>

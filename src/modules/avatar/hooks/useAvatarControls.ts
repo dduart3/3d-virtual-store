@@ -6,12 +6,14 @@ import {
   avatarCameraDistanceAtom,
   avatarCameraRotationAtom,
 } from "../state/avatar";
+import { chatInputFocusedAtom } from "../../chat/state/chat";
 
 export const useAvatarControls = (characterRef: any) => {
   const [isDragging, setIsDragging] = useState(false);
   const [cameraRotation, setCameraRotation] = useAtom(avatarCameraRotationAtom);
   const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
   const { gl } = useThree();
+  const [chatInputFocused] = useAtom(chatInputFocusedAtom);
 
   const MOVEMENT_SPEED = 0.1;
   const MOUSE_SENSITIVITY = 0.003;
@@ -60,20 +62,22 @@ export const useAvatarControls = (characterRef: any) => {
   const updateMovement = (controls: Record<string, boolean>) => {
     if (!characterRef.current) return;
 
-    const moveDirection = new Vector3();
-    if (controls.forward) moveDirection.z -= 1;
-    if (controls.backward) moveDirection.z += 1;
-    if (controls.left) moveDirection.x -= 1;
-    if (controls.right) moveDirection.x += 1;
+    if (!chatInputFocused) {
+      const moveDirection = new Vector3();
+      if (controls.forward) moveDirection.z -= 1;
+      if (controls.backward) moveDirection.z += 1;
+      if (controls.left) moveDirection.x -= 1;
+      if (controls.right) moveDirection.x += 1;
 
-    if (moveDirection.length() > 0) {
-      moveDirection.normalize().multiplyScalar(MOVEMENT_SPEED);
-      moveDirection.applyAxisAngle(new Vector3(0, 1, 0), cameraRotation);
-      characterRef.current.position.add(moveDirection);
-      characterRef.current.rotation.y = Math.atan2(
-        moveDirection.x,
-        moveDirection.z
-      );
+      if (moveDirection.length() > 0) {
+        moveDirection.normalize().multiplyScalar(MOVEMENT_SPEED);
+        moveDirection.applyAxisAngle(new Vector3(0, 1, 0), cameraRotation);
+        characterRef.current.position.add(moveDirection);
+        characterRef.current.rotation.y = Math.atan2(
+          moveDirection.x,
+          moveDirection.z
+        );
+      }
     }
   };
 
