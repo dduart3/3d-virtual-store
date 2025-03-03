@@ -1,6 +1,6 @@
 import {  useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
-import { Group } from "three";
+import { Mesh } from "three";
 import { useEffect, useRef } from "react";
 import { useAvatarControls } from "../hooks/useAvatarControls";
 import { useAtom } from "jotai";
@@ -15,7 +15,7 @@ enum Controls {
 }
 
 export const Avatar = () => {
-  const characterRef = useRef<Group>(null)
+  const characterRef = useRef<Mesh>(null);
   const [position, setPosition] = useAtom(avatarPositionAtom)
   const [, get] = useKeyboardControls<Controls>()
   const { updateMovement, updateCamera } = useAvatarControls(characterRef)
@@ -34,11 +34,9 @@ export const Avatar = () => {
   })
 
   return (
-    <group position={position} ref={characterRef}>
-      <mesh castShadow>
+      <mesh ref={characterRef} castShadow>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="blue" />
       </mesh>
-    </group>
   )
 }
