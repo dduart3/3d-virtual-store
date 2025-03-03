@@ -6,6 +6,8 @@ import { Experience } from "./Experience";
 import { CartPanel } from "./modules/cart/components/CartPanel";
 import { UILayout } from "./modules/ui/components/UILayout";
 import { ToastProvider } from "./shared/context/ToastContext";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
 
 enum Controls {
   forward = "forward",
@@ -27,24 +29,26 @@ function App() {
     []
   );
   return (
-    <ToastProvider>
-      <KeyboardControls map={map}>
-        <Canvas
-          shadows
-          camera={{
-            near: 0.1,
-            far: 1000,
-            fov: 30,
-          }}
-        >
-          <Experience />
-        </Canvas>
-        <ViewerUI />
-        <UILayout>
-          <CartPanel />
-        </UILayout>
-      </KeyboardControls>
-    </ToastProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <KeyboardControls map={map}>
+          <Canvas
+            shadows
+            camera={{
+              near: 0.1,
+              far: 1000,
+              fov: 30,
+            }}
+          >
+            <Experience />
+          </Canvas>
+          <ViewerUI />
+          <UILayout>
+            <CartPanel />
+          </UILayout>
+        </KeyboardControls>
+      </ToastProvider>
+    </QueryClientProvider>
   );
 }
 
