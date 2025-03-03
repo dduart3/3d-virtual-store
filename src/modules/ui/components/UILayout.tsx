@@ -10,7 +10,7 @@ export const UILayout = ({ children }: UILayoutProps) => {
   return (
     <div className="fixed inset-0 pointer-events-none z-10">
       {/* Top right - Cart and Account */}
-      <div className="absolute top-5 right-5 flex items-center gap-4 pointer-events-auto">
+      <div className="absolute top-3 right-5 flex items-center gap-4 pointer-events-auto">
         <CartButton />
         <button className="bg-white/10 p-3 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 cursor-pointer">
           <svg

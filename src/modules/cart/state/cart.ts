@@ -1,9 +1,9 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { Product } from "../../store/types/store";
+import { ProductWithModel } from "../../../shared/types/app";
 
 export interface CartItem {
-  product: Product;
+  product: ProductWithModel;
   quantity: number;
 }
 
@@ -19,9 +19,9 @@ export const cartAtom = atomWithStorage<Cart>("store-cart", {
 });
 
 type CartAction =
-  | { type: "ADD"; product: Product; quantity: number }
-  | { type: "REMOVE"; product: Product }
-  | { type: "UPDATE"; product: Product; quantity: number }
+  | { type: "ADD"; product: ProductWithModel; quantity: number }
+  | { type: "REMOVE"; product: ProductWithModel }
+  | { type: "UPDATE"; product: ProductWithModel; quantity: number }
   | { type: "CLEAR" };
 
 export const cartActionsAtom = atom(

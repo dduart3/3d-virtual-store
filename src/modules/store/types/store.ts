@@ -1,5 +1,4 @@
-import { Model } from "../../../shared/types/model";
-import { Product } from "../../../shared/types/product";
+
 
 export const STORE_SECTION_IDS = {
   MEN_SUITS: "men-suits",
@@ -17,10 +16,3 @@ export const STORE_SECTION_IDS = {
 } as const;
 
 export type SectionId = (typeof STORE_SECTION_IDS)[keyof typeof STORE_SECTION_IDS];
-
-export interface StoreSection {
-  id: SectionId;
-  name: string;
-  model: Model;
-  products: Product[];
-}

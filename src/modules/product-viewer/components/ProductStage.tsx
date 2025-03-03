@@ -15,9 +15,6 @@ export const ProductStage = ({
 } & GroupProps) => {
   const [viewerState] = useAtom(viewerStateAtom);
   const groupRef = useRef<Group>(null);
-  const model = viewerState.currentProduct?.model;
-
-  if (!model) return null;
 
   useFrame(() => {
     if (groupRef.current === null) return;
@@ -27,15 +24,17 @@ export const ProductStage = ({
       groupRef.current.rotation.y += 0.01;
     }
   });
-
+  
+  const model = viewerState.currentProduct?.model;
+  if (!model) return null;
   const { path, position, rotation, scale } = model;
 
   return (
     <group
       ref={groupRef}
       position={position}
-      rotation={rotation?  rotation : [0, 0, 0]}
-      scale={scale? scale : 1}
+      rotation={rotation ? rotation : [0, 0, 0]}
+      scale={scale ? scale : 1}
       {...props}
     >
       <Model modelPath={path} />

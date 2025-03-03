@@ -1,10 +1,9 @@
-import { Product } from "../../../shared/types/product";
-import { ProductData } from "../../store/data/store-sections";
+import { ProductWithModel } from "../../../shared/types/app";
 
 export type ViewerState = {
     isOpen: boolean;
-    currentProduct: ProductData | null;
-    products: ProductData[] | null;
+    currentProduct: ProductWithModel | null;
+    products: ProductWithModel[] | null;
     currentIndex: number;
   };
   
