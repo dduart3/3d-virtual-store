@@ -14,29 +14,23 @@ export const womenBagsSection = {
       name: "Bolso Valentino",
       description: "Bolso de lujo Valentino con diseño exclusivo y materiales premium.",
       price: 1499.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_BAGS}/valentino`,
-        position: [0, -0.17, 8.7],
-      },
+      modelId: "valentino",
+      modelPosition: [0, -0.17, 8.7]
     },
     {
       name: "Bolso Saint Laurent",
       description: "Elegante bolso Saint Laurent con acabados refinados y estilo atemporal.",
       price: 1899.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_BAGS}/saint`,
-        position: [0, -0.1, 8.9],
-      },
+      modelId: "saint",
+      modelPosition: [0, -0.1, 8.9]
     },
     {
       name: "Bolso Gucci",
       description: "Exclusivo bolso Gucci con el icónico diseño de la marca y alta calidad.",
       price: 2199.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_BAGS}/gucci`,
-        position: [0, 0, 4.3],
-        scale: 0.75,
-      },
+      modelId: "gucci",
+      modelPosition: [0, 0, 4.3],
+      modelScale: 0.75
     },
   ],
-}as SectionData;
+} as SectionData;

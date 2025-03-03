@@ -11,33 +11,27 @@ export const menShoesSection = {
   products: [
     {
       name: "Mocasines",
-      description: "",
+      description: "Elegantes mocasines de cuero genuino con costura detallada y diseño clásico.",
       price: 99.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/oxford`,
-        position: [0, -0.2, 7.5],
-        scale: 3,
-      },
+      modelId: "oxford",
+      modelPosition: [0, -0.2, 7.5],
+      modelScale: 3,
     },
     {
       name: "Zapatos de vestir claros",
-      description: "",
+      description: "Zapatos formales de tono claro con acabado premium y diseño italiano sofisticado.",
       price: 299.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/magnanni`,
-        position: [0, -0.02, 9.1],
-        scale: 0.001,
-      },
+      modelId: "magnanni",
+      modelPosition: [0, -0.02, 9.1],
+      modelScale: 0.001,
     },
     {
       name: "Zapatos de vestir oscuros",
-      description: "",
+      description: "Zapatos de vestir en tono oscuro con cuero de alta calidad y suela resistente.",
       price: 249.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_SHOES}/rossi`,
-        position: [0, 0, 6.5],
-        scale: 0.4,
-      },
+      modelId: "rossi",
+      modelPosition: [0, 0, 6.5],
+      modelScale: 0.4,
     },
   ],
-}as SectionData;
+} as SectionData;

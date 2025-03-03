@@ -13,29 +13,23 @@ export const womenDressesSection = {
       name: "Vestido Manga Larga",
       description: "Vestido elegante con mangas largas ideal para eventos formales.",
       price: 119.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_DRESSES}/long-sleeve-dress`,
-        position: [0, -1.3, 7.7],
-        scale: 0.01
-      },
+      modelId: "long-sleeve-dress",
+      modelPosition: [0, -1.3, 7.7],
+      modelScale: 0.01
     },
     {
       name: "Vestido Azul Casual",
       description: "Vestido azul para uso diario con diseño contemporáneo y tejido cómodo.",
       price: 89.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_DRESSES}/blue-dress`,
-        position: [0, -0.3, 7.7],
-      },
+      modelId: "blue-dress",
+      modelPosition: [0, -0.3, 7.7]
     },
     {
       name: "Vestido de Fiesta",
       description: "Vestido sofisticado para ocasiones especiales con detalles refinados.",
       price: 149.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.WOMEN_DRESSES}/dress`,
-        position: [0, -1.35, 7.7],
-      },
+      modelId: "dress",
+      modelPosition: [0, -1.35, 7.7]
     },
   ],
 } as SectionData;

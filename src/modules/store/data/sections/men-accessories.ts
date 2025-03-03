@@ -13,31 +13,25 @@ export const menAccessoriesSection = {
       name: "Lentes de Sol Aviador",
       description: "Gafas de sol estilo aviador con montura metálica y protección UV.",
       price: 129.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_ACCESSORIES}/aviator-sunglasses`,
-        position: [0, -0.5, 5],
-        scale: 0.1,
-      },
+      modelId: "aviator-sunglasses",
+      modelPosition: [0, -0.5, 5],
+      modelScale: 0.1
     },
     {
       name: "Cartera de Cuero",
       description: "Cartera elegante de cuero genuino con múltiples compartimentos.",
       price: 79.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_ACCESSORIES}/wallet`,
-        position: [0, -0.15, 6],
-        scale: 0.5,
-      },
+      modelId: "wallet",
+      modelPosition: [0, -0.15, 6],
+      modelScale: 0.5
     },
     {
       name: "Reloj Seiko",
       description: "Reloj clásico Seiko con mecanismo automático y correa de acero inoxidable.",
       price: 249.99,
-      model: {
-        path: `products/${STORE_SECTION_IDS.MEN_ACCESSORIES}/seiko`,
-        position: [0, -0.7, 5],
-        scale: 10,
-      },
+      modelId: "seiko",
+      modelPosition: [0, -0.7, 5],
+      modelScale: 10
     },
   ],
-}as SectionData;
+} as SectionData;

@@ -14,11 +14,12 @@ import { Model } from '../../../shared/types/model';
 import { SectionId } from '../types/store';
 
 // Models should match your database schema
-
-
-export interface SectionModel extends Model {
-  id: SectionId;
-  name: string;
+export interface ModelData {
+  path: string;
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number | [number, number, number];
+  label?: string;
 }
 
 export interface ProductData {
@@ -26,15 +27,25 @@ export interface ProductData {
   description: string;
   price: number;
   stock?: number;
-  model: Model;
+  modelId: string;
+  modelPosition: [number, number, number];
+  modelRotation?: [number, number, number];
+  modelScale?: number | [number, number, number];
 }
 
 export interface SectionData {
-  id: SectionId; // Using SECTION_IDS values
+  id: SectionId; // Using STORE_SECTION_IDS values
   name: string;
-  model: Model;
+  model: ModelData;
   products: ProductData[];
 }
+
+
+export interface SectionModel extends ModelData {
+  id: SectionId;
+  name: string;
+}
+
 
 // Generate random stock between 1 and 50
 const addRandomStock = (section: SectionData): SectionData => {

@@ -144,7 +144,7 @@ export const ViewerUI = () => {
             </button>
 
             {/* Product Name */}
-            <h1 className="absolute top-[10%] left-1/2 -translate-x-1/2 text-white text-[3rem] font-extralight tracking-[0.2em] m-0 uppercase">
+            <h1 className="absolute top-[10%] left-1/2 -translate-x-1/2 text-white text-[2.6rem] font-extralight tracking-[0.2em] m-0 uppercase">
               {product.name}
             </h1>
 
