@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
 import { Background } from "./Background";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import {
   Bloom,
   DepthOfField,
@@ -25,17 +25,6 @@ export const ViewerScene = () => {
 
   return (
     <group>
-      <OrbitControls
-        enableZoom={true}
-        enablePan={false}
-        enableRotate={true}
-        enableDamping={true}
-        dampingFactor={0.1}
-        rotateSpeed={0.4}
-        minPolarAngle={Math.PI / 2}
-        maxAzimuthAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 2}
-      />
       <ambientLight intensity={0.7} />
       <Background position={[0, 0, 3.7]} />
       <spotLight
