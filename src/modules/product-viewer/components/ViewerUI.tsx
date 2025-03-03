@@ -191,6 +191,7 @@ export const ViewerUI = () => {
                       } else if (value < 1) {
                         setQuantity(1);
                       } else if (value > maxQuantity) {
+                        showToast(`Solo hay ${product.stock} unidades disponibles de este producto`, "info");
                         setQuantity(maxQuantity);
                       } else {
                         setQuantity(value);
