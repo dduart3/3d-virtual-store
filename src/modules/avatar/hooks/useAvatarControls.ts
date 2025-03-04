@@ -1,6 +1,6 @@
 import { useThree } from "@react-three/fiber";
 import { useAtom } from "jotai";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Vector3 } from "three";
 import {
   avatarCameraDistanceAtom,
@@ -14,8 +14,16 @@ export const useAvatarControls = (characterRef: any) => {
   const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
   const { gl } = useThree();
   const [chatInputFocused] = useAtom(chatInputFocusedAtom);
+  
+  // Store previous camera position for interpolation
+  const prevCameraPosition = useRef(new Vector3());
+  const prevLookAtPosition = useRef(new Vector3());
+  
+  // Interpolation settings
+  const cameraLag = 0.1; // Lower = more responsive, higher = more smooth (0-1)
+  const rotationLag = 0.15; // Rotation can have different smoothness
 
-  const MOVEMENT_SPEED = 15;
+  const MOVEMENT_SPEED = 3;
   const MOUSE_SENSITIVITY = 0.003;
   const CAMERA_HEIGHT = 15;
   const MIN_ZOOM = 10;
@@ -108,30 +116,44 @@ export const useAvatarControls = (characterRef: any) => {
     }
   };
 
-  // Update camera position to follow character
+  // Rest of your code...
+
   const updateCamera = (state: any) => {
-    if (!characterRef.current) return;
+    if (!characterRef.current || !characterRef.current.translation) return;
     
-    // Get character position from physics
+    // Get current physics position
     const physicsPos = characterRef.current.translation();
     
-    // Calculate camera position based on distance and rotation
+    // Create a Vector3 from the physics position
+    const characterPosition = new Vector3(physicsPos.x, physicsPos.y, physicsPos.z);
+    
+    // Calculate target camera position
     const cameraOffset = new Vector3(
       Math.sin(cameraRotation) * cameraDistance,
       CAMERA_HEIGHT * (cameraDistance / MAX_ZOOM),
       Math.cos(cameraRotation) * cameraDistance
     );
     
-    // Get character position
-    const characterPosition = new Vector3(
-      physicsPos.x,
-      physicsPos.y,
-      physicsPos.z
-    );
+    // Calculate the target position for the camera
+    const targetCameraPosition = characterPosition.clone().add(cameraOffset);
     
-    // Position camera and look at character
-    state.camera.position.copy(characterPosition).add(cameraOffset);
-    state.camera.lookAt(characterPosition);
+    // Initialize previous position if not set
+    if (prevCameraPosition.current.length() === 0) {
+      prevCameraPosition.current.copy(targetCameraPosition);
+      prevLookAtPosition.current.copy(characterPosition);
+    }
+    
+    // Smoothly interpolate camera position
+    state.camera.position.lerp(targetCameraPosition, cameraLag);
+    
+    // Create a smoothed look-at target that lags slightly behind the character
+    prevLookAtPosition.current.lerp(characterPosition, rotationLag);
+    
+    // Look at the smoothed target position
+    state.camera.lookAt(prevLookAtPosition.current);
+    
+    // Update previous positions for next frame
+    prevCameraPosition.current.copy(state.camera.position);
   };
 
   return { updateMovement, updateCamera };
