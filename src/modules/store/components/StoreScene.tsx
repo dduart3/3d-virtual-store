@@ -111,7 +111,7 @@ export const StoreScene = (props: GroupProps) => {
               {hoveredModel === section.id && (
                 <Annotation
                   position={section.model.position}
-                  content={section.model.label || section.name}
+                  content={"Ver articulos"}
                 />
               )}
             </Select>
