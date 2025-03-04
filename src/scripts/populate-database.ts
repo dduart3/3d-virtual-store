@@ -3,15 +3,12 @@ import Stripe from 'stripe';
 import { storeData } from '../modules/store/data/store-sections';
 import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
-// Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY!; // Use service key for admin access
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Initialize Stripe (optional - only if STRIPE_SECRET_KEY is provided)
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 
@@ -19,7 +16,7 @@ async function populateDatabase() {
   console.log('Starting database population...');
   
   try {
-    // 1. Clear existing data (optional - be careful with this in production!)
+    // Clear existing data 
     if (process.env.CLEAR_EXISTING_DATA === 'true') {
       console.log('Clearing existing data...');
       await supabase.from('order_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
@@ -30,7 +27,7 @@ async function populateDatabase() {
       await supabase.rpc('reset_models_id_sequence');
     }
 
-    // 2. Process each section
+    // Process each section
     for (const section of storeData) {
       console.log(`Processing section: ${section.id} - ${section.name}`);
       
@@ -72,28 +69,24 @@ async function populateDatabase() {
         console.error(`Error adding model for section ${section.id}:`, modelError);
       }
       
-      // 3. Process products in this section
       for (const product of section.products) {
         console.log(`  Processing product: ${product.name}`);
         
-        // Construct the model and thumbnail paths
         const modelPath = `products/${section.id}/${product.modelId}`;
         const thumbnailPath = `${section.id}/${product.modelId}.webp`;
         
-        // Create Stripe product and price if Stripe is initialized
+        // Create Stripe product and price if stripe is initialized
         let stripeProductId = null;
         let stripePriceId = null;
         
         if (stripe) {
           try {
-            // Create product in Stripe
             const stripeProduct = await stripe.products.create({
               name: product.name,
               description: product.description,
               metadata: {
                 section_id: section.id
               },
-              // Add thumbnail image if available
               images: [`${process.env.VITE_PUBLIC_URL}/thumbnails/${thumbnailPath}`]
             });
             stripeProductId = stripeProduct.id;
@@ -116,7 +109,6 @@ async function populateDatabase() {
         const { data: productData, error: productError } = await supabase
           .from('products')
           .upsert({
-            // Let Supabase generate the UUID
             section_id: section.id,
             name: product.name,
             description: product.description,
@@ -165,5 +157,4 @@ async function populateDatabase() {
   }
 }
 
-// Run the population script
 populateDatabase();
