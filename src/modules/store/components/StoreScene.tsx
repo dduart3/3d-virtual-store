@@ -14,18 +14,22 @@ import { useSections, useSectionProducts } from "../../../lib/api";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { fadeRefAtom } from "../../../shared/state/fade";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { CheckoutCounter } from "./CheckoutCounter";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
-  const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined);
+  const [selectedSection, setSelectedSection] = useState<string | undefined>(
+    undefined
+  );
   const [, setViewerState] = useAtom(viewerStateAtom);
   const [fadeRef] = useAtom(fadeRefAtom);
-  
+
   // Fetch all sections with their models
   const { data: sections, isLoading: sectionsLoading } = useSections();
-  
+
   // Fetch products for the selected section
-  const { data: products, isLoading: productsLoading } = 
+  const { data: products, isLoading: productsLoading } =
     useSectionProducts(selectedSection);
 
   // When products are loaded, update the viewer
@@ -33,18 +37,18 @@ export const StoreScene = (props: GroupProps) => {
     if (selectedSection && products && products.length > 0) {
       // Fade out
       fadeRef?.fadeToBlack();
-      
+
       // Update viewer state after fade
       setTimeout(() => {
         setViewerState({
           isOpen: true,
           currentIndex: 0,
           currentProduct: products[0],
-          products: products
+          products: products,
         });
-        
+
         fadeRef?.fadeFromBlack();
-        
+
         // Reset selected section
         setSelectedSection(undefined);
       }, 1000);
@@ -81,28 +85,51 @@ export const StoreScene = (props: GroupProps) => {
       <group {...props}>
         <Model modelPath="scene" />
 
-        {sections?.map((section) => (
-          <Select key={section.id} enabled={hoveredModel === section.id}>
-            <Model
-              modelPath={section.model.path}
-              position={section.model.position}
-              rotation={section.model.rotation}
-              scale={section.model.scale}
-              onPointerOver={() => handlePointerOver(section.id)}
-              onPointerOut={handlePointerOut}
-              onClick={() => handleModelClick(section.id)}
-            />
-            {hoveredModel === section.id && (
-              <Annotation 
-                position={section.model.position} 
-                content={section.model.label || section.name} 
-              />
-            )}
-          </Select>
-        ))}
+        {sections?.map((section) => {
+          return (
+            <Select key={section.id} enabled={hoveredModel === section.id}>
+              {/* Wrap each model in a RigidBody for collisions */}
+              <RigidBody
+                type="fixed"
+                position={section.model.position}
+                rotation={section.model.rotation}
+                colliders={false}
+              >
+                <CuboidCollider
+                  args={[1, 0.5, 0.8]} // Width, height, depth - use much smaller values
+                  position={[1, 0.5, -0.75]} // Centered on the model
+                />
+                <Model
+                  modelPath={section.model.path}
+                  scale={section.model.scale}
+                  onPointerOver={() => handlePointerOver(section.id)}
+                  onPointerOut={handlePointerOut}
+                  onClick={() => handleModelClick(section.id)}
+                />
+              </RigidBody>
 
+              {hoveredModel === section.id && (
+                <Annotation
+                  position={section.model.position}
+                  content={section.model.label || section.name}
+                />
+              )}
+            </Select>
+          );
+        })}
         <Doors />
-        <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -1, -60]} />
+        <Select enabled={hoveredModel === "checkoutCounter"}>
+          <CheckoutCounter
+            position={[-139.5, 0, -56.5]}
+            onPointerOver={() => handlePointerOver("checkoutCounter")}
+            onPointerOut={handlePointerOut}
+          />
+          {hoveredModel === "checkoutCounter" && (
+            <Annotation position={[-139.5, 0, -56.5]} content="Pagar" />
+          )}
+        </Select>
+
+        <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -0.5, -60]} />
       </group>
     </Selection>
   );

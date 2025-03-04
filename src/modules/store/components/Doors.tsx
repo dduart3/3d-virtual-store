@@ -35,11 +35,13 @@ export const Doors = (props: GroupProps) => {
   const hoverProps = useHoverCursor()
   
   return (
+    
     <group
       {...props}
       {...hoverProps}
       onClick={() => setStatus(prev => prev === "closed" ? "open" : "closed")}
     >
+      
       <Door side="left" status={status} />
       <Door side="right" status={status} />
     </group>

@@ -1,5 +1,6 @@
 import { useTexture } from "@react-three/drei";
 import { MeshProps } from "@react-three/fiber";
+import { RigidBody } from "@react-three/rapier";
 import { RepeatWrapping } from "three";
 
 export const Floor = (props: MeshProps) => {
@@ -8,16 +9,13 @@ export const Floor = (props: MeshProps) => {
   floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
   floorTexture.repeat.set(10, 10);
 
+
   return (
-    <>
-      <mesh
-        castShadow
-        {...props}
-      >
-        <planeGeometry args={[100, 115]} />
+    <RigidBody type="fixed"  colliders="cuboid" position={props.position} rotation={props.rotation}>
+      <mesh receiveShadow>
+        <planeGeometry args={[200, 200]} />
         <meshStandardMaterial map={floorTexture} />
       </mesh>
-    </>
+    </RigidBody>
   );
 };
-
