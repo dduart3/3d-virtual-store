@@ -1,21 +1,26 @@
 import { useTexture } from "@react-three/drei";
 import { MeshProps } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { CuboidCollider } from "@react-three/rapier";
 import { RepeatWrapping } from "three";
 
-export const Floor = (props: MeshProps) => {
+export const Ground = (props: MeshProps) => {
   const floorTexture = useTexture("/textures/concrete.jpg");
   // Make the texture repeat
   floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
   floorTexture.repeat.set(10, 10);
 
-
   return (
-    <RigidBody type="fixed"  colliders="cuboid" position={props.position} rotation={props.rotation}>
-      <mesh receiveShadow>
+    <>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[-165, -0.5, -60]}
+        receiveShadow
+        {...props}
+      >
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial map={floorTexture} />
       </mesh>
-    </RigidBody>
+      <CuboidCollider args={[100, 0, 100]} position={[-165, -0.4, -60]} />
+    </>
   );
 };
