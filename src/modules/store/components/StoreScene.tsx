@@ -1,6 +1,6 @@
 import { GroupProps } from "@react-three/fiber";
 import { Model } from "../../../shared/components/Model";
-import { Floor } from "./Floor";
+import { Ground } from "./Ground";
 import { Doors } from "./Doors";
 import {
   Selection,
@@ -129,7 +129,7 @@ export const StoreScene = (props: GroupProps) => {
           )}
         </Select>
 
-        <Floor rotation={[-Math.PI / 2, 0, 0]} position={[-165, -0.5, -60]} />
+        <Ground/>
       </group>
     </Selection>
   );

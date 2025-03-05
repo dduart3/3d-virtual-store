@@ -1,36 +1,30 @@
 import { useThree } from "@react-three/fiber";
 import { useAtom } from "jotai";
-import { useState, useEffect, useRef } from "react";
-import { Vector3 } from "three";
+import { useState, useEffect, RefObject } from "react";
+import { Vector3, Quaternion, Euler } from "three";
 import {
   avatarCameraDistanceAtom,
   avatarCameraRotationAtom,
 } from "../state/avatar";
 import { chatInputFocusedAtom } from "../../chat/state/chat";
 
-export const useAvatarControls = (characterRef: any) => {
+export const useAvatarControls = (characterRef: RefObject<any>) => {
   const [isDragging, setIsDragging] = useState(false);
   const [cameraRotation, setCameraRotation] = useAtom(avatarCameraRotationAtom);
   const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
   const { gl } = useThree();
   const [chatInputFocused] = useAtom(chatInputFocusedAtom);
-  
-  // Store previous camera position for interpolation
-  const prevCameraPosition = useRef(new Vector3());
-  const prevLookAtPosition = useRef(new Vector3());
-  
-  // Interpolation settings
-  const cameraLag = 0.1; // Lower = more responsive, higher = more smooth (0-1)
-  const rotationLag = 0.15; // Rotation can have different smoothness
 
-  const MOVEMENT_SPEED = 3;
+  // Constants
+  const MOVEMENT_SPEED = 0.1;
   const MOUSE_SENSITIVITY = 0.003;
   const CAMERA_HEIGHT = 15;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 25;
   const ZOOM_SPEED = 0.3;
+  const GROUND_OFFSET = 0.1; // Small offset to keep character slightly above ground
 
-  // Camera zoom with mouse wheel
+  // Set up mouse and wheel controls
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
       const zoomDirection = event.deltaY > 0 ? 1 : -1;
@@ -42,118 +36,148 @@ export const useAvatarControls = (characterRef: any) => {
       );
     };
 
-    window.addEventListener("wheel", handleWheel);
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, []);
-
-  // Camera rotation with mouse drag
-  useEffect(() => {
-    const handleMouseDown = () => {
-      if (!chatInputFocused) setIsDragging(true);
-    };
-    
+    const handleMouseDown = () => setIsDragging(true);
     const handleMouseUp = () => setIsDragging(false);
-    
     const handleMouseMove = (event: MouseEvent) => {
-      if (isDragging && !chatInputFocused) {
+      if (isDragging) {
         setCameraRotation((prev) => prev - event.movementX * MOUSE_SENSITIVITY);
       }
     };
 
+    window.addEventListener("wheel", handleWheel);
     gl.domElement.addEventListener("mousedown", handleMouseDown);
     gl.domElement.addEventListener("mouseup", handleMouseUp);
     gl.domElement.addEventListener("mousemove", handleMouseMove);
     gl.domElement.addEventListener("mouseleave", handleMouseUp);
 
     return () => {
+      window.removeEventListener("wheel", handleWheel);
       gl.domElement.removeEventListener("mousedown", handleMouseDown);
       gl.domElement.removeEventListener("mouseup", handleMouseUp);
       gl.domElement.removeEventListener("mousemove", handleMouseMove);
       gl.domElement.removeEventListener("mouseleave", handleMouseUp);
     };
-  }, [gl, isDragging, chatInputFocused]);
+  }, [gl, isDragging]);
 
   // Update character movement based on keyboard controls
-  const updateMovement = (controls: Record<string, boolean>) => {
+// In your updateMovement function
+
+// Only modify the updateMovement function - keep everything else as you have it
+const updateMovement = (controls: Record<string, boolean>) => {
+  if (!characterRef.current || chatInputFocused) return;
+
+  // Get current position and linear velocity
+  const currentPos = characterRef.current.translation();
+  const currentVel = characterRef.current.linvel();
+  
+  // Get raw input direction
+  const inputDirection = new Vector3(0, 0, 0);
+  let isMoving = false;
+  let isRunning = false;
+  
+  // Process key inputs
+  if (controls.forward) {
+    inputDirection.z -= 1;
+    isMoving = true;
+  }
+  if (controls.backward) {
+    inputDirection.z += 1;
+    isMoving = true;
+  }
+  if (controls.left) {
+    inputDirection.x -= 1;
+    isMoving = true;
+  }
+  if (controls.right) {
+    inputDirection.x += 1;
+    isMoving = true;
+  }
+  
+  isRunning = isMoving && controls.shift;
+  
+  // Fall protection
+  if (currentPos.y < -2) {
+    characterRef.current.setTranslation(
+      { x: currentPos.x, y: GROUND_OFFSET, z: currentPos.z },
+      true
+    );
+    characterRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+  }
+  
+  if (isMoving && inputDirection.length() > 0) {
+    // Normalize input direction
+    inputDirection.normalize();
+    
+    // Apply camera rotation to make movement relative to camera
+    const moveDirection = inputDirection.clone()
+      .applyAxisAngle(new Vector3(0, 1, 0), cameraRotation);
+    
+    // Set velocity for movement - horizontal only, preserve vertical
+    const moveSpeed = MOVEMENT_SPEED * (isRunning ? 1.8 : 1) * 10;
+    characterRef.current.setLinvel(
+      { 
+        x: moveDirection.x * moveSpeed, 
+        y: currentVel.y,  
+        z: moveDirection.z * moveSpeed 
+      },
+      true
+    );
+    
+    // Always update rotation when there's input - this is the key fix
+    // Calculate target rotation based on movement direction
+    const targetAngle = Math.atan2(moveDirection.x, moveDirection.z);
+    
+    // Create Euler rotation (rotates around Y axis only)
+    const euler = new Euler(0, targetAngle, 0);
+    
+    // Convert to quaternion for physics engine
+    const quat = new Quaternion().setFromEuler(euler);
+    
+    // Apply rotation directly through the RigidBody API
+    characterRef.current.setRotation(
+      { x: quat.x, y: quat.y, z: quat.z, w: quat.w },
+      true
+    );
+  } else {
+    // When not moving, stop horizontal velocity but keep vertical
+    characterRef.current.setLinvel(
+      { x: 0, y: currentVel.y, z: 0 },
+      true
+    );
+  }
+
+  // Return animation state info
+  return { 
+    isMoving, 
+    isRunning, 
+    isJumping: Boolean(controls.jump)
+  };
+};
+
+
+  // Update camera position to follow character
+  const updateCamera = (state: any) => {
     if (!characterRef.current) return;
 
-    if (!chatInputFocused) {
-      const moveDirection = new Vector3();
-      
-      // Calculate movement direction from keyboard input
-      if (controls.forward) moveDirection.z -= 1;
-      if (controls.backward) moveDirection.z += 1;
-      if (controls.left) moveDirection.x -= 1;
-      if (controls.right) moveDirection.x += 1;
-
-      // Apply movement if there's input
-      if (moveDirection.length() > 0) {
-        // Normalize and scale the movement
-        moveDirection.normalize().multiplyScalar(MOVEMENT_SPEED);
-        
-        // Apply camera rotation to movement direction
-        moveDirection.applyAxisAngle(new Vector3(0, 1, 0), cameraRotation);
-        
-        // Set linear velocity for physics movement
-        characterRef.current.setLinvel({
-          x: moveDirection.x,
-          y: 0,
-          z: moveDirection.z
-        }, true);
-        
-        // Update rotation to face movement direction
-        const angle = Math.atan2(moveDirection.x, moveDirection.z);
-        characterRef.current.setRotation({
-          x: 0,
-          y: Math.sin(angle/2),
-          z: 0,
-          w: Math.cos(angle/2)
-        }, true);
-      } else {
-        // Stop movement when no keys are pressed
-        characterRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
-      }
-    }
-  };
-
-  // Rest of your code...
-
-  const updateCamera = (state: any) => {
-    if (!characterRef.current || !characterRef.current.translation) return;
+    const characterPosition = characterRef.current.translation();
     
-    // Get current physics position
-    const physicsPos = characterRef.current.translation();
-    
-    // Create a Vector3 from the physics position
-    const characterPosition = new Vector3(physicsPos.x, physicsPos.y, physicsPos.z);
-    
-    // Calculate target camera position
     const cameraOffset = new Vector3(
       Math.sin(cameraRotation) * cameraDistance,
       CAMERA_HEIGHT * (cameraDistance / MAX_ZOOM),
       Math.cos(cameraRotation) * cameraDistance
     );
     
-    // Calculate the target position for the camera
-    const targetCameraPosition = characterPosition.clone().add(cameraOffset);
+    state.camera.position.copy(new Vector3(
+      characterPosition.x, 
+      characterPosition.y, 
+      characterPosition.z
+    )).add(cameraOffset);
     
-    // Initialize previous position if not set
-    if (prevCameraPosition.current.length() === 0) {
-      prevCameraPosition.current.copy(targetCameraPosition);
-      prevLookAtPosition.current.copy(characterPosition);
-    }
-    
-    // Smoothly interpolate camera position
-    state.camera.position.lerp(targetCameraPosition, cameraLag);
-    
-    // Create a smoothed look-at target that lags slightly behind the character
-    prevLookAtPosition.current.lerp(characterPosition, rotationLag);
-    
-    // Look at the smoothed target position
-    state.camera.lookAt(prevLookAtPosition.current);
-    
-    // Update previous positions for next frame
-    prevCameraPosition.current.copy(state.camera.position);
+    state.camera.lookAt(
+      characterPosition.x,
+      characterPosition.y + 1,
+      characterPosition.z
+    );
   };
 
   return { updateMovement, updateCamera };

@@ -10,7 +10,7 @@ export const Ground = (props: MeshProps) => {
   floorTexture.repeat.set(10, 10);
 
   return (
-    <>
+    <group>
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[-165, -0.5, -60]}
@@ -21,6 +21,6 @@ export const Ground = (props: MeshProps) => {
         <meshStandardMaterial map={floorTexture} />
       </mesh>
       <CuboidCollider args={[100, 0, 100]} position={[-165, -0.4, -60]} />
-    </>
+    </group>
   );
 };
