@@ -1,17 +1,17 @@
-import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls, useGLTF } from "@react-three/drei";
-import { useRef, useEffect } from "react";
-import { useAtom } from "jotai";
-import { Group, Vector3, Quaternion, Euler } from "three";
+import { useEffect, useRef } from "react";
+import { Stats, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { Group } from "three";
 import {
   RigidBody,
   CuboidCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
-import { avatarPositionAtom, avatarCameraRotationAtom } from "../state/avatar";
-import { useAvatarControls } from "../hooks/useAvatarControls";
+import { useAvatarMovement } from "../hooks/useAvatarMovement";
+import { useAvatarCamera } from "../hooks/useAvatarCamera";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
-import { chatInputFocusedAtom } from "../../chat/state/chat";
+import { useFrame } from "@react-three/fiber";
+import { useAtom } from "jotai";
+import { avatarRotationAtom } from "../state/avatar";
 
 enum Controls {
   forward = "forward",
@@ -19,56 +19,46 @@ enum Controls {
   left = "left",
   right = "right",
   jump = "jump",
-  shift = "shift",
+  run = "run",
 }
 
 export const Avatar = () => {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<Group>(null);
-  const [position, setPosition] = useAtom(avatarPositionAtom);
-  const [cameraRotation] = useAtom(avatarCameraRotationAtom);
   const [, get] = useKeyboardControls<Controls>();
-  const [chatInputFocused] = useAtom(chatInputFocusedAtom);
+
+  // Load character model
   const { scene } = useGLTF(
     "https://models.readyplayer.me/67c73014fc7b58705586f455.glb"
   );
+  
+  // Let the hook handle position, rotation and movement
+ useAvatarMovement(rigidBodyRef, modelRef);
+  
+  // Other hooks for camera, animations, etc.
+  useAvatarCamera(rigidBodyRef);
+  const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
+  
+  // Update animations
+  useFrame((_, delta) => {
+    // Animation updates only - movement handled in useAvatarMovement
+    const { forward, backward, left, right, run } = get();
+    const isMoving = forward || backward || left || right;
+    const isRunning = isMoving && run;
+    
+    updateAnimation(isMoving, isRunning, false);
+    updateAnimations(delta);
+  });
 
-  const { updateMovement, updateCamera } = useAvatarControls(rigidBodyRef);
-  const { updateAnimation, update: updateAnimations } =
-    useAvatarAnimations(modelRef);
-
-  useFrame((state, delta) => {
+  // Update animations
+  useFrame((_, delta) => {
     if (!rigidBodyRef.current) return;
 
-    // Update movement and get animation state info
-    const movementInfo = updateMovement(get());
+    const { forward, backward, left, right, run } = get();
+    const isMoving = forward || backward || left || right;
+    const isRunning = isMoving && run;
 
-    // Update camera to follow character
-    updateCamera(state);
-
-    // Update character position atom for other components
-    const physicsPosition = rigidBodyRef.current.translation();
-    setPosition(
-      new Vector3(physicsPosition.x, physicsPosition.y, physicsPosition.z)
-    );
-
-    // Explicitly check if character is moving for animation
-    if (movementInfo) {
-      // Log to debug animation state
-      console.log("Movement info:", movementInfo);
-
-      // Update animations based on movement state
-      updateAnimation(
-        movementInfo.isMoving,
-        movementInfo.isRunning,
-        movementInfo.isJumping
-      );
-    } else {
-      // If movement info is undefined, ensure we're in idle state
-      updateAnimation(false, false, false);
-    }
-
-    // Update animation mixer
+    updateAnimation(isMoving, isRunning, false);
     updateAnimations(delta);
   });
 
@@ -76,18 +66,16 @@ export const Avatar = () => {
     <RigidBody
       ref={rigidBodyRef}
       type="dynamic"
-      position={[position.x, position.y, position.z]}
-      enabledRotations={[false, true, false]}
+      enabledRotations={[false, false, false]}
       mass={1}
       friction={1}
-      colliders={false} // Disable automatic colliders
+      colliders={false}
     >
-      {/* Custom collider with smaller height */}
       <CuboidCollider
         args={[0.4, 1, 0.4]} // Width, height, depth (half-extents)
-        position={[0, 0, 0]} // Offset to align with character's visual center
+        position={[0, 0, 0]}
       />
-
+      <Stats />;
       <group ref={modelRef} scale={1} position={[0, -1, 0]}>
         <primitive object={scene} />
       </group>

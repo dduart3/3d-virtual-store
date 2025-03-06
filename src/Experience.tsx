@@ -13,7 +13,7 @@ export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!);
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
   const [, setFadeRef] = useAtom(fadeRefAtom);
-  
+
   // Make fadeRef accessible via atom
   useEffect(() => {
     if (fadeRef.current) {
@@ -29,9 +29,9 @@ export const Experience = () => {
       {!viewerState.isOpen ? (
         <Physics
           gravity={[0, -9.81, 0]} // Standard Earth gravity
-          timeStep={1/60} // 60 FPS physics update
+          timeStep={1 / 60} // 60 FPS physics update
           interpolate={true} // Enable interpolation for smoother physics
-          debug={true} // Disable debug rendering
+          debug={!true} // Disable debug rendering
         >
           <StoreScene />
           <Avatar />

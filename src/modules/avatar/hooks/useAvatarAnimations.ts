@@ -17,8 +17,7 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
   // Load the animation files
   const { animations: idleAnimations } = useGLTF('/animations/idle.glb');
   const { animations: walkAnimations } = useGLTF('/animations/walk.glb');
-  // Uncomment when you have a run animation
-   const { animations: runAnimations } = useGLTF('/animations/run.glb');
+  const { animations: runAnimations } = useGLTF('/animations/run.glb');
   // const { animations: jumpAnimations } = useGLTF('/animations/jump.glb');
   
   // Initialize the mixer and actions when the model ref is available
@@ -42,6 +41,7 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
     // Log animations to debug
     console.log("Idle animations:", idleAnimations);
     console.log("Walk animations:", walkAnimations);
+    console.log("Run animations:", runAnimations);
     
     if (idleAnimations && idleAnimations.length > 0) {
       newActions.idle = newMixer.clipAction(idleAnimations[0]);
@@ -50,11 +50,14 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
     
     if (walkAnimations && walkAnimations.length > 0) {
       newActions.walk = newMixer.clipAction(walkAnimations[0]);
+      newActions.walk.setEffectiveTimeScale(0.7)
       console.log("Added walk animation");
     }
     
    if (runAnimations && runAnimations.length > 0) {
        newActions.run = newMixer.clipAction(runAnimations[0]);
+       newActions.run.setEffectiveTimeScale(0.5)
+
        console.log("Added run animation");
      }
     
@@ -78,6 +81,8 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
   // Function to update animation based on character state
   const updateAnimation = (isMoving: boolean, isRunning: boolean, isJumping: boolean) => {
     let newState: AnimationState = "idle";
+
+    console.log(isRunning)
     
     if (isJumping) {
       newState = "jump";
