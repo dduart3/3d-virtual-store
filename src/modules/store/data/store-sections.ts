@@ -1,17 +1,16 @@
-import { menShoesSection } from './sections/men-shoes';
-import { menSuitsSection } from './sections/men-suits';
-import { menPantsSection } from './sections/men-pants';
-import { menShirtsSection } from './sections/men-shirts';
-import { menHatsSection } from './sections/men-hats';
-import { menAccessoriesSection } from './sections/men-accessories';
-import { womenBlousesSection } from './sections/women-blouses';
-import { womenDressesSection } from './sections/women-dresses';
-import { womenSkirtsSection } from './sections/women-skirts';
-import { womenAccessoriesSection } from './sections/women-accessories';
-import { womenShoesSection } from './sections/women-shoes';
-import { womenBagsSection } from './sections/women-bags';
-import { Model } from '../../../shared/types/model';
-import { SectionId } from '../types/store';
+import { menShoesSection } from "./sections/men-shoes";
+import { menSuitsSection } from "./sections/men-suits";
+import { menPantsSection } from "./sections/men-pants";
+import { menShirtsSection } from "./sections/men-shirts";
+import { menHatsSection } from "./sections/men-hats";
+import { menAccessoriesSection } from "./sections/men-accessories";
+import { womenBlousesSection } from "./sections/women-blouses";
+import { womenDressesSection } from "./sections/women-dresses";
+import { womenSkirtsSection } from "./sections/women-skirts";
+import { womenAccessoriesSection } from "./sections/women-accessories";
+import { womenShoesSection } from "./sections/women-shoes";
+import { womenBagsSection } from "./sections/women-bags";
+import { SectionId } from "../types/store";
 
 // Models should match your database schema
 export interface ModelData {
@@ -40,45 +39,48 @@ export interface SectionData {
   products: ProductData[];
 }
 
-
 export interface SectionModel extends ModelData {
   id: SectionId;
   name: string;
 }
 
-
 // Generate random stock between 1 and 50
 const addRandomStock = (section: SectionData): SectionData => {
   return {
     ...section,
-    products: section.products.map(product => ({
+    products: section.products.map((product) => ({
       ...product,
-      stock: Math.floor(Math.random() * 50) + 1
-    }))
+      stock: Math.floor(Math.random() * 50) + 1,
+    })),
   };
 };
 
 // Combine all sections and add random stock
 export const storeData: SectionData[] = [
-  addRandomStock(menShoesSection),
-  addRandomStock(menSuitsSection),
-  addRandomStock(menPantsSection),
-  addRandomStock(menShirtsSection),
-  addRandomStock(menHatsSection),
-  addRandomStock(menAccessoriesSection),
-  addRandomStock(womenBlousesSection),
-  addRandomStock(womenDressesSection),
-  addRandomStock(womenSkirtsSection),
-  addRandomStock(womenAccessoriesSection),
-  addRandomStock(womenShoesSection),
-  addRandomStock(womenBagsSection)
-];
+  menShoesSection,
+  menSuitsSection,
+  menPantsSection,
+  menShirtsSection,
+  menHatsSection,
+  menAccessoriesSection,
+  womenBlousesSection,
+  womenDressesSection,
+  womenSkirtsSection,
+  womenAccessoriesSection,
+  womenShoesSection,
+  womenBagsSection,
+].map(addRandomStock);
 
 // Create a map for easier access by section ID
-export const storeDataMap: Record<string, SectionData> = storeData.reduce((acc, section) => {
-  acc[section.id] = section;
-  return acc;
-}, {} as Record<string, SectionData>);
+export const storeDataMap: Record<string, SectionData> = storeData.reduce(
+  (acc, section) => {
+    acc[section.id] = section;
+    return acc;
+  },
+  {} as Record<string, SectionData>
+);
+
+/*
 
 // Helper function to get a section by ID
 export const getSectionById = (id: string): SectionData | undefined => {
@@ -115,3 +117,4 @@ export const getSectionModelsMap = (): Record<string, Model> => {
     return acc;
   }, {} as Record<string, Model>);
 };
+*/

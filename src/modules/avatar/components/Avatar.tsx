@@ -72,8 +72,8 @@ export const Avatar = () => {
       colliders={false}
     >
       <CuboidCollider
-        args={[0.4, 1, 0.4]} // Width, height, depth (half-extents)
-        position={[0, 0, 0]}
+        args={[0.2, 0.9, 0.3]} // Width, height, depth (half-extents)
+        position={[0, -0.1, 0]}
       />
       <Stats />;
       <group ref={modelRef} scale={1} position={[0, -1, 0]}>

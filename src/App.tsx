@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";
-import { Experience } from "./Experience";
+import { Experience } from "./modules/store/Experience";
 import { CartPanel } from "./modules/cart/components/CartPanel";
 import { UILayout } from "./modules/ui/components/UILayout";
 import { ToastProvider } from "./shared/context/ToastContext";
