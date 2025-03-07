@@ -1,14 +1,11 @@
-import { Canvas } from "@react-three/fiber";
 import { useMemo } from "react";
 import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
-import { ViewerUI } from "./modules/product-viewer/components/ViewerUI";
-import { Experience } from "./modules/store/Experience";
-import { CartPanel } from "./modules/cart/components/CartPanel";
-import { UILayout } from "./modules/ui/components/UILayout";
 import { ToastProvider } from "./shared/context/ToastContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
-import { AvatarCreator } from "./modules/avatar/components/AvatarCreator";
+import { AuthProvider } from "./modules/auth/context/AuthProvider";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./router";
 
 enum Controls {
   forward = "forward",
@@ -33,25 +30,13 @@ function App() {
   );
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <KeyboardControls map={map}>
-          <Canvas
-            shadows
-            camera={{
-              near: 0.1,
-              far: 1000,
-              fov: 30,
-            }}
-          >
-            <Experience />
-          </Canvas>
-          {!true && <AvatarCreator onClose={() => console.log("close")} />}
-          <ViewerUI />
-          <UILayout>
-            <CartPanel />
-          </UILayout>
-        </KeyboardControls>
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <KeyboardControls map={map}>
+            <RouterProvider router={router} />
+          </KeyboardControls>
+        </ToastProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

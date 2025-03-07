@@ -6,28 +6,24 @@ export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn, isSigningIn } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setLoading(true)
     
-    try {
-      const { error } = await signIn(email, password)
-      
-      if (error) {
-        throw error
+    signIn(
+      { email, password },
+      {
+        onSuccess: () => {
+          navigate({ to: '/store' })
+        },
+        onError: (error: any) => {
+          setError(error.message || 'Failed to sign in')
+        }
       }
-      
-      navigate({ to: '/store' })
-    } catch (error: any) {
-      setError(error.message || 'Failed to sign in')
-    } finally {
-      setLoading(false)
-    }
+    )
   }
 
   return (
@@ -66,12 +62,31 @@ export function LoginForm() {
         />
       </div>
       
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <input
+            id="remember-me"
+            type="checkbox"
+            className="h-4 w-4 border-gray-300 rounded"
+          />
+          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
+            Remember me
+          </label>
+        </div>
+        
+        <div className="text-sm">
+          <a href="#" className="text-white hover:underline">
+            Forgot your password?
+          </a>
+        </div>
+      </div>
+      
       <button
         type="submit"
-        disabled={loading}
+        disabled={isSigningIn}
         className="w-full py-3 bg-white text-black font-medium rounded hover:bg-opacity-90 transition-colors disabled:opacity-70"
       >
-        {loading ? 'Signing in...' : 'Sign In'}
+        {isSigningIn ? 'Signing in...' : 'Sign In'}
       </button>
     </form>
   )

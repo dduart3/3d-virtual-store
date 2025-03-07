@@ -1,10 +1,118 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '../../../lib/supabase'
 
+// Get the current session
+export function useSession() {
+  return useQuery({
+    queryKey: ['auth', 'session'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession()
+      return data.session
+    },
+  })
+}
+
+// Get the user profile
+export function useProfile(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['profile', userId],
+    queryFn: async () => {
+      if (!userId) throw new Error('User ID is required')
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+        
+      if (error) throw error
+      return data
+    },
+    enabled: !!userId,
+  })
+}
+
+// Sign in mutation
+export function useSignIn() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async ({ email, password }: { email: string, password: string }) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email, 
+        password
+      })
+      
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => {
+      // Invalidate session query to refetch
+      queryClient.invalidateQueries({ queryKey: ['auth', 'session'] })
+    }
+  })
+}
+
+// Sign up mutation
+export function useSignUp() {
+  return useMutation({
+    mutationFn: async ({ 
+      email, 
+      password, 
+      userData 
+    }: { 
+      email: string, 
+      password: string, 
+      userData: any 
+    }) => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: userData }
+      })
+      
+      if (error) throw error
+      return data
+    }
+  })
+}
+
+// Sign out mutation
+export function useSignOut() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+    },
+    onSuccess: () => {
+      // Clear auth data from query cache
+      queryClient.invalidateQueries({ queryKey: ['auth'] })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    }
+  })
+}
+
+// Combined hook for convenience
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+  const sessionQuery = useSession()
+  const userId = sessionQuery.data?.user?.id
+  const profileQuery = useProfile(userId)
+  const signInMutation = useSignIn()
+  const signUpMutation = useSignUp()
+  const signOutMutation = useSignOut()
+  
+  return {
+    user: sessionQuery.data?.user || null,
+    session: sessionQuery.data,
+    profile: profileQuery.data,
+    loading: sessionQuery.isLoading || (userId ? profileQuery.isLoading : false),
+    signIn: signInMutation.mutate,
+    signUp: signUpMutation.mutate,
+    signOut: signOutMutation.mutate,
+    isSigningIn: signInMutation.isPending,
+    isSigningUp: signUpMutation.isPending,
+    isSigningOut: signOutMutation.isPending,
   }
-  return context;
 }

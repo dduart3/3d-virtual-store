@@ -50,7 +50,7 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
     
     if (walkAnimations && walkAnimations.length > 0) {
       newActions.walk = newMixer.clipAction(walkAnimations[0]);
-      newActions.walk.setEffectiveTimeScale(0.7)
+      newActions.walk.setEffectiveTimeScale(0.5)
       console.log("Added walk animation");
     }
     

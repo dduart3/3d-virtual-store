@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { CartButton } from "../../cart/components/CartButton";
 import { Chat } from "../../chat/components/Chat";
+import { CartPanel } from "../../cart/components/CartPanel";
+import { UserMenu } from "../../auth/components/UserMenu";
 
 interface UILayoutProps {
   children?: ReactNode;
@@ -32,7 +34,8 @@ export const UILayout = ({ children }: UILayoutProps) => {
       </div>
 
       <Chat />
-
+      <CartPanel />
+      <UserMenu />
       {children}
     </div>
   );
