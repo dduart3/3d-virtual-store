@@ -94,14 +94,66 @@ export function useSignOut() {
   })
 }
 
-// Combined hook for convenience
+// Check if username is available
+export function useCheckUsername() {
+  return useMutation({
+    mutationFn: async (username: string) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+        
+      if (data) {
+        throw new Error('Username already taken');
+      }
+      
+      return { available: true };
+    }
+  });
+}
+
+// Update profile with registration data
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      userId, 
+      profileData 
+    }: { 
+      userId: string, 
+      profileData: {
+        username: string;
+        first_name: string;
+        last_name: string;
+        avatar_url: string;
+      }
+    }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', userId);
+        
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    }
+  });
+}
+
+// Update the useAuth function to include these new methods
 export function useAuth() {
-  const sessionQuery = useSession()
-  const userId = sessionQuery.data?.user?.id
-  const profileQuery = useProfile(userId)
-  const signInMutation = useSignIn()
-  const signUpMutation = useSignUp()
-  const signOutMutation = useSignOut()
+  const sessionQuery = useSession();
+  const userId = sessionQuery.data?.user?.id;
+  const profileQuery = useProfile(userId);
+  const signInMutation = useSignIn();
+  const signUpMutation = useSignUp();
+  const signOutMutation = useSignOut();
+  const checkUsernameMutation = useCheckUsername();
+  const updateProfileMutation = useUpdateProfile();
   
   return {
     user: sessionQuery.data?.user || null,
@@ -111,8 +163,12 @@ export function useAuth() {
     signIn: signInMutation.mutate,
     signUp: signUpMutation.mutate,
     signOut: signOutMutation.mutate,
+    checkUsername: checkUsernameMutation.mutate,
+    updateProfile: updateProfileMutation.mutate,
     isSigningIn: signInMutation.isPending,
     isSigningUp: signUpMutation.isPending,
     isSigningOut: signOutMutation.isPending,
-  }
+    isCheckingUsername: checkUsernameMutation.isPending,
+    isUpdatingProfile: updateProfileMutation.isPending
+  };
 }

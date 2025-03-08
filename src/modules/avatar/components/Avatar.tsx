@@ -10,7 +10,8 @@ import { useAvatarMovement } from "../hooks/useAvatarMovement";
 import { useAvatarCamera } from "../hooks/useAvatarCamera";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
-
+import { useAtom } from "jotai";
+import {avatarUrlAtom} from "../state/avatar";
 enum Controls {
   forward = "forward",
   backward = "backward",
@@ -24,11 +25,10 @@ export const Avatar = () => {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<Group>(null);
   const [, get] = useKeyboardControls<Controls>();
+  const [avatarUrl] = useAtom(avatarUrlAtom);
 
   // Load character model
-  const { scene } = useGLTF(
-    "https://models.readyplayer.me/67c73014fc7b58705586f455.glb"
-  );
+  const { scene } = useGLTF(avatarUrl || "https://readyplayerme.github.io/visage/male.glb");
   
   // Let the hook handle position, rotation and movement
  useAvatarMovement(rigidBodyRef, modelRef);

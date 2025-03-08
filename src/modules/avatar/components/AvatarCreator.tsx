@@ -1,17 +1,20 @@
 import { AvatarCreator as RPMAvatarCreator, AvatarExportedEvent } from '@readyplayerme/react-avatar-creator';
 import { useAtom } from 'jotai';
-import { avatarUrlAtom } from '../state/avatar';
+import { avatarUrlAtom, avatarIdAtom } from '../state/avatar';
 
 export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
   const [, setAvatarUrl] = useAtom(avatarUrlAtom);
+  const [, setAvatarId] = useAtom(avatarIdAtom);
 
   const handleOnAvatarExported = (event: AvatarExportedEvent) => {
     console.log('Avatar exported event:', event);
     
     // Extract the URL (check console for actual structure)
-    const url = event.data?.url || event.toString();
+    const url = event.data?.url
+    const id = event.data?.avatarId
     
     setAvatarUrl(url);
+    setAvatarId(id);
     onClose();
   };
 

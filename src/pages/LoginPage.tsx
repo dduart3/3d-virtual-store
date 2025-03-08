@@ -20,7 +20,7 @@ export function LoginPage() {
         <LoginForm />
         
         <p className="mt-6 text-center text-gray-400">
-          No tienes una cuenta??{' '}
+          No tienes una cuenta?{' '}
           <Link to="/register" className="text-white hover:underline">
             Registrarse
           </Link>
