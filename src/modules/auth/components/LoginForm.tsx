@@ -20,7 +20,11 @@ export function LoginForm() {
           navigate({ to: '/store' })
         },
         onError: (error: any) => {
-          setError(error.message || 'Failed to sign in')
+          if(error.message == "Invalid login credentials"){
+            setError("Correo o contraseña incorrectos.");
+            return
+          }
+          setError(error.message || 'Falló el inicio de sesión.')
         }
       }
     )

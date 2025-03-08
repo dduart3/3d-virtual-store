@@ -6,6 +6,7 @@ import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./modules/auth/context/AuthProvider";
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./router";
+import { AuthDataLoader } from "./shared/components/AuthDataLoader";
 
 enum Controls {
   forward = "forward",
@@ -31,6 +32,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <AuthDataLoader />
         <ToastProvider>
           <KeyboardControls map={map}>
             <RouterProvider router={router} />

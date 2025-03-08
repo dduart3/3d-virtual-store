@@ -120,12 +120,12 @@ export const StoreScene = (props: GroupProps) => {
         <Doors />
         <Select enabled={hoveredModel === "checkoutCounter"}>
           <CheckoutCounter
-            position={[-139.5, 0, -56.5]}
+            position={[-139.5, -.5, -56.5]}
             onPointerOver={() => handlePointerOver("checkoutCounter")}
             onPointerOut={handlePointerOut}
           />
           {hoveredModel === "checkoutCounter" && (
-            <Annotation position={[-139.5, 0, -56.5]} content="Pagar" />
+            <Annotation position={[-139.5, -.5, -56.5]} content="Pagar" />
           )}
         </Select>
 

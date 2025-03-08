@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../auth/hooks/useAuth";
 import { avatarIdAtom, avatarUrlAtom } from "../../avatar/state/avatar";
 import { useAtom } from "jotai";
 
-export function UserMenu() {
+export function UserMenuButton() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
   const [, setAvatarUrl] = useAtom(avatarUrlAtom);
-  const [, setAvatarId] = useAtom(avatarIdAtom);
+  const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
 
   const handleSignOut = async () => {
     setAvatarId(null);
@@ -36,20 +36,20 @@ export function UserMenu() {
   if (!user) return null;
 
   return (
-    <div
-      className="absolute top-5 right-5 z-10 pointer-events-auto"
-      ref={menuRef}
-    >
+    <div className="pointer-events-auto" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 px-4 py-2 text-white hover:bg-black/80 transition-colors"
+        className="bg-white/10 p-3 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 cursor-pointer overflow-hidden"
       >
-        <span className="mr-2">{profile?.username || user.email}</span>
-        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white">
-          {profile?.username
-            ? profile.username[0].toUpperCase()
-            : user.email?.[0].toUpperCase()}
-        </div>
+        <div
+          className=" w-6 h-6 rounded-full bg-no-repeat"
+          style={{
+            backgroundImage: `url(https://models.readyplayer.me/${avatarId}.png)`,
+            transform: "scale(10)",
+            backgroundSize: "40%",
+            backgroundPosition: "50% 60% ",
+          }}
+        />
       </button>
 
       {isOpen && (
