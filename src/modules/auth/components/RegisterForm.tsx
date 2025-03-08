@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../hooks/useAuth";
 import { AvatarCreator } from "../../avatar/components/AvatarCreator";
 import { useAtom } from "jotai";
 import { avatarUrlAtom, avatarIdAtom } from "../../avatar/state/avatar";
+import ReactDOM from "react-dom";
+import { isValidEmail } from "../../../shared/utils/validations";
 
 interface RegisterFormProps {
   currentStep: number;
@@ -47,13 +49,19 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
     setError(null);
 
     if (currentStep === 1) {
+      // Check if email is valid
+      if (!isValidEmail(email)) {
+        setError("Por favor ingresa un correo electrónico válido");
+        return;
+      }
+
       if (password !== confirmPassword) {
         setError("Las contraseñas no coinciden");
         return;
       }
 
       try {
-        await checkUsername(username);
+        checkUsername(username);
         onStepChange(2);
       } catch (err: any) {
         setError(err.message);
@@ -391,9 +399,11 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
       )}
 
       {/* Avatar Creator Modal */}
-      {showAvatarCreator && (
-        <AvatarCreator onClose={() => setShowAvatarCreator(false)} />
-      )}
+      {showAvatarCreator &&
+        ReactDOM.createPortal(
+          <AvatarCreator onClose={() => setShowAvatarCreator(false)} />,
+          document.body
+        )}
     </form>
   );
 }
