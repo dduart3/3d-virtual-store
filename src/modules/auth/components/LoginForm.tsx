@@ -36,7 +36,7 @@ export function LoginForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="email">
-          Email
+          Correo
         </label>
         <input
           id="email"
@@ -50,7 +50,7 @@ export function LoginForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="password">
-          Password
+          Contraseña
         </label>
         <input
           id="password"
@@ -70,13 +70,13 @@ export function LoginForm() {
             className="h-4 w-4 border-gray-300 rounded"
           />
           <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-            Remember me
+            Recuérdame
           </label>
         </div>
         
         <div className="text-sm">
           <a href="#" className="text-white hover:underline">
-            Forgot your password?
+            Olvidaste tu contraseña?
           </a>
         </div>
       </div>
@@ -86,7 +86,7 @@ export function LoginForm() {
         disabled={isSigningIn}
         className="w-full py-3 bg-white text-black font-medium rounded hover:bg-opacity-90 transition-colors disabled:opacity-70"
       >
-        {isSigningIn ? 'Signing in...' : 'Sign In'}
+        {isSigningIn ? 'Iniciando sesión...' : 'Iniciar sesión'}
       </button>
     </form>
   )

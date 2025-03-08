@@ -53,7 +53,7 @@ export function RegisterForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="username">
-          Username
+          Usuario
         </label>
         <input
           id="username"
@@ -67,7 +67,7 @@ export function RegisterForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="email">
-          Email
+          Correo
         </label>
         <input
           id="email"
@@ -81,7 +81,7 @@ export function RegisterForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="password">
-          Password
+          Contraseña
         </label>
         <div className="relative">
           <input
@@ -115,7 +115,7 @@ export function RegisterForm() {
       
       <div>
         <label className="block text-sm font-medium mb-1" htmlFor="confirmPassword">
-          Confirm Password
+          Confirmar Contraseña
         </label>
         <div className="relative">
           <input
@@ -152,7 +152,7 @@ export function RegisterForm() {
         disabled={isSigningUp}
         className="w-full py-3 bg-white text-black font-medium rounded hover:bg-opacity-90 transition-colors disabled:opacity-70"
       >
-        {isSigningUp ? 'Creating Account...' : 'Create Account'}
+        {isSigningUp ? 'Creando Cuenta...' : 'Crear Cuenta'}
       </button>
     </form>
   )

@@ -8,6 +8,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { StoreExperience } from "./pages/StoreExperience";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
 
 // Create routes
 const rootRoute = createRootRoute();
@@ -33,7 +34,11 @@ const registerRoute = createRoute({
 const storeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/store",
-  component: StoreExperience,
+  component: () => (
+    <ProtectedRoute>
+      <StoreExperience />
+    </ProtectedRoute>
+  ),
 });
 
 const profileRoute = createRoute({

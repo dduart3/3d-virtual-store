@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Stats, useGLTF, useKeyboardControls } from "@react-three/drei";
 import { Group } from "three";
 import {
@@ -10,8 +10,6 @@ import { useAvatarMovement } from "../hooks/useAvatarMovement";
 import { useAvatarCamera } from "../hooks/useAvatarCamera";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
-import { useAtom } from "jotai";
-import { avatarRotationAtom } from "../state/avatar";
 
 enum Controls {
   forward = "forward",
