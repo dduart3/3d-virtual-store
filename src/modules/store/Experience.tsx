@@ -9,11 +9,13 @@ import { StoreScene } from "./components/StoreScene";
 import { Physics } from "@react-three/rapier";
 import { fadeRefAtom } from "../../shared/state/fade";
 import { hideCanvasLoader } from "../../shared/utils/loaderUtils";
+import { avatarUrlAtom } from "../avatar/state/avatar";
 
 export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!);
-  const [viewerState, setViewerState] = useAtom(viewerStateAtom);
+  const [viewerState] = useAtom(viewerStateAtom);
   const [, setFadeRef] = useAtom(fadeRefAtom);
+  const [avataUrl] = useAtom(avatarUrlAtom);
 
   // Make fadeRef accessible via atom
   useEffect(() => {
@@ -40,7 +42,7 @@ export const Experience = () => {
           debug={!false} // Disable debug rendering
         >
           <StoreScene />
-          <Avatar />
+          <Avatar key={avataUrl} />
         </Physics>
       ) : (
         <ViewerScene />

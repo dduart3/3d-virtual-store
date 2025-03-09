@@ -83,7 +83,7 @@ export const StoreScene = (props: GroupProps) => {
       </EffectComposer>
 
       <group {...props}>
-        <Model modelPath="scene" />
+        <Model isCritical={true}  modelPath="scene" />
 
         {sections?.map((section) => {
           return (
@@ -105,6 +105,7 @@ export const StoreScene = (props: GroupProps) => {
                   onPointerOver={() => handlePointerOver(section.id)}
                   onPointerOut={handlePointerOut}
                   onClick={() => handleModelClick(section.id)}
+                  isCritical={true}
                 />
               </RigidBody>
 

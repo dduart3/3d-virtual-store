@@ -6,7 +6,7 @@ import {
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { StoreExperience } from "./pages/StoreExperience";
+import { StorePage } from "./pages/StorePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
 
@@ -36,7 +36,7 @@ const storeRoute = createRoute({
   path: "/store",
   component: () => (
     <ProtectedRoute>
-      <StoreExperience />
+      <StorePage />
     </ProtectedRoute>
   ),
 });
@@ -44,7 +44,11 @@ const storeRoute = createRoute({
 const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/profile",
-  component: ProfilePage,
+  component: () => (
+    <ProtectedRoute>
+      <ProfilePage />
+    </ProtectedRoute>
+  ),
 });
 
 // Create and export the router

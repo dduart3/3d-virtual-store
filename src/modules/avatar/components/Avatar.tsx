@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Stats, useGLTF, useKeyboardControls } from "@react-three/drei";
 import { Group } from "three";
 import {
@@ -11,7 +11,8 @@ import { useAvatarCamera } from "../hooks/useAvatarCamera";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
-import {avatarUrlAtom} from "../state/avatar";
+import { avatarUrlAtom } from "../state/avatar";
+import { isSceneReadyAtom } from "../../../shared/state/loading";
 enum Controls {
   forward = "forward",
   backward = "backward",
@@ -26,44 +27,50 @@ export const Avatar = () => {
   const modelRef = useRef<Group>(null);
   const [, get] = useKeyboardControls<Controls>();
   const [avatarUrl] = useAtom(avatarUrlAtom);
+  const [isSceneReady] = useAtom(isSceneReadyAtom);
 
   // Load character model
-  const { scene } = useGLTF(avatarUrl || "https://readyplayerme.github.io/visage/male.glb");
-  
+  const { scene } = useGLTF(
+    avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
+  );
+
   // Let the hook handle position, rotation and movement
- useAvatarMovement(rigidBodyRef, modelRef);
-  
+  useAvatarMovement(rigidBodyRef, modelRef);
+
   // Other hooks for camera, animations, etc.
   useAvatarCamera(rigidBodyRef);
-  const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
-  
+  const { updateAnimation, update: updateAnimations } =
+    useAvatarAnimations(modelRef);
+
   // Update animations
   useFrame((_, delta) => {
     // Animation updates only - movement handled in useAvatarMovement
     const { forward, backward, left, right, run } = get();
     const isMoving = forward || backward || left || right;
     const isRunning = isMoving && run;
-    
+
     updateAnimation(isMoving, isRunning, false);
     updateAnimations(delta);
   });
 
-  // Update animations
-  useFrame((_, delta) => {
+  useEffect(() => {
     if (!rigidBodyRef.current) return;
 
-    const { forward, backward, left, right, run } = get();
-    const isMoving = forward || backward || left || right;
-    const isRunning = isMoving && run;
+    if (isSceneReady) {
+      // Wait a moment for floor colliders to fully initialize
+      // Add null check here
 
-    updateAnimation(isMoving, isRunning, false);
-    updateAnimations(delta);
-  });
+      rigidBodyRef.current.setBodyType(0, true); // 1 = dynamic (with physics)
+    } else {
+      // Already checked above, but being explicit for clarity
+      rigidBodyRef.current.setBodyType(2, true); // 2 = kinematic (no physics)
+    }
+  }, [isSceneReady]);
 
   return (
     <RigidBody
       ref={rigidBodyRef}
-      type="dynamic"
+      type="kinematicPosition"
       enabledRotations={[false, false, false]}
       mass={1}
       friction={1}

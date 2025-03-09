@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from '@tanstack/react-router'
+import { useNavigate, Link, useLocation } from '@tanstack/react-router'
 import { useAuth } from '../modules/auth/hooks/useAuth'
 import { supabase } from '../lib/supabase'
-import { ProtectedRoute } from '../modules/auth/components/ProtectedRoute'
+import { useRouteHistory } from '../shared/hooks/useRouteHistory'
 
 export function ProfilePage() {
   const { user, profile, loading } = useAuth()
@@ -10,7 +10,21 @@ export function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const navigate = useNavigate()
+
+
+  const navigate = useNavigate();
+  const { previousRoute } = useRouteHistory();
+  
+  const handleGoBack = () => {
+    if (previousRoute?.includes('/store')) {
+      navigate({ to: '/store' });
+    } else {
+      navigate({ to: '/' });
+    }
+  };
+
+
+
 
   useEffect(() => {
     if (profile) {
@@ -49,17 +63,17 @@ export function ProfilePage() {
   }
 
   return (
-    <ProtectedRoute>
       <div className="min-h-screen w-full bg-gradient-to-b from-black to-gray-900 py-12 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-light">Your Profile</h1>
-            <Link 
-              to="/store" 
+            <h1 className="text-3xl font-light">Perfil</h1>
+            {/* Replace Link with button that uses the dynamic navigation */}
+            <button 
+              onClick={handleGoBack}
               className="px-4 py-2 bg-white/10 rounded hover:bg-white/20 transition-colors"
             >
-              Back to Store
-            </Link>
+              Volver
+            </button>
           </div>
           
           <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 p-6 mb-8">
@@ -78,7 +92,7 @@ export function ProfilePage() {
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1" htmlFor="email">
-                  Email
+                  Correo
                 </label>
                 <input
                   type="email"
@@ -86,12 +100,12 @@ export function ProfilePage() {
                   disabled
                   className="w-full px-4 py-2 bg-black/40 border border-white/20 rounded text-white/70 cursor-not-allowed"
                 />
-                <p className="mt-1 text-sm text-white/50">Email cannot be changed</p>
+                <p className="mt-1 text-sm text-white/50">El correo no puede ser cambiado</p>
               </div>
               
               <div className="mb-6">
                 <label className="block text-sm font-medium mb-1" htmlFor="username">
-                  Username
+                  Usuario
                 </label>
                 <input
                   id="username"
@@ -107,12 +121,11 @@ export function ProfilePage() {
                 disabled={saving}
                 className="px-4 py-2 bg-white text-black rounded font-medium hover:bg-white/90 transition-colors disabled:opacity-70"
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Guardando cambios...' : 'Guardar cambios'}
               </button>
             </form>
           </div>
         </div>
       </div>
-    </ProtectedRoute>
   )
 }

@@ -24,6 +24,7 @@ const useHoverCursor = () => ({
 const Door = ({ side, status }: { side: 'left' | 'right', status: DoorsStatus }) => (
   <Model
     name={`${side}Door`}
+    isCritical={true}
     modelPath="/misc/door"
     position={new Vector3(...DOOR_POSITIONS[status][side].position)}
     rotation={new Euler(...DOOR_POSITIONS[status][side].rotation)}

@@ -3,14 +3,19 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { avatarIdAtom, avatarUrlAtom } from "../../avatar/state/avatar";
 import { useAtom } from "jotai";
+import { AvatarCreator } from "../../avatar/components/AvatarCreator";
+import ReactDOM from "react-dom";
+import { useToast } from "../../../shared/context/ToastContext";
 
 export function UserMenuButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, updateAvatar, isUpdatingAvatar } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [, setAvatarUrl] = useAtom(avatarUrlAtom);
+  const [avatarUrl, setAvatarUrl] = useAtom(avatarUrlAtom);
   const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
+  const [showAvatarCreator, setShowAvatarCreator] = useState(false);
+  const { showToast } = useToast();
 
   const handleSignOut = async () => {
     setAvatarId(null);
@@ -33,6 +38,11 @@ export function UserMenuButton() {
     };
   }, []);
 
+  // When avatar creator is closed, save the new avatar if it changed
+  const handleAvatarCreatorClose = () => {
+    setShowAvatarCreator(false);
+  };
+
   if (!user) return null;
 
   return (
@@ -42,15 +52,20 @@ export function UserMenuButton() {
         className="bg-white/10 p-3 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 cursor-pointer overflow-hidden"
       >
         <div
-          className=" w-6 h-6 rounded-full bg-no-repeat"
+          className="w-6 h-6 rounded-full bg-no-repeat"
           style={{
-            backgroundImage: `url(https://models.readyplayer.me/${avatarId}.png)`,
+            backgroundImage: `url(${`https://models.readyplayer.me/${avatarId}.png`})`,
             transform: "scale(10)",
             backgroundSize: "40%",
             backgroundPosition: "50% 60% ",
           }}
         />
       </button>
+      {showAvatarCreator &&
+        ReactDOM.createPortal(
+          <AvatarCreator onClose={handleAvatarCreatorClose} />,
+          document.body
+        )}
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-black/80 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg overflow-hidden">
@@ -71,6 +86,17 @@ export function UserMenuButton() {
             >
               Profile
             </Link>
+
+            <button
+              onClick={() => {
+                setShowAvatarCreator(true);
+                setIsOpen(false);
+              }}
+              disabled={isUpdatingAvatar}
+              className="block w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded transition-colors disabled:opacity-50"
+            >
+              {isUpdatingAvatar ? "Actualizando..." : "Cambiar avatar"}
+            </button>
 
             <button
               onClick={handleSignOut}
