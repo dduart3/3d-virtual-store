@@ -106,7 +106,7 @@ export function useSignOut() {
 export function useCheckUsername() {
   return useMutation({
     mutationFn: async (username: string) => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("profiles")
         .select("username")
         .eq("username", username)
@@ -174,13 +174,11 @@ export function updateAvatar() {
       return data;
     },
     onSuccess: () => {
-      // Invalidate profile query to refresh data
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
 }
 
-// Update the useAuth function to include these new methods
 export function useAuth() {
   const sessionQuery = useSession();
   const userId = sessionQuery.data?.user?.id;
