@@ -10,7 +10,9 @@ import { stripePromise } from "../../../lib/stripe";
 import { useCreatePaymentIntent, useConfirmPayment } from "../hooks/usePayment";
 import { useCreateOrder } from "../hooks/useOrder";
 import { useAtom } from "jotai";
-import { cartAtom } from "../state/cart";
+import { cartActionsAtom, cartAtom } from "../state/cart";
+import { useQueryClient } from "@tanstack/react-query";
+import { viewerStateAtom } from "../../product-viewer/state/viewer";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -123,58 +125,123 @@ export function PaymentModalWrapper({
 }
 
 // The actual modal component
-function PaymentModal({
-  onClose,
-  amount,
-  onSuccess,
+function PaymentModal({ 
+  //isOpen, 
+  onClose, 
+  amount, 
+  onSuccess 
 }: PaymentModalProps): JSX.Element {
   const stripe = useStripe();
   const elements = useElements();
   const { showToast } = useToast();
-  const [isPaymentElementReady, setIsPaymentElementReady] =
-    useState<boolean>(false);
+  const [isPaymentElementReady, setIsPaymentElementReady] = useState<boolean>(false);
   const [cart] = useAtom(cartAtom);
+  
 
+  const [, dispatch] = useAtom(cartActionsAtom);
+  const [viewerState, setViewerState] = useAtom(viewerStateAtom);
+  const queryClient = useQueryClient();
+  
+
+  
   // Use our hooks
   const confirmPayment = useConfirmPayment();
   const createOrder = useCreateOrder();
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-
+    
     if (!stripe || !elements || !isPaymentElementReady) {
       return;
     }
-
+    
     confirmPayment.mutate(
       { stripe, elements },
       {
         onSuccess: async (paymentIntent) => {
-          try {
-            await createOrder.mutateAsync({
+          // Get the section IDs of all products in the cart to invalidate them later
+          const sectionIds = new Set(cart.items.map(item => item.product.section_id));
+          
+          createOrder.mutate(
+            {
               cart_items: cart.items,
               payment_intent_id: paymentIntent.id,
               total: amount,
-              shipping_address: {},
-            });
+              shipping_address: {}
+            },
+            {
+              onSuccess: () => {
+                // 1. Invalidate queries
+                sectionIds.forEach(sectionId => {
+                  queryClient.invalidateQueries({ 
+                    queryKey: ['products', 'section', sectionId] 
+                  });
+                });
+                
+                cart.items.forEach(item => {
+                  queryClient.invalidateQueries({ 
+                    queryKey: ['product', item.product.id] 
+                  });
+                });
+                
+                // 2. Update the viewerState atom directly to reflect stock changes
+                if (viewerState.products && viewerState.currentProduct) {
+                  // Create a map of product quantities from cart
+                  const purchasedQuantities = cart.items.reduce((acc, item) => {
+                    acc[item.product.id] = item.quantity;
+                    return acc;
+                  }, {} as Record<string, number>);
+                  
+                  // Update all products in the viewer
+                  const updatedProducts = viewerState.products.map(product => {
+                    if (purchasedQuantities[product.id]) {
+                      // Reduce the stock by the purchased quantity
+                      return {
+                        ...product,
+                        stock: product.stock - purchasedQuantities[product.id]
+                      };
+                    }
+                    return product;
+                  });
+                  
+                  // Update the current product if it was purchased
+                  let updatedCurrentProduct = viewerState.currentProduct;
+                  if (purchasedQuantities[viewerState.currentProduct.id]) {
+                    updatedCurrentProduct = {
+                      ...viewerState.currentProduct,
+                      stock: viewerState.currentProduct.stock - purchasedQuantities[viewerState.currentProduct.id]
+                    };
+                  }
+                  
+                  // Update the atom
+                  setViewerState({
+                    ...viewerState,
+                    products: updatedProducts,
+                    currentProduct: updatedCurrentProduct
+                  });
+                }
+                
+                // 3. Clear the cart
+                dispatch({ type: 'CLEAR' });
+                
+                showToast('Order completed successfully!', 'success');
+                onSuccess();
+                onClose();
+              },
 
-            showToast("Order completed successfully!", "success");
-            onSuccess();
-            onClose();
-          } catch (error) {
-            console.error("Error creating order:", error);
-            showToast("Payment processed but order creation failed.", "error");
-          }
+              onError: (error) => {
+                console.error('Error creating order:', error);
+                showToast('Payment processed but order creation failed.', 'error');
+              }
+            }
+          );
         },
         onError: (error) => {
-          showToast(error.message || "Payment failed", "error");
-        },
+          showToast(error.message || 'Payment failed', 'error');
+        }
       }
     );
   };
-
   // Combined error from either payment confirmation or order creation
   const paymentError =
     confirmPayment.error?.message || createOrder.error?.message;
