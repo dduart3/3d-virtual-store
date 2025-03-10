@@ -1,11 +1,18 @@
 import { useAtom } from "jotai";
 import { cartAtom, cartActionsAtom } from "../state/cart";
 import { useToast } from "../../../shared/context/ToastContext";
+import { useState } from "react";
+import { PaymentModalWrapper } from "./PaymentModal";
 
 export const CartPanel = () => {
   const [cart, setCart] = useAtom(cartAtom);
   const [, dispatch] = useAtom(cartActionsAtom);
   const { showToast } = useToast();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const handlePaymentSuccess = () => {
+    showToast('Order completed successfully!', 'success');
+    dispatch({ type: 'CLEAR' });
+  };
 
   const total = cart.items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -13,6 +20,7 @@ export const CartPanel = () => {
   );
 
   return (
+    <>
     <div
       className={`fixed right-0 top-0 h-screen w-96 bg-black/90 transform transition-transform duration-300 z-[100] pointer-events-auto ${
         cart.isOpen ? "translate-x-0" : "translate-x-full"
@@ -164,6 +172,7 @@ export const CartPanel = () => {
             <button
               className="py-3 px-6 bg-white text-black font-medium rounded hover:bg-white/90 transition-colors"
               type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
             >
               Pagar
             </button>
@@ -171,5 +180,12 @@ export const CartPanel = () => {
         </div>
       </div>
     </div>
+    <PaymentModalWrapper 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        amount={total}
+        onSuccess={handlePaymentSuccess}
+      />
+    </>
   );
 };

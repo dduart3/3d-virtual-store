@@ -11,7 +11,7 @@ export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
   const [avatarUrl, setAvatarUrl] = useAtom(avatarUrlAtom);
   const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
   const { showToast } = useToast();
-  const { user, updateAvatar, isUpdatingAvatar } = useAuth();
+  const { user, updateAvatar } = useAuth();
 
   const handleOnAvatarExported = (event: AvatarExportedEvent) => {
     console.log("Avatar exported event:", event);

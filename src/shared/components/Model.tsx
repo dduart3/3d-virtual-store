@@ -1,6 +1,6 @@
-import { GroupProps, useThree } from "@react-three/fiber";
+import { GroupProps } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAtom } from "jotai";
 import { criticalModelsLoadingAtom } from "../state/loading";
 

@@ -29,7 +29,7 @@ export const StoreScene = (props: GroupProps) => {
   const { data: sections, isLoading: sectionsLoading } = useSections();
 
   // Fetch products for the selected section
-  const { data: products, isLoading: productsLoading } =
+  const { data: products } =
     useSectionProducts(selectedSection);
 
   // When products are loaded, update the viewer

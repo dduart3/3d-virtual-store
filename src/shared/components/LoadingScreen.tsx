@@ -4,7 +4,7 @@ import { isSceneReadyAtom, criticalModelsLoadingAtom, loadingProgressAtom } from
 import { useEffect, useState } from "react";
 
 export const LoadingScreen = () => {
-  const { active, item } = useProgress();
+  const { active } = useProgress();
   const [isSceneReady] = useAtom(isSceneReadyAtom);
   const [criticalModels] = useAtom(criticalModelsLoadingAtom);
   const [progress, setProgress] = useAtom(loadingProgressAtom);

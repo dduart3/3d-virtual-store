@@ -13,7 +13,6 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
   const { gl } = useThree();
   
   // Camera settings for Sims-like top-down view
-  const CAMERA_HEIGHT = 15; // Increased height for top-down view
   const CAMERA_HEIGHT_ANGLE = 0.7; // Angle between 0 (behind) and Math.PI/2 (directly above)
   const MIN_ZOOM = 8;
   const MAX_ZOOM = 25;

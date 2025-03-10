@@ -1,4 +1,5 @@
-import { Product } from '../../store/types/store'
+import { Product } from "../../../shared/types/app"
+
 
 export interface CartItem {
   product: Product

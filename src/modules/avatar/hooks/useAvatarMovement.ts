@@ -49,7 +49,7 @@ export function useAvatarMovement(
   const RUN_MULTIPLIER = 2.5;
   const ROTATION_SPEED = 10.0;
   
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!rigidBodyRef.current || !modelRef.current || chatInputFocused) return;
     
     // Get input state

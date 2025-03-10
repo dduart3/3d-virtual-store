@@ -7,7 +7,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Setup auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       // Update queries when auth state changes
       queryClient.invalidateQueries({ queryKey: ['auth', 'session'] })
       

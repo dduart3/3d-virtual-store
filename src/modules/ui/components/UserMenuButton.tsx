@@ -5,17 +5,15 @@ import { avatarIdAtom, avatarUrlAtom } from "../../avatar/state/avatar";
 import { useAtom } from "jotai";
 import { AvatarCreator } from "../../avatar/components/AvatarCreator";
 import ReactDOM from "react-dom";
-import { useToast } from "../../../shared/context/ToastContext";
 
 export function UserMenuButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, profile, signOut, updateAvatar, isUpdatingAvatar } = useAuth();
+  const { user, profile, signOut, isUpdatingAvatar } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [avatarUrl, setAvatarUrl] = useAtom(avatarUrlAtom);
+  const [, setAvatarUrl] = useAtom(avatarUrlAtom);
   const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
-  const { showToast } = useToast();
 
   const handleSignOut = async () => {
     setAvatarId(null);
