@@ -302,7 +302,7 @@ function PaymentModal({
                 Processing...
               </div>
             ) : (
-              "Pay Now"
+              "Pagar Ahora"
             )}
           </button>
         </form>
