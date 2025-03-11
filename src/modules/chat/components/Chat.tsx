@@ -2,10 +2,12 @@ import { useAtom } from "jotai";
 import { useState, useEffect } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useAIChat } from '../hooks/useAIChat';
+import { ChatMessage } from '../types/chat';
 
 // In a real implementation, this would come from your socket connection
 
-const mockMessages = [
+
+const mockMessages: ChatMessage[] = [
   {
     id: 1,
     sender: "Sistema",
@@ -34,8 +36,9 @@ export const Chat = () => {
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<'chat' | 'ai'>('chat');
 
-  const [messages, setMessages] = useState(mockMessages);
-  const [aiMessages, setAiMessages] = useState([
+
+  const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
+  const [aiMessages, setAiMessages] = useState<ChatMessage[]>([
     {
       id: 1,
       sender: "Asistente AI",

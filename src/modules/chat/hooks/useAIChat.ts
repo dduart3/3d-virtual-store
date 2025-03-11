@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { getAIResponse, AIMessage } from '../services/aiService';
+import { getAIResponse } from '../services/aiService';
+import { ChatMessage } from '../types/chat';
 
 export function useAIChat() {
     const [isLoading, setIsLoading] = useState(false);
 
-    const sendMessage = async (messages: AIMessage[]): Promise<AIMessage> => {
+    const sendMessage = async (messages: ChatMessage[]): Promise<ChatMessage> => {
         setIsLoading(true);
         try {
             const aiResponse = await getAIResponse(messages);
