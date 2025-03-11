@@ -38,7 +38,7 @@ export const Chat = () => {
   const [aiMessages, setAiMessages] = useState([
     {
       id: 1,
-      sender: "AI Assistant",
+      sender: "Asistente AI",
       content: "¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
       read: false,
       type: "system",
@@ -213,11 +213,11 @@ export const Chat = () => {
               </>
             )}
           </div>
-          {/* Remove this line that uses isTyping */}
+
           {/* Chat Input section continues... */}
         </div>
 
-        {/* Chat Input - Hidden when closed */}
+
         <div
           className={`p-2 border-t border-white/20 flex transition-all ${!isOpen ? "hidden" : "block"
             }`}
