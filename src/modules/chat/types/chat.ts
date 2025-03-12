@@ -4,5 +4,6 @@ export interface ChatMessage {
     sender_id?: string;
     content: string;
     read: boolean;
-    type: string;
+    type: "system" | "admin" | "user";	
+
 }

@@ -77,7 +77,7 @@ export const Chat = () => {
           content: newAIChatMessage,
           read: true,
           type: "user",
-        };
+        } as ChatMessage;
 
         const updatedMessages = [...aiMessages, message];
         setAiMessages(updatedMessages);
@@ -94,7 +94,7 @@ export const Chat = () => {
             "Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.",
           read: true,
           type: "system",
-        };
+        } as  ChatMessage;
         setAiMessages((prev) => [...prev, errorMessage]);
       }
     }

@@ -80,6 +80,25 @@ export function useChat() {
     },
   });
 
+  // Helper function to announce user disconnect
+  const announceDisconnect = (userId: string, username: string) => {
+    if (!channelRef.current) return;
+    
+    console.log(`User disconnected: ${username} (${userId})`);
+    
+    channelRef.current.send({
+      type: "broadcast",
+      event: "message",
+      payload: {
+        id: `system-disconnect-${userId}-${Date.now()}`,
+        sender: "Sistema",
+        content: `${username} se ha desconectado.`,
+        type: "system",
+        timestamp: Date.now(),
+      },
+    });
+  };
+
   // Set up the Realtime subscription
   useEffect(() => {
     if (!channelRef.current && profile) {
@@ -87,9 +106,9 @@ export function useChat() {
 
       const channel = supabase.channel(CHANNEL, {
         config: {
-          broadcast: { self: true }, // We'll handle deduplication in addMessage
+          broadcast: { self: true },
           presence: {
-            key: profile.id || USER_ID,
+            key: profile.id,
           },
         },
       });
@@ -98,46 +117,45 @@ export function useChat() {
       channel
         .on("broadcast", { event: "message" }, (payload) => {
           const message = payload.payload as ChatMessage;
-          // Use the mutation to add the message
           addMessage.mutate(message);
         })
-        .on("presence", { event: "sync" }, () => {
-          // Get the current presence state
-          const newState = channel.presenceState();
+        .on("presence", { event: "join" }, ({ key, currentPresences }) => {
+          console.log(`User joined with key: ${key}`);
+        })
+        .on("presence", { event: "leave" }, ({ key, currentPresences, leftPresences }) => {
+          // This is more reliable than the sync event for detecting leaves
+          console.log(`User left with key: ${key}`);
           
-          // Compare with previous state to detect leaves
-          const previousUserIds = Object.keys(presenceRef.current);
+          // Don't announce our own disconnection
+          if (key === profile.id) return;
           
-          // Find users who left (were in previous state but not in current)
-          for (const userId of previousUserIds) {
-            if (!newState[userId] && userId !== profile.id) { // Don't announce our own disconnection
-              const userInfo = presenceRef.current[userId]?.[0];
-              if (userInfo) {
-                console.log(`User disconnected: ${userInfo.username}`);
-                
-                // Announce disconnection
-                channel.send({
-                  type: "broadcast",
-                  event: "message",
-                  payload: {
-                    id: `system-disconnect-${userId}-${Date.now()}`,
-                    sender: "Sistema",
-                    content: `${userInfo.username} se ha desconectado.`,
-                    type: "system",
-                    timestamp: Date.now(),
-                  },
-                });
-              }
+          // Find the user info from the left presence
+          if (leftPresences && leftPresences.length > 0) {
+            const userInfo = leftPresences[0];
+            if (userInfo && userInfo.username) {
+              announceDisconnect(key, userInfo.username);
             }
           }
+        })
+        .on("presence", { event: "sync" }, () => {
+          const newState = channel.presenceState();
           
-          // Update our presence reference
+          // Check for users who have left by comparing with our previous state
+          Object.keys(presenceRef.current).forEach(userId => {
+            if (!newState[userId] && userId !== profile.id) {
+              const userInfo = presenceRef.current[userId]?.[0];
+              if (userInfo && userInfo.username) {
+                announceDisconnect(userId, userInfo.username);
+              }
+            }
+          });
+          
+          // Update our reference
           presenceRef.current = newState;
         })
         .subscribe((status) => {
           if (status === "SUBSCRIBED") {
             console.log("Connected to chat channel");
-            // Update connection status
             queryClient.setQueryData(["chat-connection-status"], true);
 
             // Add welcome messages if there are none
@@ -159,20 +177,16 @@ export function useChat() {
                 },
               ];
 
-              // Add welcome messages to cache
               queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
             }
 
-            // Only announce that a new user joined if:
-            // 1. We have a profile
-            // 2. We haven't already announced this user in this session
-            // 3. This user ID isn't in the announced sessions list
-            if (profile && !hasAnnouncedRef.current) {
+            // Announce that the user has joined if this is their first time
+            if (profile.username && !hasAnnouncedRef.current) {
               const announcedSessions = getAnnouncedSessions();
 
               if (!announcedSessions.includes(profile.id)) {
-                const username =
-                  profile.username || profile.full_name || "Usuario";
+                const username = profile.username || `${profile.first_name} ${profile.last_name}`  || "Usuario";
+                
                 channel.send({
                   type: "broadcast",
                   event: "message",
@@ -185,11 +199,9 @@ export function useChat() {
                   },
                 });
 
-                // Mark this user as announced for this session
                 hasAnnouncedRef.current = true;
                 addAnnouncedSession(profile.id);
               } else {
-                // If already announced in a previous session, just mark as announced
                 hasAnnouncedRef.current = true;
               }
             }
@@ -200,7 +212,6 @@ export function useChat() {
                 user_id: profile.id,
                 username: profile.username || profile.full_name || "Usuario",
                 avatar_url: profile.avatar_url,
-                connected_at: Date.now(),
               });
             }
           }
@@ -208,15 +219,26 @@ export function useChat() {
 
       // Store the channel reference
       channelRef.current = channel;
+      
+      // Setup beforeunload handler to untrack presence when page closes
+      const handleBeforeUnload = () => {
+        if (channelRef.current) {
+          channelRef.current.untrack();
+        }
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      // Clean up function
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        if (channelRef.current && profile) {
+          channelRef.current.untrack();
+        }
+      };
     }
 
-    // Clean up function
-    return () => {
-      if (channelRef.current && profile) {
-        // Untrack our presence when component unmounts
-        channelRef.current.untrack();
-      }
-    };
+    return () => {};
   }, [profile, queryClient, messages.length, addMessage]);
 
   // Send a message to all connected clients
@@ -233,8 +255,8 @@ export function useChat() {
       sender_id: profile?.id,
       content,
       type: "user",
-      read: false
-    };
+      read: false,
+      };
 
     // Broadcast the message to all clients
     channelRef.current.send({
