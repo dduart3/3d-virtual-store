@@ -1,40 +1,18 @@
 import { useAtom } from "jotai";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
+import { useChat } from '../hooks/useChat';
 import { useAIChat } from '../hooks/useAIChat';
-
-// In a real implementation, this would come from your socket connection
-
-const mockMessages = [
-  {
-    id: 1,
-    sender: "Sistema",
-    content: "¡Bienvenido a la Tienda Virtual!",
-    read: false,
-    type: "system",
-  },
-  {
-    id: 2,
-    sender: "Admin",
-    content: "Explora y añade productos a tu carrito.",
-    read: false,
-    type: "admin",
-  },
-  {
-    id: 3,
-    sender: "Usuario",
-    content: "¿Cómo puedo ver los detalles del producto?",
-    read: false,
-    type: "user",
-  },
-];
 
 export const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
+  const [, setInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<'chat' | 'ai'>('chat');
-
-  const [messages, setMessages] = useState(mockMessages);
+  
+  // Real-time chat functionality
+  const { messages, sendMessage: sendChatMessage, connected } = useChat();
+  
+  // AI chat functionality
   const [aiMessages, setAiMessages] = useState([
     {
       id: 1,
@@ -44,10 +22,11 @@ export const Chat = () => {
       type: "system",
     }
   ]);
-  const [unreadCount, setUnreadCount] = useState(
-    mockMessages.filter((msg) => !msg.read).length
-  );
+  
   const [newMessage, setNewMessage] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const prevMessageCountRef = useRef(messages.length);
 
   // Format unread count with 99+ cap
   const formattedUnreadCount =
@@ -56,38 +35,52 @@ export const Chat = () => {
   // Mark all messages as read when opening the chat
   useEffect(() => {
     if (isOpen && unreadCount > 0) {
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) => ({ ...msg, read: true }))
-      );
       setUnreadCount(0);
     }
   }, [isOpen, unreadCount]);
+  
+  // Track new messages for unread count
+  useEffect(() => {
+    if (!isOpen && messages.length > prevMessageCountRef.current) {
+      const newMessages = messages.slice(prevMessageCountRef.current);
+      const newUnreadCount = newMessages.filter(m => m.sender !== 'Usuario').length;
+      if (newUnreadCount > 0) {
+        setUnreadCount(prev => prev + newUnreadCount);
+      }
+    }
+    
+    prevMessageCountRef.current = messages.length;
+    
+    // Auto-scroll to bottom when new messages arrive
+    if (messagesEndRef.current && isOpen) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages.length, isOpen]);
 
-  const { isLoading, sendMessage } = useAIChat();
-  // Remove isTyping state
+  const { isLoading, sendMessage: sendAIMessage } = useAIChat();
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() && !isLoading) {
-      const message = {
-        id: (activeTab === 'chat' ? messages : aiMessages).length + 1,
-        sender: activeTab === 'chat' ? "Usuario" : "User",
-        content: newMessage,
-        read: true,
-        type: "user",
-      };
-
-      if (activeTab === 'chat') {
-        setMessages(prev => [...prev, message]);
+    if (newMessage.trim()) {
+      if (activeTab === 'chat' && connected) {
+        sendChatMessage(newMessage);
         setNewMessage("");
-        setChatInputFocused(false);
-      } else {
+        setInputFocused(false);
+      } else if (activeTab === 'ai' && !isLoading) {
         try {
+          const message = {
+            id: aiMessages.length + 1,
+            sender: "User",
+            content: newMessage,
+            read: true,
+            type: "user",
+          };
+          
           const updatedMessages = [...aiMessages, message];
           setAiMessages(updatedMessages);
           setNewMessage("");
-          setChatInputFocused(false);
+          setInputFocused(false);
 
-          const aiMessage = await sendMessage(updatedMessages);
+          const aiMessage = await sendAIMessage(updatedMessages);
           setAiMessages(prev => [...prev, aiMessage]);
         } catch (error) {
           console.error('Failed to get AI response:', error);
@@ -104,13 +97,11 @@ export const Chat = () => {
     }
   };
 
-  // Add tab change handler
   const handleTabChange = (tab: 'chat' | 'ai') => {
     setActiveTab(tab);
-    setChatInputFocused(false); // Release focus when switching tabs
+    setInputFocused(false);
   };
 
-  // Update the tab buttons to use the new handler
   return (
     <div className="absolute bottom-5 left-5 pointer-events-auto">
       <div
@@ -124,13 +115,15 @@ export const Chat = () => {
         >
           <div className="text-white flex items-center">
             <div
-              className={`w-2 h-2 rounded-full ${unreadCount > 0 ? "bg-red-500 animate-pulse" : "bg-green-500"
-                } mr-2`}
+              className={`w-2 h-2 rounded-full ${
+                activeTab === 'chat' 
+                  ? (connected ? "bg-green-500" : "bg-red-500 animate-pulse") 
+                  : (unreadCount > 0 ? "bg-red-500 animate-pulse" : "bg-green-500")
+              } mr-2`}
             ></div>
             <span>
               {!isOpen && unreadCount > 0
-                ? `Chat (${formattedUnreadCount} mensaje${unreadCount > 1 ? "s" : ""
-                } nuevo${unreadCount > 1 ? "s" : ""})`
+                ? `Chat (${formattedUnreadCount} mensaje${unreadCount > 1 ? "s" : ""} nuevo${unreadCount > 1 ? "s" : ""})`
                 : "Chat"}
             </span>
           </div>
@@ -163,83 +156,82 @@ export const Chat = () => {
           </div>
         )}
 
-        {/* Chat Messages - Hidden when closed */}
+        {/* Chat Messages Area */}
         <div
-          className={`flex-1 p-3 overflow-auto transition-all ${!isOpen ? "hidden" : "block"
-            }`}
+          className={`flex-1 p-3 overflow-auto transition-all ${!isOpen ? "hidden" : "block"}`}
         >
-          {/* Chat Messages section */}
-          <div className={`flex-1 p-3 overflow-auto transition-all ${!isOpen ? "hidden" : "block"}`}>
-            {/* Only show messages corresponding to the active tab */}
-            {activeTab === 'chat' ? (
-              // General chat messages
-              messages.map((message) => (
+          {activeTab === 'chat' ? (
+            // Real-time chat messages
+            <>
+              {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`text-sm mb-1 ${message.type === "system"
-                    ? "text-green-400"
-                    : message.type === "admin"
-                      ? "text-blue-400"
-                      : "text-white"
-                    }`}
+                  className={`text-sm mb-1 ${
+                    message.type === "system"
+                      ? "text-green-400"
+                      : message.type === "admin"
+                        ? "text-blue-400"
+                        : "text-white"
+                  }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   {message.content}
-                  {!message.read && (
-                    <span className="ml-2 w-2 h-2 bg-red-500 rounded-full inline-block" />
-                  )}
                 </div>
-              ))
-            ) : (
-              // AI chat messages
-              <>
-                {aiMessages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`text-sm mb-1 ${message.type === "system"
+              ))}
+            </>
+          ) : (
+            // AI chat messages
+            <>
+              {aiMessages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`text-sm mb-1 ${
+                    message.type === "system"
                       ? "text-green-400"
                       : "text-white"
-                      }`}
-                  >
-                    <span className="text-yellow-400">{message.sender}:</span>{" "}
-                    {message.content}
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="text-sm text-gray-400 italic">
-                    El asistente está escribiendo...
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-          {/* Remove this line that uses isTyping */}
-          {/* Chat Input section continues... */}
+                  }`}
+                >
+                  <span className="text-yellow-400">{message.sender}:</span>{" "}
+                  {message.content}
+                </div>
+              ))}
+              {isLoading && (
+                <div className="text-sm text-gray-400 italic">
+                  El asistente está escribiendo...
+                </div>
+              )}
+            </>
+          )}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Chat Input - Hidden when closed */}
+        {/* Chat Input */}
         <div
-          className={`p-2 border-t border-white/20 flex transition-all ${!isOpen ? "hidden" : "block"
-            }`}
+          className={`p-2 border-t border-white/20 flex transition-all ${!isOpen ? "hidden" : "block"}`}
         >
           <input
             type="text"
-            placeholder={isLoading ? "Esperando respuesta..." : "Escribe tu mensaje..."}
+            placeholder={
+              activeTab === 'chat'
+                ? (connected ? "Escribe tu mensaje..." : "Conectando...")
+                : (isLoading ? "Esperando respuesta..." : "Escribe tu mensaje...")
+            }
             className="flex-1 bg-black/40 text-white p-2 rounded border border-white/30 text-sm focus:outline-none focus:border-white/50"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
-            onFocus={() => setChatInputFocused(true)}
-            onBlur={() => setChatInputFocused(false)}
-            disabled={isLoading}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            disabled={(activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading)}
           />
           <button
-            className={`ml-2 px-3 rounded ${isLoading
-              ? "bg-gray-600 cursor-not-allowed"
-              : "bg-white/10 hover:bg-white/20"
-              } text-white`}
+            className={`ml-2 px-3 rounded ${
+              (activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading)
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-white/10 hover:bg-white/20"
+            } text-white`}
             onClick={handleSendMessage}
-            disabled={isLoading}
+            disabled={(activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading)}
           >
             Enviar
           </button>
