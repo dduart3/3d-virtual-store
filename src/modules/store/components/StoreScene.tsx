@@ -134,7 +134,7 @@ export const StoreScene = (props: GroupProps) => {
 
         <Select enabled={hoveredModel === "jukebox"}>
           <Jukebox
-            position={[-137.11, -0.5, -54]}
+            position={[-137.5, -0.5, -54]}
             onPointerOver={() => handlePointerOver("jukebox")}
             onPointerOut={handlePointerOut}
             rotation= {[0, -Math.PI / 2, 0]}

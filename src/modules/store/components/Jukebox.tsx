@@ -4,7 +4,7 @@ import { Model } from "../../../shared/components/Model";
 export const Jukebox = (props: GroupProps) => {
     return <Model
         isCritical={true}
-        modelPath="misc/Jukebox"
+        modelPath="misc/jukebox"
         {...props}
 
     />;
