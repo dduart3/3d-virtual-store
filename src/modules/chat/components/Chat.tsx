@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useChat } from '../hooks/useChat';
 import { useAIChat } from '../hooks/useAIChat';
-import { ChatMessage } from '../types/chat';
 
 export const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
