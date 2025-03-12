@@ -10,8 +10,8 @@ export function useAIChat() {
         try {
             const aiResponse = await getAIResponse(messages);
             return {
-                id: messages.length + 2,
-                sender: 'AI Assistant',
+                id: `msg-${Date.now()}`,
+                sender: 'Asistente IA',
                 content: aiResponse,
                 read: true,
                 type: 'system'
