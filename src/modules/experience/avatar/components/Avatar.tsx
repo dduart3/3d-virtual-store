@@ -12,7 +12,7 @@ import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { avatarUrlAtom } from "../state/avatar";
-import { isSceneReadyAtom } from "../../../shared/state/loading";
+import { isSceneReadyAtom } from "../../../../shared/state/loading";
 enum Controls {
   forward = "forward",
   backward = "backward",

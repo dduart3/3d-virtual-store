@@ -1,6 +1,6 @@
 import { CohereClient } from 'cohere-ai';
-import { storeData } from '../../store/data/store-sections';
-import { SectionData } from '../../store/data/store-sections';
+import { storeData } from '../../experience/store/data/store-sections';
+import { SectionData } from '../../experience/store/data/store-sections';
 import { ChatMessage } from '../types/chat';
 
 const cohere = new CohereClient({

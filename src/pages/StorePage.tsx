@@ -1,10 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { Experience } from "../modules/store/Experience";
-import { ViewerUI } from "../modules/product-viewer/components/ViewerUI";
+import { Experience } from "../modules/experience/Experience";
+import { ViewerUI } from "../modules/experience/product-viewer/components/ViewerUI";
 import { UILayout } from "../modules/ui/components/UILayout";
 import { useAtom } from "jotai";
-import { viewerStateAtom } from "../modules/product-viewer/state/viewer";
+import { viewerStateAtom } from "../modules/experience/product-viewer/state/viewer";
 import { LoadingScreen } from "../shared/components/LoadingScreen";
 import { useRouteHistory } from "../shared/hooks/useRouteHistory";
 

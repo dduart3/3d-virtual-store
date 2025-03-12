@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import { viewerStateAtom } from "../state/viewer";
 import { useRef } from "react";
 import { Group } from "three";
-import { Model } from "../../../shared/components/Model";
+import { Model } from "../../../../shared/components/Model";
 
 export const ProductStage = ({
   isDragging,

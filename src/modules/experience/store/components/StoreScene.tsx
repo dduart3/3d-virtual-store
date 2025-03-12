@@ -1,5 +1,5 @@
 import { GroupProps } from "@react-three/fiber";
-import { Model } from "../../../shared/components/Model";
+import { Model } from "../../../../shared/components/Model";
 import { Ground } from "./Ground";
 import { Doors } from "./Doors";
 
@@ -10,11 +10,11 @@ import {
   Outline,
 } from "@react-three/postprocessing";
 import { useEffect, useState } from "react";
-import { Annotation } from "../../../shared/components/Annotation";
-import { useSections, useSectionProducts } from "../../../lib/api";
+import { Annotation } from "../../../../shared/components/Annotation";
+import { useSections, useSectionProducts } from "../../../../lib/api";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
-import { fadeRefAtom } from "../../../shared/state/fade";
+import { fadeRefAtom } from "../../../../shared/state/fade";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { Jukebox } from './Jukebox';

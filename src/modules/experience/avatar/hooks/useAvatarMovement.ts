@@ -5,7 +5,7 @@ import { Vector3 } from 'three';
 import { RapierRigidBody } from '@react-three/rapier';
 import { useAtom } from 'jotai';
 import { avatarPositionAtom, avatarCameraRotationAtom, avatarRotationAtom } from '../state/avatar';
-import { chatInputFocusedAtom } from '../../chat/state/chat';
+import { chatInputFocusedAtom } from '../../../chat/state/chat';
 import * as THREE from 'three';
 
 enum Controls {

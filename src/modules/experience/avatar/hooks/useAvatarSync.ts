@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { avatarUrlAtom, avatarIdAtom } from '../state/avatar';
-import { useAuth } from '../../auth/hooks/useAuth';
+import { useAuth } from '../../../auth/hooks/useAuth';
 
 export function useAvatarSync() {
   const { profile, loading } = useAuth();

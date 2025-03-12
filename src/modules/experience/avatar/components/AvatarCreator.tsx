@@ -4,8 +4,8 @@ import {
 } from "@readyplayerme/react-avatar-creator";
 import { useAtom } from "jotai";
 import { avatarUrlAtom, avatarIdAtom } from "../state/avatar";
-import { useToast } from "../../../shared/context/ToastContext";
-import { useAuth } from "../../auth/hooks/useAuth";
+import { useToast } from "../../../../shared/context/ToastContext";
+import { useAuth } from "../../../auth/hooks/useAuth";
 
 export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
   const [avatarUrl, setAvatarUrl] = useAtom(avatarUrlAtom);

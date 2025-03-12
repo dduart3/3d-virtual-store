@@ -1,15 +1,15 @@
 import { Environment } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import { Fade, FadeHandle } from "../../shared/components/Fade";
-import { Avatar } from "../avatar/components/Avatar";
-import { ViewerScene } from "../product-viewer/components/ViewerScene";
+import { Avatar } from "../experience/avatar/components/Avatar";
+import { ViewerScene } from "./product-viewer/components/ViewerScene";
 import { useAtom } from "jotai";
-import { viewerStateAtom } from "../product-viewer/state/viewer";
-import { StoreScene } from "./components/StoreScene";
+import { viewerStateAtom } from "../experience/product-viewer/state/viewer";
+import { StoreScene } from "./store/components/StoreScene";
 import { Physics } from "@react-three/rapier";
 import { fadeRefAtom } from "../../shared/state/fade";
 import { hideCanvasLoader } from "../../shared/utils/loaderUtils";
-import { avatarUrlAtom } from "../avatar/state/avatar";
+import { avatarUrlAtom } from "./avatar/state/avatar";
 
 export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!);

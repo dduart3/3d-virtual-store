@@ -1,7 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useState, RefObject } from "react";
 import { Group, AnimationMixer, AnimationAction } from "three";
-import { chatInputFocusedAtom } from "../../chat/state/chat";
+import { chatInputFocusedAtom } from "../../../chat/state/chat";
 import { useAtom } from "jotai";
 
 type AnimationState = "idle" | "walk" | "run" | "jump";

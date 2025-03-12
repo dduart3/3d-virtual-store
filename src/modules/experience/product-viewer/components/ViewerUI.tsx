@@ -1,9 +1,9 @@
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../state/viewer";
-import { fadeRefAtom } from "../../../shared/state/fade";
-import { cartActionsAtom, cartAtom } from "../../cart/state/cart";
+import { fadeRefAtom } from "../../../../shared/state/fade";
+import { cartActionsAtom, cartAtom } from "../../../cart/state/cart";
 import { useEffect, useState } from "react";
-import { useToast } from "../../../shared/context/ToastContext";
+import { useToast } from "../../../../shared/context/ToastContext";
 
 export const ViewerUI = () => {
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);

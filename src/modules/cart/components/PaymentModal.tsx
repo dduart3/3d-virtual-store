@@ -12,7 +12,7 @@ import { useCreateOrder } from "../hooks/useOrder";
 import { useAtom } from "jotai";
 import { cartActionsAtom, cartAtom } from "../state/cart";
 import { useQueryClient } from "@tanstack/react-query";
-import { viewerStateAtom } from "../../product-viewer/state/viewer";
+import { viewerStateAtom } from "../../experience/product-viewer/state/viewer";
 
 interface PaymentModalProps {
   isOpen: boolean;

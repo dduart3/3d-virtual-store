@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../../auth/hooks/useAuth";
-import { avatarIdAtom, avatarUrlAtom } from "../../avatar/state/avatar";
+import { avatarIdAtom, avatarUrlAtom } from "../../experience/avatar/state/avatar";
 import { useAtom } from "jotai";
-import { AvatarCreator } from "../../avatar/components/AvatarCreator";
+import { AvatarCreator } from "../../experience/avatar/components/AvatarCreator";
 import ReactDOM from "react-dom";
 
 export function UserMenuButton() {

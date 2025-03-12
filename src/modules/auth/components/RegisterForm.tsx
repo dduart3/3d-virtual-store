@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../hooks/useAuth";
-import { AvatarCreator } from "../../avatar/components/AvatarCreator";
+import { AvatarCreator } from "../../experience/avatar/components/AvatarCreator";
 import { useAtom } from "jotai";
-import { avatarUrlAtom, avatarIdAtom } from "../../avatar/state/avatar";
+import { avatarUrlAtom, avatarIdAtom } from "../../experience/avatar/state/avatar";
 import ReactDOM from "react-dom";
 import { isValidEmail } from "../../../shared/utils/validations";
 
