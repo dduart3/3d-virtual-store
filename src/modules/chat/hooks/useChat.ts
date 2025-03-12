@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useAuth } from "../../auth/hooks/useAuth";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage } from "../types/chat"; // Import your existing type
 
 // Generate a unique ID for this user session
 const USER_ID = Math.random().toString(36).substring(2, 15);
@@ -119,15 +119,8 @@ export function useChat() {
           const message = payload.payload as ChatMessage;
           addMessage.mutate(message);
         })
-        .on("presence", { event: "join" }, ({ key, currentPresences }) => {
-          console.log(`User joined with key: ${key}`);
-        })
-        .on("presence", { event: "leave" }, ({ key, currentPresences, leftPresences }) => {
-          // This is more reliable than the sync event for detecting leaves
+        .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
           console.log(`User left with key: ${key}`);
-          
-          // Don't announce our own disconnection
-          if (key === profile.id) return;
           
           // Find the user info from the left presence
           if (leftPresences && leftPresences.length > 0) {
@@ -142,7 +135,7 @@ export function useChat() {
           
           // Check for users who have left by comparing with our previous state
           Object.keys(presenceRef.current).forEach(userId => {
-            if (!newState[userId] && userId !== profile.id) {
+            if (!newState[userId]) {
               const userInfo = presenceRef.current[userId]?.[0];
               if (userInfo && userInfo.username) {
                 announceDisconnect(userId, userInfo.username);
@@ -181,23 +174,31 @@ export function useChat() {
             }
 
             // Announce that the user has joined if this is their first time
-            if (profile.username && !hasAnnouncedRef.current) {
+            if (profile && !hasAnnouncedRef.current) {
               const announcedSessions = getAnnouncedSessions();
 
               if (!announcedSessions.includes(profile.id)) {
-                const username = profile.username || `${profile.first_name} ${profile.last_name}`  || "Usuario";
+                const username = profile.username || profile.full_name || "Usuario";
                 
+                // Create join message
+                const joinMessage: ChatMessage = {
+                  id: `system-join-${profile.id}-${Date.now()}`,
+                  sender: "Sistema",
+                  content: `${username} se ha unido al chat.`,
+                  type: "system", 
+                  read: false
+                };
+                
+                // Broadcast the message
                 channel.send({
                   type: "broadcast",
                   event: "message",
-                  payload: {
-                    id: `system-join-${profile.id}-${Date.now()}`,
-                    sender: "Sistema",
-                    content: `${username} se ha unido al chat.`,
-                    type: "system",
-                    timestamp: Date.now(),
-                  },
+                  payload: joinMessage
                 });
+                
+                // Also add it to our local messages state 
+                // to ensure we see our own join message
+                addMessage.mutate(joinMessage);
 
                 hasAnnouncedRef.current = true;
                 addAnnouncedSession(profile.id);
@@ -255,8 +256,8 @@ export function useChat() {
       sender_id: profile?.id,
       content,
       type: "user",
-      read: false,
-      };
+      read: false
+    };
 
     // Broadcast the message to all clients
     channelRef.current.send({
