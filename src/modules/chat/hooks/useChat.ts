@@ -4,15 +4,7 @@ import { useAtom } from "jotai";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useAuth } from "../../auth/hooks/useAuth";
-
-export interface ChatMessage {
-  id: string;
-  sender: string;
-  sender_id?: string;
-  content: string;
-  type: "system" | "admin" | "user";
-  timestamp: number;
-}
+import { ChatMessage } from "../types/chat";
 
 // Generate a unique ID for this user session
 const USER_ID = Math.random().toString(36).substring(2, 15);
@@ -241,7 +233,7 @@ export function useChat() {
       sender_id: profile?.id,
       content,
       type: "user",
-      timestamp: Date.now(),
+      read: false
     };
 
     // Broadcast the message to all clients
