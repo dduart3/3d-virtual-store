@@ -2,6 +2,7 @@ import { GroupProps } from "@react-three/fiber";
 import { Model } from "../../../shared/components/Model";
 import { Ground } from "./Ground";
 import { Doors } from "./Doors";
+
 import {
   Selection,
   Select,
@@ -16,6 +17,7 @@ import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { fadeRefAtom } from "../../../shared/state/fade";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
+import { Jukebox } from './Jukebox';
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -83,7 +85,7 @@ export const StoreScene = (props: GroupProps) => {
       </EffectComposer>
 
       <group {...props}>
-        <Model isCritical={true}  modelPath="scene" />
+        <Model isCritical={true} modelPath="scene" />
 
         {sections?.map((section) => {
           return (
@@ -130,7 +132,20 @@ export const StoreScene = (props: GroupProps) => {
           )}
         </Select>
 
-        <Ground/>
+        <Select enabled={hoveredModel === "jukebox"}>
+          <Jukebox
+            position={[-137.11, -0.5, -54]}
+            onPointerOver={() => handlePointerOver("jukebox")}
+            onPointerOut={handlePointerOut}
+            rotation= {[0, -Math.PI / 2, 0]}
+            scale={1.5}
+          />
+          {hoveredModel === "jukebox" && (
+            <Annotation position={[-137.2, -0.5, -54]} content="Escuchar musica" />
+          )}
+        </Select>
+
+        <Ground />
       </group>
     </Selection>
   );
