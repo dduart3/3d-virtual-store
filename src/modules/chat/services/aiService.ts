@@ -1,6 +1,7 @@
 import { CohereClient } from 'cohere-ai';
 import { storeData } from '../../store/data/store-sections';
 import { SectionData } from '../../store/data/store-sections';
+import { ChatMessage } from '../types/chat';
 
 const cohere = new CohereClient({
     token: import.meta.env.VITE_COHERE_API_KEY
@@ -34,15 +35,7 @@ function isFashionRelatedQuestion(question: string): boolean {
     );
 }
 
-export interface AIMessage {
-    id: number;
-    sender: string;
-    content: string;
-    read: boolean;
-    type: string;
-}
-
-export async function getAIResponse(messages: AIMessage[]): Promise<string> {
+export async function getAIResponse(messages: ChatMessage[]): Promise<string> {
     try {
         if (messages.length === 0) {
             return 'No hay mensajes para procesar.';

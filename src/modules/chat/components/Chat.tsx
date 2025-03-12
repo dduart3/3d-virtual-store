@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useChat } from '../hooks/useChat';
 import { useAIChat } from '../hooks/useAIChat';
+import { ChatMessage } from '../types/chat';
 
 export const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ export const Chat = () => {
   const [aiMessages, setAiMessages] = useState([
     {
       id: 1,
-      sender: "AI Assistant",
+      sender: "Asistente AI",
       content: "¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
       read: false,
       type: "system",
