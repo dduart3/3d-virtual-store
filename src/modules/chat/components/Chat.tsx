@@ -4,14 +4,24 @@ import { chatInputFocusedAtom } from "../state/chat";
 import { useChat } from "../hooks/useChat";
 import { useAIChat } from "../hooks/useAIChat";
 import { ChatMessage } from "../types/chat";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 export const Chat = () => {
+  const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<"chat" | "ai">("chat");
-
-  // Real-time chat functionality
-  const { messages, sendMessage: sendChatMessage, connected } = useChat();
+  
+  // Real-time chat with improved hook
+  const { 
+    messages, 
+    sendMessage: sendChatMessage, 
+    connected,
+    markAsRead,
+    initializeChannel,
+    checkAndAnnounceJoin,
+    initializeWelcomeMessages
+  } = useChat();
 
   // AI chat functionality
   const [aiMessages, setAiMessages] = useState<ChatMessage[]>([
@@ -19,8 +29,9 @@ export const Chat = () => {
       id: `msg-${Date.now()}`,
       sender: "Asistente AI",
       content: "¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
-      read: false,
+      read: true,
       type: "system",
+      timestamp: Date.now()
     },
   ]);
 
@@ -34,20 +45,60 @@ export const Chat = () => {
   const formattedUnreadCount =
     unreadCount > 99 ? "99+" : unreadCount.toString();
 
+  // Initialize chat when profile is available
+  useEffect(() => {
+    if (profile) {
+      // Create user object from profile
+      const user = {
+        id: profile.id,
+        username: profile.username || profile.full_name || "",
+        avatar_url: profile.avatar_url,
+      };
+      
+      // Initialize the chat channel
+      initializeChannel(user);
+      
+      // Initialize welcome messages
+      initializeWelcomeMessages();
+    }
+  }, [profile]);
+  
+  // Check and announce join when profile and username are available
+  useEffect(() => {
+    if (profile && (profile.username || profile.full_name)) {
+      // Create user object from profile with proper username
+      const user = {
+        id: profile.id,
+        username: profile.username || profile.full_name,
+        avatar_url: profile.avatar_url,
+      };
+      
+      // Check and announce join if needed
+      checkAndAnnounceJoin(user);
+    }
+  }, [profile?.username, profile?.full_name]);
+
   // Mark all messages as read when opening the chat
   useEffect(() => {
     if (isOpen && unreadCount > 0) {
+      // Mark messages as read
+      messages
+        .filter(msg => !msg.read)
+        .forEach(msg => markAsRead(msg.id));
+        
       setUnreadCount(0);
     }
-  }, [isOpen, unreadCount]);
+  }, [isOpen, unreadCount, messages]);
 
   // Track new messages for unread count
   useEffect(() => {
     if (!isOpen && messages.length > prevMessageCountRef.current) {
       const newMessages = messages.slice(prevMessageCountRef.current);
       const newUnreadCount = newMessages.filter(
-        (m) => m.sender !== "Usuario"
+        (m) => m.sender !== profile?.username && 
+               m.sender !== (profile?.full_name || "Usuario")
       ).length;
+      
       if (newUnreadCount > 0) {
         setUnreadCount((prev) => prev + newUnreadCount);
       }
@@ -59,7 +110,7 @@ export const Chat = () => {
     if (messagesEndRef.current && isOpen) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages.length, isOpen]);
+  }, [messages.length, isOpen, profile]);
 
   const { isLoading, sendMessage: sendAIMessage } = useAIChat();
 
@@ -73,10 +124,11 @@ export const Chat = () => {
       try {
         const message = {
           id: `msg-${Date.now()}`,
-          sender: "User",
+          sender: profile.username || "Usuario",
           content: newAIChatMessage,
           read: true,
           type: "user",
+          timestamp: Date.now()
         } as ChatMessage;
 
         const updatedMessages = [...aiMessages, message];
@@ -94,7 +146,8 @@ export const Chat = () => {
             "Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.",
           read: true,
           type: "system",
-        } as  ChatMessage;
+          timestamp: Date.now()
+        } as ChatMessage;
         setAiMessages((prev) => [...prev, errorMessage]);
       }
     }
@@ -113,12 +166,13 @@ export const Chat = () => {
       setNewAIChatMessage(value);
     }
   };
-  const isInputDisabled = (activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading)
+  
+  const isInputDisabled = (activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading);
 
   return (
     <div className="absolute bottom-5 left-5 pointer-events-auto">
       <div
-        className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 flex flex-col transition-all duration-300 
+        className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 flex flex-col transition-all duration-300
         ${!isOpen ? "w-60 h-10" : "w-96 h-64"}`}
       >
         {/* Chat Header with unread count */}
@@ -199,6 +253,9 @@ export const Chat = () => {
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   {message.content}
+                  {!message.read && (
+                    <span className="ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span>
+                  )}
                 </div>
               ))}
             </>

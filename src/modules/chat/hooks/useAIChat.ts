@@ -14,7 +14,8 @@ export function useAIChat() {
                 sender: 'Asistente IA',
                 content: aiResponse,
                 read: true,
-                type: 'system'
+                type: 'system',
+                timestamp: Date.now() // Add this property
             };
         } catch (error) {
             throw error;

@@ -16,7 +16,6 @@ export function useRouteHistory() {
   const location = useLocation();
   const pathname = location.pathname;
 
-  console.log("Current Route:", pathname);
   useEffect(() => {
 
     // Only update if the path has actually changed

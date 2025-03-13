@@ -29,7 +29,7 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
   useEffect(() => {
     if (!modelRef.current) return;
 
-    console.log("Setting up animation mixer for model");
+    //console.log("Setting up animation mixer for model");
 
     // Create new mixer connected to the model
     const newMixer = new AnimationMixer(modelRef.current);
@@ -44,23 +44,23 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
     };
 
     // Log animations to debug
-    console.log("Idle animations:", idleAnimations);
-    console.log("Walk animations:", walkAnimations);
-    console.log("Run animations:", runAnimations);
+    //console.log("Idle animations:", idleAnimations);
+    //console.log("Walk animations:", walkAnimations);
+    //console.log("Run animations:", runAnimations);
 
     if (idleAnimations && idleAnimations.length > 0) {
       newActions.idle = newMixer.clipAction(idleAnimations[0]);
-      console.log("Added idle animation");
+      //console.log("Added idle animation");
     }
 
     if (walkAnimations && walkAnimations.length > 0) {
       newActions.walk = newMixer.clipAction(walkAnimations[0]);
-      console.log("Added walk animation");
+      //console.log("Added walk animation");
     }
 
     if (runAnimations && runAnimations.length > 0) {
       newActions.run = newMixer.clipAction(runAnimations[0]);
-      console.log("Added run animation");
+      //console.log("Added run animation");
     }
 
     // if (jumpAnimations && jumpAnimations.length > 0) {
@@ -97,7 +97,7 @@ export function useAvatarAnimations(modelRef: RefObject<Group>) {
 
       // Only change animations if state has changed
       if (newState !== currentState) {
-        console.log(`Changing animation from ${currentState} to ${newState}`);
+        //console.log(`Changing animation from ${currentState} to ${newState}`);
 
         // Fade out current animation
         if (actions[currentState]) {

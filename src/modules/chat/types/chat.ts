@@ -3,7 +3,15 @@ export interface ChatMessage {
     sender: string;
     sender_id?: string;
     content: string;
+    type: "system" | "admin" | "user" | "ai";
+    timestamp: number;
     read: boolean;
-    type: "system" | "admin" | "user";	
-
-}
+  }
+  
+  export interface ChatUser {
+    id: string;
+    username: string;
+    avatar_url?: string;
+    last_seen?: number;
+  }
+  

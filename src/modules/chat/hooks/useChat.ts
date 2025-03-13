@@ -1,199 +1,255 @@
-import { useEffect, useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import { useAtom } from "jotai";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { chatInputFocusedAtom } from "../state/chat";
-import { useAuth } from "../../auth/hooks/useAuth";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, ChatUser } from "../types/chat";
+import { useAIChat } from "./useAIChat";
 
-// Generate a unique ID for this user session
-const USER_ID = Math.random().toString(36).substring(2, 15);
-const CHANNEL = "public-chat";
+// Constants
+const CHANNEL_NAME = "public-chat";
 const MESSAGES_QUERY_KEY = "chat-messages";
-
-// Store already announced sessions in sessionStorage to persist across refreshes
-const getAnnouncedSessions = () => {
-  try {
-    return JSON.parse(sessionStorage.getItem("announced-chat-joins") || "[]");
-  } catch (e) {
-    return [];
-  }
-};
-
-const addAnnouncedSession = (userId: string) => {
-  try {
-    const sessions = getAnnouncedSessions();
-    if (!sessions.includes(userId)) {
-      sessions.push(userId);
-      sessionStorage.setItem("announced-chat-joins", JSON.stringify(sessions));
-    }
-  } catch (e) {
-    console.error("Error storing announced session", e);
-  }
-};
+const USERS_QUERY_KEY = "chat-users";
+const CLIENT_ID = Math.random().toString(36).substring(2, 15);
 
 export function useChat() {
-  // Use TanStack Query for messages
   const queryClient = useQueryClient();
+  const aiChat = useAIChat();
+  const [isLoading, setIsLoading] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
-  // Get current user profile using your existing hook
-  const { profile } = useAuth();
-  const [, setInputFocused] = useAtom(chatInputFocusedAtom);
+  // References to maintain state without causing re-renders
   const channelRef = useRef<any>(null);
+  const hasJoinedRef = useRef(false);
+  const currentUserRef = useRef<ChatUser | null>(null);
+  const messageIdsRef = useRef(new Set<string>());
 
-  // Track if this user has already been announced in this session
-  const hasAnnouncedRef = useRef<boolean>(false);
+  // Check Supabase configuration
+  useEffect(() => {
+    console.log(
+      "Supabase URL:",
+      import.meta.env.VITE_SUPABASE_URL ? "Defined" : "Missing"
+    );
+    console.log(
+      "Supabase key:",
+      import.meta.env.VITE_SUPABASE_ANON_KEY ? "Defined" : "Missing"
+    );
+  }, []);
 
-  // Track if we have a valid username to use for announcements
-  const hasValidUsername =
-    profile &&
-    (profile.username || profile.full_name) &&
-    (profile.username !== "" || profile.full_name !== "");
-
-  // Track presence state - who's currently online
-  const presenceRef = useRef<Record<string, any>>({});
-
-  // Store connection status
-  const { data: connected = false } = useQuery({
-    queryKey: ["chat-connection-status"],
-    queryFn: () => false, // Initial value
-    staleTime: Infinity,
-  });
-
-  // Query for messages
+  // Query for messages with read status
   const { data: messages = [] } = useQuery<ChatMessage[]>({
     queryKey: [MESSAGES_QUERY_KEY],
-    queryFn: () => [], // Start with empty array
-    staleTime: Infinity, // Never refetch automatically
+    queryFn: () => [], // Empty initial state
+    staleTime: Infinity,
+    initialData: [],
   });
 
-  // Mutation to add a new message
+  // Connection status tracking
+  const { data: connected = false } = useQuery({
+    queryKey: ["chat-connection-status"],
+    queryFn: () => false,
+    staleTime: Infinity,
+    initialData: false,
+  });
+
+  // Query for online users
+  const { data: onlineUsers = [] } = useQuery<ChatUser[]>({
+    queryKey: [USERS_QUERY_KEY],
+    queryFn: () => [], // Empty initial state
+    staleTime: Infinity,
+    initialData: [],
+  });
+
+  // Add message mutation
   const addMessage = useMutation({
-    mutationFn: (message: ChatMessage) => {
-      return Promise.resolve(message);
-    },
+    mutationFn: (message: ChatMessage) => Promise.resolve(message),
     onSuccess: (newMessage) => {
+      // Check if we already have this message to prevent duplicates
+      if (messageIdsRef.current.has(newMessage.id)) {
+        return;
+      }
+
+      messageIdsRef.current.add(newMessage.id);
+
       queryClient.setQueryData<ChatMessage[]>(
         [MESSAGES_QUERY_KEY],
-        (oldMessages = []) => {
-          // Check if we already have this message (to prevent duplicates)
-          if (oldMessages.some((m) => m.id === newMessage.id)) {
-            return oldMessages;
-          }
-          return [...oldMessages, newMessage];
-        }
+        (oldMessages = []) => [...oldMessages, newMessage]
       );
     },
   });
 
-  // Helper function to announce user disconnect
-  const announceDisconnect = (userId: string, username: string) => {
-    if (!channelRef.current) return;
+  // Set message as read
+  const markMessageAsRead = useMutation({
+    mutationFn: (messageId: string) => Promise.resolve(messageId),
+    onSuccess: (messageId) => {
+      queryClient.setQueryData<ChatMessage[]>(
+        [MESSAGES_QUERY_KEY],
+        (oldMessages = []) =>
+          oldMessages.map((msg) =>
+            msg.id === messageId ? { ...msg, read: true } : msg
+          )
+      );
+    },
+  });
 
-    console.log(`User disconnected: ${username} (${userId})`);
+  // Update online users
+  const updateOnlineUsers = useMutation({
+    mutationFn: (users: ChatUser[]) => Promise.resolve(users),
+    onSuccess: (users) => {
+      queryClient.setQueryData<ChatUser[]>([USERS_QUERY_KEY], users);
+    },
+  });
 
-    channelRef.current.send({
-      type: "broadcast",
-      event: "message",
-      payload: {
-        id: `system-disconnect-${userId}-${Date.now()}`,
-        sender: "Sistema",
-        content: `${username} se ha desconectado.`,
-        type: "system",
-        timestamp: Date.now(),
-      },
-    });
+  // Reconnect function
+  const reconnect = () => {
+    if (channelRef.current) {
+      console.log("Attempting to reconnect to chat channel...");
+      channelRef.current.subscribe();
+    }
   };
 
-  // Set up the channel subscription only once
-  useEffect(() => {
-    if (!channelRef.current && profile) {
-      console.log("Creating new chat channel subscription");
+  // Initialize the Supabase channel
+  const initializeChannel = (user: ChatUser) => {
+    // Store current user
+    currentUserRef.current = user;
 
-      const channel = supabase.channel(CHANNEL, {
+    // Initialize connection state
+    queryClient.setQueryData(["chat-connection-status"], false);
+
+    console.log("Initializing chat channel with user:", user.username);
+
+    // Create the channel if it doesn't exist
+    if (!channelRef.current) {
+      const channel = supabase.channel(CHANNEL_NAME, {
         config: {
           broadcast: { self: true },
           presence: {
-            key: profile.id,
+            key: user.id,
           },
         },
       });
+      console.log("Created channel:", channel);
 
-      // When a new message arrives
-      channel
-        .on("broadcast", { event: "message" }, (payload) => {
-          const message = payload.payload as ChatMessage;
-          addMessage.mutate(message);
-        })
-        .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
-          console.log(`User left with key: ${key}`);
+      // Message handler
+      channel.on("broadcast", { event: "message" }, ({ payload }) => {
+        console.log("Received message:", payload);
+        const message = payload as ChatMessage;
+        addMessage.mutate(message);
+      });
 
-          // Find the user info from the left presence
-          if (leftPresences && leftPresences.length > 0) {
-            const userInfo = leftPresences[0];
-            if (userInfo && userInfo.username) {
-              announceDisconnect(key, userInfo.username);
-            }
+      // Presence handlers for user join/leave
+      channel.on("presence", { event: "join" }, ({ key, newPresences }) => {
+        console.log("User joined:", key, newPresences);
+        if (newPresences && newPresences.length > 0) {
+          const userInfo = newPresences[0] as any;
+
+          // Don't announce if we don't have proper user data yet
+          if (!userInfo.username || userInfo.username === "Usuario") {
+            return;
           }
-        })
-        .on("presence", { event: "sync" }, () => {
-          const newState = channel.presenceState();
 
-          // Check for users who have left by comparing with our previous state
-          Object.keys(presenceRef.current).forEach((userId) => {
-            if (!newState[userId]) {
-              const userInfo = presenceRef.current[userId]?.[0];
-              if (userInfo && userInfo.username) {
-                announceDisconnect(userId, userInfo.username);
-              }
-            }
-          });
+          // Create a join message
+          const joinMessage: ChatMessage = {
+            id: `system-join-${key}-${Date.now()}`,
+            sender: "Sistema",
+            content: `${userInfo.username} ha entrado al chat.`,
+            type: "system",
+            timestamp: Date.now(),
+            read: false,
+          };
 
-          // Update our reference
-          presenceRef.current = newState;
-        })
-        .subscribe((status) => {
-          if (status === "SUBSCRIBED") {
-            console.log("Connected to chat channel");
-            queryClient.setQueryData(["chat-connection-status"], true);
-
-            // Add welcome messages if there are none
-            if (messages.length === 0) {
-              const welcomeMessages = [
-                {
-                  id: "system-welcome",
-                  sender: "Sistema",
-                  content: "¡Bienvenido a la Tienda Virtual!",
-                  type: "system" as const,
-                  timestamp: Date.now(),
-                },
-                {
-                  id: "admin-tip",
-                  sender: "Admin",
-                  content: "Explora y añade productos a tu carrito.",
-                  type: "admin" as const,
-                  timestamp: Date.now() + 100,
-                },
-              ];
-
-              queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
-            }
-
-            // Track our own presence once connected
-            if (profile) {
-              channel.track({
-                user_id: profile.id,
-                username: profile.username || profile.full_name || "Usuario",
-                avatar_url: profile.avatar_url,
-              });
-            }
+          // Broadcast join message if this isn't our join event
+          // Our own join event is handled in the checkAndAnnounceJoin function
+          if (key !== user.id && !hasJoinedRef.current) {
+            channel.send({
+              type: "broadcast",
+              event: "message",
+              payload: joinMessage,
+            });
           }
-        });
+        }
+      });
 
-      // Store the channel reference
+      channel.on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+        console.log("User left:", key, leftPresences);
+        if (leftPresences && leftPresences.length > 0) {
+          const userInfo = leftPresences[0] as any;
+
+          if (userInfo && userInfo.username && key !== user.id) {
+            // Create a leave message
+            const leaveMessage: ChatMessage = {
+              id: `system-leave-${key}-${Date.now()}`,
+              sender: "Sistema",
+              content: `${userInfo.username} ha salido del chat.`,
+              type: "system",
+              timestamp: Date.now(),
+              read: false,
+            };
+
+            // Broadcast leave message
+            channel.send({
+              type: "broadcast",
+              event: "message",
+              payload: leaveMessage,
+            });
+          }
+        }
+      });
+
+      channel.on("presence", { event: "sync" }, () => {
+        console.log("Presence state synchronized");
+        // Get list of online users from presence state
+        const presenceState = channel.presenceState();
+        const users = Object.entries(presenceState).map(
+          ([userId, presences]) => {
+            const userInfo = presences[0] as any;
+            return {
+              id: userId,
+              username: userInfo.username || "Usuario",
+              avatar_url: userInfo.avatar_url,
+              last_seen: userInfo.last_seen || Date.now(),
+            };
+          }
+        );
+
+        console.log("Online users:", users);
+
+        // Update online users list
+        updateOnlineUsers.mutate(users);
+      });
+
+      // Subscribe to the channel
+      channel.subscribe(async (status) => {
+        console.log(`Chat channel status: ${status}`);
+
+        if (status === "SUBSCRIBED") {
+          console.log("Successfully connected to chat channel");
+          // Set connected status to true
+          queryClient.setQueryData(["chat-connection-status"], true);
+
+          // Track our presence
+          try {
+            await channel.track({
+              username: user.username,
+              avatar_url: user.avatar_url,
+              last_seen: Date.now(),
+            });
+            console.log("Successfully tracked presence");
+          } catch (error) {
+            console.error("Failed to track presence:", error);
+          }
+        } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
+          console.error(`Channel disconnected with status: ${status}`);
+          // Set connected status to false on disconnection
+          queryClient.setQueryData(["chat-connection-status"], false);
+        } else if (status === "TIMED_OUT") {
+          console.error("Channel subscription timed out");
+          queryClient.setQueryData(["chat-connection-status"], false);
+        }
+      });
+
+      // Store channel reference
       channelRef.current = channel;
 
-      // Setup beforeunload handler to untrack presence when page closes
+      // Handle page close/refresh - untrack presence
       const handleBeforeUnload = () => {
         if (channelRef.current) {
           channelRef.current.untrack();
@@ -202,96 +258,156 @@ export function useChat() {
 
       window.addEventListener("beforeunload", handleBeforeUnload);
 
-      // Clean up function
+      // Set up reconnection interval
+      const reconnectInterval = setInterval(() => {
+        if (!queryClient.getQueryData(["chat-connection-status"])) {
+          console.log("Still not connected, attempting to reconnect...");
+          reconnect();
+        }
+      }, 5000); // Try to reconnect every 5 seconds
+
+      // Add cleanup
       return () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
-        if (channelRef.current && profile) {
+        clearInterval(reconnectInterval);
+        if (channelRef.current) {
           channelRef.current.untrack();
+          // We don't unsubscribe to keep connection alive between page navigations
         }
       };
     }
+  };
 
-    return () => {};
-  }, [profile, queryClient, messages.length, addMessage]);
-
-  // Separate effect to handle join announcements
-  // This will re-run whenever profile changes or hasValidUsername changes
-  useEffect(() => {
-    // Only proceed if we have a valid channel, profile, valid username,
-    // and we haven't announced yet
-    if (
-      channelRef.current &&
-      profile &&
-      hasValidUsername &&
-      !hasAnnouncedRef.current
-    ) {
-      const announcedSessions = getAnnouncedSessions();
-
-      if (!announcedSessions.includes(profile.id)) {
-        const username = profile.username || profile.full_name;
-        console.log(`Announcing user join for ${username} (${profile.id})`);
-
-        // Create join message
-        const joinMessage: ChatMessage = {
-          id: `system-join-${profile.id}-${Date.now()}`,
-          sender: "Sistema",
-          content: `${username} se ha unido al chat.`,
-          type: "system",
-          read: false,
-        };
-
-        // Broadcast the message
-        channelRef.current.send({
-          type: "broadcast",
-          event: "message",
-          payload: joinMessage,
-        });
-
-        // Also add it to our local messages state
-        // to ensure we see our own join message
-        addMessage.mutate(joinMessage);
-
-        hasAnnouncedRef.current = true;
-        addAnnouncedSession(profile.id);
-      } else {
-        hasAnnouncedRef.current = true;
-      }
+  // Check and announce join if needed
+  const checkAndAnnounceJoin = (user: ChatUser) => {
+    if (!channelRef.current || hasJoinedRef.current || !user.username) {
+      return;
     }
-  }, [profile, hasValidUsername, addMessage]);
 
-  // Send a message to all connected clients
-  const sendMessage = (content: string) => {
-    if (!content.trim() || !channelRef.current) return;
+    console.log("Announcing join for user:", user.username);
 
-    const username = profile
-      ? profile.username || profile.full_name || "Usuario"
-      : "Usuario";
-
-    const newMessage: ChatMessage = {
-      id: `${USER_ID}-${Date.now()}`,
-      sender: username,
-      sender_id: profile?.id,
-      content,
-      type: "user",
-      read: false,
+    // Create join message for self
+    const joinMessage: ChatMessage = {
+      id: `system-join-${user.id}-${Date.now()}`,
+      sender: "Sistema",
+      content: `${user.username} ha entrado al chat.`,
+      type: "system",
+      timestamp: Date.now(),
+      read: true, // Mark as read since it's our own join
     };
 
-    // Broadcast the message to all clients
+    // Broadcast to others and add to our own messages
     channelRef.current.send({
       type: "broadcast",
       event: "message",
-      payload: newMessage,
+      payload: joinMessage,
     });
+
+    // Also add directly to our messages to ensure we see it
+    addMessage.mutate(joinMessage);
+
+    // Mark as joined
+    hasJoinedRef.current = true;
+  };
+
+  // Initialize welcome messages if needed
+  const initializeWelcomeMessages = () => {
+    if (messages.length === 0) {
+      console.log("Initializing welcome messages");
+      const welcomeMessages: ChatMessage[] = [
+        {
+          id: "system-welcome",
+          sender: "Sistema",
+          content: "¡Bienvenido a la Tienda Virtual!",
+          type: "system",
+          timestamp: Date.now(),
+          read: true,
+        },
+        {
+          id: "admin-tip",
+          sender: "Admin",
+          content:
+            "Explora y añade productos a tu carrito. Puedes chatear con otros usuarios aquí.",
+          type: "admin",
+          timestamp: Date.now() + 100,
+          read: true,
+        },
+      ];
+
+      queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
+      welcomeMessages.forEach((msg) => messageIdsRef.current.add(msg.id));
+    }
+  };
+
+  // Send a message
+  const sendMessage = async (content: string, recipientAI: boolean = false) => {
+    if (!content.trim() || !channelRef.current || !currentUserRef.current) {
+      console.log("Cannot send message - channel or user not initialized");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      console.log("Sending message:", content);
+      // Create user message
+      const userMessage: ChatMessage = {
+        id: `msg-${CLIENT_ID}-${Date.now()}`,
+        sender: currentUserRef.current.username,
+        sender_id: currentUserRef.current.id,
+        content,
+        type: "user",
+        timestamp: Date.now(),
+        read: true, // Our own messages are always read
+      };
+
+      // Handle AI response if requested
+  
+      if (recipientAI) {
+        try {
+          // Only send the current user message as context, not previous messages
+          const aiResponse = await aiChat.sendMessage([userMessage]);
+
+          // Instead of broadcasting, just add to local state
+          // This way only the requesting user sees the response
+          const aiMessageWithTimestamp = {
+            ...aiResponse,
+            timestamp: Date.now(),
+            read: true, // Mark as read immediately for the user
+          };
+
+          // Add directly to query cache instead of broadcasting
+          addMessage.mutate(aiMessageWithTimestamp);
+        } catch (error) {
+          console.error("Error getting AI response:", error);
+        }
+      } else {
+        // Broadcast user message to all clients
+        channelRef.current.send({
+          type: "broadcast",
+          event: "message",
+          payload: userMessage,
+        });
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
     messages,
-    sendMessage,
+    onlineUsers,
     connected,
+    sendMessage,
+    markAsRead: (messageId: string) => markMessageAsRead.mutate(messageId),
+    isLoading: isLoading || aiChat.isLoading,
+    inputFocused,
     setInputFocused,
-    username: profile
-      ? profile.username || profile.full_name || "Usuario"
-      : "Usuario",
-    userId: profile?.id,
+    initializeChannel,
+    checkAndAnnounceJoin,
+    initializeWelcomeMessages,
+    reconnect,
   };
 }
