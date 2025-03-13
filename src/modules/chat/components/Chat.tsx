@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useChat } from "../hooks/useChat";
 import { useAuth } from "../../auth/hooks/useAuth";
-import { set } from "cohere-ai/core/schemas";
 
 export const Chat = () => {
   const { profile } = useAuth();
