@@ -28,7 +28,8 @@ function isFashionRelatedQuestion(question: string): boolean {
         'ropa', 'vestido', 'pantalón', 'camisa', 'zapatos', 'talla',
         'precio', 'color', 'material', 'disponible', 'stock', 'accesorio',
         'bolso', 'cartera', 'reloj', 'anillo', 'collar', 'blusa', 'falda',
-        'traje', 'sombrero', 'gafas', 'lentes', 'mocasines', 'tacones',
+        'traje', 'sombrero', 'gafas', 'lentes', 'mocasines', 'tacones', 'mujer',
+        'dama', 'hombre', 'caballero', 'masculino', 'femenino', 'vestuario', 'casual'
     ];
     return fashionKeywords.some(keyword =>
         question.toLowerCase().includes(keyword)
@@ -43,15 +44,16 @@ export async function getAIResponse(messages: ChatMessage[]): Promise<string> {
 
         const lastMessage = messages[messages.length - 1].content;
 
+         
         if (!isFashionRelatedQuestion(lastMessage)) {
             await delay(1500);
-            return 'Me especializo en nuestra colección de moda. ¿Qué prenda te interesa?';
+            return 'Disculpa, solamente me especializo en nuestra colección de moda. ¿Qué prenda te interesa?';
         }
 
         const storeContext = formatStoreData(storeData);
         const contextoPreamble = `Eres un asistente de tienda virtual de moda especializado. Configuración:
 
-1. IDIOMA: Responde SIEMPRE en español.
+1. IDIOMA: Responde SIEMPRE en español, bajo ninguna circunstancia, incluso si la pregunta está en otro idioma, todas tus respuestas tienen que estar en Español TODAS SIN ESCEPCIÓN.
 
 2. CONOCIMIENTO:
    Catálogo actual de la tienda:
@@ -77,7 +79,7 @@ ${storeContext}
 
         const chatHistory = messages.length > 1
             ? messages.slice(0, -1).map(msg => ({
-                role: msg.sender.toLowerCase() === 'user' ? 'USER' : 'CHATBOT',
+                role: msg.type.toLowerCase() === 'user' ? 'USER' : 'CHATBOT',
                 message: msg.content
             })) as { role: 'USER' | 'CHATBOT'; message: string }[]
             : [];

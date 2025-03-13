@@ -2,41 +2,30 @@ import { useAtom } from "jotai";
 import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
 import { useChat } from "../hooks/useChat";
-import { useAIChat } from "../hooks/useAIChat";
-import { ChatMessage } from "../types/chat";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { set } from "cohere-ai/core/schemas";
 
 export const Chat = () => {
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<"chat" | "ai">("chat");
-  
-  // Real-time chat with improved hook
-  const { 
-    messages, 
-    sendMessage: sendChatMessage, 
+
+  // Use the updated useChat hook which now handles both regular and AI messages
+  const {
+    messages,
+    aiMessages, // Now provided by the hook
+    sendMessage, // Unified send message function
     connected,
     markAsRead,
     initializeChannel,
     checkAndAnnounceJoin,
-    initializeWelcomeMessages
+    initializeWelcomeMessages,
+    isLoading // Combined loading state
   } = useChat();
 
-  // AI chat functionality
-  const [aiMessages, setAiMessages] = useState<ChatMessage[]>([
-    {
-      id: `msg-${Date.now()}`,
-      sender: "Asistente AI",
-      content: "¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
-      read: true,
-      type: "system",
-      timestamp: Date.now()
-    },
-  ]);
-
-  const [newAIChatMessage, setNewAIChatMessage] = useState<string>("");
   const [newChatMessage, setNewChatMessage] = useState<string>("");
+  const [newAIChatMessage, setNewAIChatMessage] = useState<string>("");
   const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMessageCountRef = useRef(messages.length);
@@ -54,15 +43,15 @@ export const Chat = () => {
         username: profile.username || profile.full_name || "",
         avatar_url: profile.avatar_url,
       };
-      
+     
       // Initialize the chat channel
       initializeChannel(user);
-      
+     
       // Initialize welcome messages
       initializeWelcomeMessages();
     }
   }, [profile]);
-  
+ 
   // Check and announce join when profile and username are available
   useEffect(() => {
     if (profile && (profile.username || profile.full_name)) {
@@ -72,7 +61,7 @@ export const Chat = () => {
         username: profile.username || profile.full_name,
         avatar_url: profile.avatar_url,
       };
-      
+     
       // Check and announce join if needed
       checkAndAnnounceJoin(user);
     }
@@ -85,7 +74,7 @@ export const Chat = () => {
       messages
         .filter(msg => !msg.read)
         .forEach(msg => markAsRead(msg.id));
-        
+       
       setUnreadCount(0);
     }
   }, [isOpen, unreadCount, messages]);
@@ -95,10 +84,10 @@ export const Chat = () => {
     if (!isOpen && messages.length > prevMessageCountRef.current) {
       const newMessages = messages.slice(prevMessageCountRef.current);
       const newUnreadCount = newMessages.filter(
-        (m) => m.sender !== profile?.username && 
+        (m) => m.sender !== profile?.username &&
                m.sender !== (profile?.full_name || "Usuario")
       ).length;
-      
+     
       if (newUnreadCount > 0) {
         setUnreadCount((prev) => prev + newUnreadCount);
       }
@@ -112,45 +101,17 @@ export const Chat = () => {
     }
   }, [messages.length, isOpen, profile]);
 
-  const { isLoading, sendMessage: sendAIMessage } = useAIChat();
-
   const handleSendMessage = async () => {
-    if (newChatMessage.trim() && activeTab === "chat" && connected) {
-      sendChatMessage(newChatMessage);
+    if (activeTab === "chat" && newChatMessage.trim() && connected) {
+      // Send regular chat message
+      sendMessage(newChatMessage, false); // false = not AI message
       setNewChatMessage("");
+    } else if (activeTab === "ai" && newAIChatMessage.trim() && !isLoading) {
+      // Send AI message
+      sendMessage(newAIChatMessage, true); // true = AI message
+      setNewAIChatMessage("");
     }
-
-    if (newAIChatMessage.trim() && activeTab === "ai" && !isLoading) {
-      try {
-        const message = {
-          id: `msg-${Date.now()}`,
-          sender: profile.username || "Usuario",
-          content: newAIChatMessage,
-          read: true,
-          type: "user",
-          timestamp: Date.now()
-        } as ChatMessage;
-
-        const updatedMessages = [...aiMessages, message];
-        setAiMessages(updatedMessages);
-        setNewAIChatMessage("");
-
-        const aiMessage = await sendAIMessage(updatedMessages);
-        setAiMessages((prev) => [...prev, aiMessage]);
-      } catch (error) {
-        console.error("Failed to get AI response:", error);
-        const errorMessage = {
-          id: `msg-${Date.now()}`,
-          sender: "System",
-          content:
-            "Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.",
-          read: true,
-          type: "system",
-          timestamp: Date.now()
-        } as ChatMessage;
-        setAiMessages((prev) => [...prev, errorMessage]);
-      }
-    }
+    setChatInputFocused(false)
   };
 
   const handleTabChange = (tab: "chat" | "ai") => {
@@ -166,7 +127,7 @@ export const Chat = () => {
       setNewAIChatMessage(value);
     }
   };
-  
+ 
   const isInputDisabled = (activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading);
 
   return (
@@ -226,7 +187,7 @@ export const Chat = () => {
               }`}
               onClick={() => handleTabChange("ai")}
             >
-              Asistente AI
+              Asistente IA
             </button>
           </div>
         )}
@@ -260,7 +221,7 @@ export const Chat = () => {
               ))}
             </>
           ) : (
-            // AI chat messages
+            // AI chat messages - now using aiMessages from the hook
             <>
               {aiMessages.map((message) => (
                 <div
