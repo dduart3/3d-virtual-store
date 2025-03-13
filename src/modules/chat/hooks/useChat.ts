@@ -43,7 +43,13 @@ export function useChat() {
 
   // Track if this user has already been announced in this session
   const hasAnnouncedRef = useRef<boolean>(false);
-  
+
+  // Track if we have a valid username to use for announcements
+  const hasValidUsername =
+    profile &&
+    (profile.username || profile.full_name) &&
+    (profile.username !== "" || profile.full_name !== "");
+
   // Track presence state - who's currently online
   const presenceRef = useRef<Record<string, any>>({});
 
@@ -83,9 +89,9 @@ export function useChat() {
   // Helper function to announce user disconnect
   const announceDisconnect = (userId: string, username: string) => {
     if (!channelRef.current) return;
-    
+
     console.log(`User disconnected: ${username} (${userId})`);
-    
+
     channelRef.current.send({
       type: "broadcast",
       event: "message",
@@ -99,7 +105,7 @@ export function useChat() {
     });
   };
 
-  // Set up the Realtime subscription
+  // Set up the channel subscription only once
   useEffect(() => {
     if (!channelRef.current && profile) {
       console.log("Creating new chat channel subscription");
@@ -119,16 +125,9 @@ export function useChat() {
           const message = payload.payload as ChatMessage;
           addMessage.mutate(message);
         })
-        .on("presence", { event: "join" }, ({ key, currentPresences }) => {
-          console.log(`User joined with key: ${key}`);
-        })
-        .on("presence", { event: "leave" }, ({ key, currentPresences, leftPresences }) => {
-          // This is more reliable than the sync event for detecting leaves
+        .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
           console.log(`User left with key: ${key}`);
-          
-          // Don't announce our own disconnection
-          if (key === profile.id) return;
-          
+
           // Find the user info from the left presence
           if (leftPresences && leftPresences.length > 0) {
             const userInfo = leftPresences[0];
@@ -139,17 +138,17 @@ export function useChat() {
         })
         .on("presence", { event: "sync" }, () => {
           const newState = channel.presenceState();
-          
+
           // Check for users who have left by comparing with our previous state
-          Object.keys(presenceRef.current).forEach(userId => {
-            if (!newState[userId] && userId !== profile.id) {
+          Object.keys(presenceRef.current).forEach((userId) => {
+            if (!newState[userId]) {
               const userInfo = presenceRef.current[userId]?.[0];
               if (userInfo && userInfo.username) {
                 announceDisconnect(userId, userInfo.username);
               }
             }
           });
-          
+
           // Update our reference
           presenceRef.current = newState;
         })
@@ -180,32 +179,6 @@ export function useChat() {
               queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
             }
 
-            // Announce that the user has joined if this is their first time
-            if (profile.username && !hasAnnouncedRef.current) {
-              const announcedSessions = getAnnouncedSessions();
-
-              if (!announcedSessions.includes(profile.id)) {
-                const username = profile.username || `${profile.first_name} ${profile.last_name}`  || "Usuario";
-                
-                channel.send({
-                  type: "broadcast",
-                  event: "message",
-                  payload: {
-                    id: `system-join-${profile.id}-${Date.now()}`,
-                    sender: "Sistema",
-                    content: `${username} se ha unido al chat.`,
-                    type: "system",
-                    timestamp: Date.now(),
-                  },
-                });
-
-                hasAnnouncedRef.current = true;
-                addAnnouncedSession(profile.id);
-              } else {
-                hasAnnouncedRef.current = true;
-              }
-            }
-            
             // Track our own presence once connected
             if (profile) {
               channel.track({
@@ -219,19 +192,19 @@ export function useChat() {
 
       // Store the channel reference
       channelRef.current = channel;
-      
+
       // Setup beforeunload handler to untrack presence when page closes
       const handleBeforeUnload = () => {
         if (channelRef.current) {
           channelRef.current.untrack();
         }
       };
-      
-      window.addEventListener('beforeunload', handleBeforeUnload);
-      
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
       // Clean up function
       return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
         if (channelRef.current && profile) {
           channelRef.current.untrack();
         }
@@ -240,6 +213,51 @@ export function useChat() {
 
     return () => {};
   }, [profile, queryClient, messages.length, addMessage]);
+
+  // Separate effect to handle join announcements
+  // This will re-run whenever profile changes or hasValidUsername changes
+  useEffect(() => {
+    // Only proceed if we have a valid channel, profile, valid username,
+    // and we haven't announced yet
+    if (
+      channelRef.current &&
+      profile &&
+      hasValidUsername &&
+      !hasAnnouncedRef.current
+    ) {
+      const announcedSessions = getAnnouncedSessions();
+
+      if (!announcedSessions.includes(profile.id)) {
+        const username = profile.username || profile.full_name;
+        console.log(`Announcing user join for ${username} (${profile.id})`);
+
+        // Create join message
+        const joinMessage: ChatMessage = {
+          id: `system-join-${profile.id}-${Date.now()}`,
+          sender: "Sistema",
+          content: `${username} se ha unido al chat.`,
+          type: "system",
+          read: false,
+        };
+
+        // Broadcast the message
+        channelRef.current.send({
+          type: "broadcast",
+          event: "message",
+          payload: joinMessage,
+        });
+
+        // Also add it to our local messages state
+        // to ensure we see our own join message
+        addMessage.mutate(joinMessage);
+
+        hasAnnouncedRef.current = true;
+        addAnnouncedSession(profile.id);
+      } else {
+        hasAnnouncedRef.current = true;
+      }
+    }
+  }, [profile, hasValidUsername, addMessage]);
 
   // Send a message to all connected clients
   const sendMessage = (content: string) => {
@@ -256,7 +274,7 @@ export function useChat() {
       content,
       type: "user",
       read: false,
-      };
+    };
 
     // Broadcast the message to all clients
     channelRef.current.send({

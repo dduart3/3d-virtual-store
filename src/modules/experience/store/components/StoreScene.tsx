@@ -2,7 +2,6 @@ import { GroupProps } from "@react-three/fiber";
 import { Model } from "../../../../shared/components/Model";
 import { Ground } from "./Ground";
 import { Doors } from "./Doors";
-
 import {
   Selection,
   Select,
@@ -17,7 +16,7 @@ import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { fadeRefAtom } from "../../../../shared/state/fade";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
-import { Jukebox } from './Jukebox';
+import { Jukebox } from "./Jukebox";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -134,7 +133,7 @@ export const StoreScene = (props: GroupProps) => {
 
         <Select enabled={hoveredModel === "jukebox"}>
           <Jukebox
-            position={[-137.5, -0.5, -54]}
+            position={[-137.9, -0.5, -54]}
             onPointerOver={() => handlePointerOver("jukebox")}
             onPointerOut={handlePointerOut}
             rotation= {[0, -Math.PI / 2, 0]}
