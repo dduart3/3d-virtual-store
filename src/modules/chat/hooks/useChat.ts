@@ -99,12 +99,58 @@ export function useChat() {
   });
 
   // Reconnect function
-  const reconnect = () => {
-    if (channelRef.current) {
-      console.log("Attempting to reconnect to chat channel...");
-      channelRef.current.subscribe();
+ // Replace the current reconnect function with this:
+const reconnect = () => {
+  if (channelRef.current) {
+    console.log("Attempting to reconnect to chat channel...");
+    
+    // First, unsubscribe from the current channel
+    channelRef.current.unsubscribe();
+    
+    // Then create a new channel instance
+    const user = currentUserRef.current;
+    if (user) {
+      const newChannel = supabase.channel(CHANNEL_NAME, {
+        config: {
+          broadcast: { self: true },
+          presence: {
+            key: user.id,
+          },
+        },
+      });
+      
+      // Set up all the same event handlers...
+      // (Copy the same event handlers from the original channel setup)
+      
+      // Subscribe to the new channel
+      newChannel.subscribe(async (status) => {
+        // Same subscription handler as before
+        console.log(`Chat channel status: ${status}`);
+        
+        if (status === "SUBSCRIBED") {
+          console.log("Successfully reconnected to chat channel");
+          queryClient.setQueryData(["chat-connection-status"], true);
+          
+          try {
+            await newChannel.track({
+              username: user.username,
+              avatar_url: user.avatar_url,
+              last_seen: Date.now(),
+            });
+          } catch (error) {
+            console.error("Failed to track presence:", error);
+          }
+        } else if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.error(`Channel reconnection failed with status: ${status}`);
+          queryClient.setQueryData(["chat-connection-status"], false);
+        }
+      });
+      
+      // Update the channel reference
+      channelRef.current = newChannel;
     }
-  };
+  }
+};
 
   // Initialize the Supabase channel
   const initializeChannel = (user: ChatUser) => {
