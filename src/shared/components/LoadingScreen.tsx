@@ -10,9 +10,9 @@ const LOADING_TIPS = [
   "Explora diferentes secciones para descubrir nuevos productos",
   "Usa el chat para recibir ayuda de nuestros asistentes",
   "Pulsa ESC para abrir el menú principal",
-  "Puedes girar la cámara manteniendo presionado el botón derecho",
+  "Puedes girar la cámara manteniendo presionado el click izquierdo",
   "Acércate a los mostradores para ver los productos disponibles",
-  "Revisa tu carrito de compras para finalizar tu pedido"
+  "Revisa tu carrito de compras para finalizar tu pedido",
 ];
 
 export const LoadingScreen = () => {
