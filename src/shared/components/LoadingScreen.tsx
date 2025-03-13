@@ -1,77 +1,115 @@
-import { useAtom } from "jotai";
-import { useProgress } from "@react-three/drei";
-import { isSceneReadyAtom, criticalModelsLoadingAtom, loadingProgressAtom } from "../state/loading";
-import { useEffect, useState } from "react";
+import { useAtom } from 'jotai';
+import { useEffect, useState, useRef } from 'react';
+import { loadingProgressAtom } from '../state/loading';
+
+// Tips that will rotate during loading - feel free to customize these!
+const LOADING_TIPS = [
+  "Utiliza las teclas WASD para moverte por la tienda",
+  "Puedes hacer zoom con la rueda del mouse",
+  "Haz clic en los productos para ver más detalles",
+  "Explora diferentes secciones para descubrir nuevos productos",
+  "Usa el chat para recibir ayuda de nuestros asistentes",
+  "Pulsa ESC para abrir el menú principal",
+  "Puedes girar la cámara manteniendo presionado el botón derecho",
+  "Acércate a los mostradores para ver los productos disponibles",
+  "Revisa tu carrito de compras para finalizar tu pedido"
+];
 
 export const LoadingScreen = () => {
-  const { active } = useProgress();
-  const [isSceneReady] = useAtom(isSceneReadyAtom);
-  const [criticalModels] = useAtom(criticalModelsLoadingAtom);
-  const [progress, setProgress] = useAtom(loadingProgressAtom);
   const [isVisible, setIsVisible] = useState(true);
-
+  const [loadingProgress] = useAtom(loadingProgressAtom);
+  const [progress, setProgress] = useState(0);
+  const [fadeOut, setFadeOut] = useState(false);
+  const [currentTip, setCurrentTip] = useState(
+    Math.floor(Math.random() * LOADING_TIPS.length)
+  );
+  const prevTipRef = useRef(currentTip);
   
-  // Calculate loaded and total models count
-  const totalModels = Object.keys(criticalModels).length;
-  const loadedModels = Object.values(criticalModels).filter(isLoading => !isLoading).length;
+  // Smoothly update the displayed progress
+  useEffect(() => {
+    setProgress(prev => Math.max(prev, loadingProgress));
+    
+    // Force completion if we reach 100%
+    if (loadingProgress >= 99) {
+      const forceComplete = setTimeout(() => {
+        setProgress(100);
+        setFadeOut(true);
+      }, 300);
+      return () => clearTimeout(forceComplete);
+    }
+  }, [loadingProgress]);
   
-  // Calculate and update progress based on critical models
+  // Hide the loading screen when progress reaches 100%
   useEffect(() => {
-    // Don't calculate if no critical models registered yet
-    if (totalModels === 0) return;
-    
-    // Calculate percentage - ensure it never decreases
-    const newProgress = Math.round((loadedModels / totalModels) * 100);
-    
-    // Important: Only update if new progress is greater than current progress
-    // This prevents the progress from going backwards
-    setProgress(prev => Math.max(prev, newProgress));
-  }, [criticalModels, loadedModels, totalModels]);
-
-  // Hide the loading screen when everything is ready
-  useEffect(() => {
-    if (isSceneReady && !active) {
-      // Force progress to 100% when scene is ready
-      setProgress(100);
-      
-      // Add a small delay for smoother transition
+    if (fadeOut) {
       const timeout = setTimeout(() => {
         setIsVisible(false);
-      }, 500);
+      }, 800);
       
       return () => clearTimeout(timeout);
     }
-  }, [isSceneReady, active]);
-
+  }, [fadeOut]);
+  
+  // Rotate through tips randomly every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Get a random index, but make sure it's not the same as current tip
+      let newTipIndex;
+      do {
+        newTipIndex = Math.floor(Math.random() * LOADING_TIPS.length);
+      } while (newTipIndex === prevTipRef.current && LOADING_TIPS.length > 1);
+      
+      setCurrentTip(newTipIndex);
+      prevTipRef.current = newTipIndex;
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   if (!isVisible) return null;
-
+  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+    <div 
+      className={`fixed inset-0 bg-black z-50 flex flex-col items-center justify-between py-20 transition-opacity duration-700 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+    >
+      {/* Top section with title */}
       <div className="text-center">
-        <div className="mb-4">
-          <svg className="w-16 h-16 mx-auto animate-spin text-white opacity-25" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
+        <h1 className="text-white text-4xl font-light tracking-wider mb-4">Uribe's Boutique</h1>
+      </div>
+      
+      {/* Center section with spinner and loading text */}
+      <div className="text-center">
+        {/* Spinning SVG Loader */}
+        <div className="mb-4 flex justify-center">
+          <svg className="animate-spin h-16 w-16 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
-        <div className="relative w-64 h-2 bg-white/20 rounded-full overflow-hidden">
+        
+        {/* "Cargando experiencia" text */}
+        <p className="text-white/70 text-lg font-light tracking-wide mb-8">
+          Cargando experiencia
+        </p>
+        
+        {/* Progress bar and percentage */}
+        <div className="w-64 h-1 bg-white/10 rounded-full mb-2 overflow-hidden">
           <div 
-            className="absolute left-0 top-0 bottom-0 bg-white transition-all duration-300"
+            className="h-full bg-white transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="mt-2 text-white/70 text-sm">{progress}%</div>
         
-        {/* Added model counter here */}
-        <div className="mt-1 text-white/60 text-sm">
-          Modelos cargados: {loadedModels}/{totalModels}
+        <div className="text-white/70 text-sm mt-1">
+          {progress}%
         </div>
-        
-        <h2 className="mt-4 text-white text-xl font-light tracking-wider">Cargando tienda virtual</h2>
+      </div>
+      
+      {/* Bottom section with random tip */}
+      <div className="text-center max-w-lg px-6">
+        <p className="text-white/80 text-sm font-light transition-opacity duration-500">
+          {LOADING_TIPS[currentTip]}
+        </p>
       </div>
     </div>
   );
