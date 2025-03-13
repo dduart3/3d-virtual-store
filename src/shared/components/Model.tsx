@@ -57,7 +57,7 @@ export const Model = ({
     if (isCritical) {
       loader.load(
         path,
-        (gltf) => {
+        () => {
           // Model fully loaded (100%)
           setCriticalProgress(prev => ({
             ...prev,
