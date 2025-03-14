@@ -8,7 +8,7 @@ export function PersonalInfo() {
 const {profile, loading} = useAuth()
     const updateProfile = useUpdateProfile();
   const [isEditing, setIsEditing] = useState(false);
-    const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
+    const [avatarId] = useAtom(avatarIdAtom);
   
   
   const [formData, setFormData] = useState<ProfileUpdateData>({
