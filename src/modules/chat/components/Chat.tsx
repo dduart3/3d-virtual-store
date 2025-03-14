@@ -5,6 +5,42 @@ import { useChat } from "../hooks/useChat";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 export const Chat = () => {
+  // Add new states for resizing
+  const [isDragging, setIsDragging] = useState(false);
+  const [height, setHeight] = useState(256);
+  const minHeight = 256;
+  const maxHeight = window.innerHeight - 100;
+
+  // Add resize handlers
+  const handleDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDrag = (e: MouseEvent) => {
+    if (isDragging && isOpen) {
+      const chatBottom = window.innerHeight - 20;
+      const newHeight = chatBottom - e.clientY;
+      setHeight(Math.min(maxHeight, Math.max(minHeight, newHeight)));
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Add effect for drag handling
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDrag);
+      window.addEventListener('mouseup', handleDragEnd);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleDrag);
+      window.removeEventListener('mouseup', handleDragEnd);
+    };
+  }, [isDragging]);
+
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
@@ -130,30 +166,37 @@ export const Chat = () => {
     <div className="absolute bottom-5 left-5 pointer-events-auto">
       <div
         className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 flex flex-col transition-all duration-300
-        ${!isOpen ? "w-60 h-10" : "w-96 h-64"}`}
+        ${!isOpen ? "w-60 h-10" : "w-96"}`}
+        style={{ height: isOpen ? height : 40 }}
       >
+        {/* Resize Handle - Only visible when chat is open */}
+        {isOpen && (
+          <div
+            className="absolute -top-1 left-0 right-0 h-2 cursor-n-resize hover:bg-white/10 rounded-t-lg"
+            onMouseDown={handleDragStart}
+          />
+        )}
+
         {/* Chat Header with unread count */}
         <div
-          className="p-2 border-b border-white/20 flex justify-between items-center cursor-pointer"
+          className="relative p-2 border-b border-white/20 flex justify-between items-center cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="text-white flex items-center">
             <div
-              className={`w-2 h-2 rounded-full ${
-                activeTab === "chat"
-                  ? connected
-                    ? "bg-green-500"
-                    : "bg-red-500 animate-pulse"
-                  : unreadCount > 0
+              className={`w-2 h-2 rounded-full ${activeTab === "chat"
+                ? connected
+                  ? "bg-green-500"
+                  : "bg-red-500 animate-pulse"
+                : unreadCount > 0
                   ? "bg-red-500 animate-pulse"
                   : "bg-green-500"
-              } mr-2`}
+                } mr-2`}
             ></div>
             <span>
               {!isOpen && unreadCount > 0
-                ? `Chat (${formattedUnreadCount} mensaje${
-                    unreadCount > 1 ? "s" : ""
-                  } nuevo${unreadCount > 1 ? "s" : ""})`
+                ? `Chat (${formattedUnreadCount} mensaje${unreadCount > 1 ? "s" : ""
+                } nuevo${unreadCount > 1 ? "s" : ""})`
                 : "Chat"}
             </span>
           </div>
@@ -166,21 +209,19 @@ export const Chat = () => {
         {isOpen && (
           <div className="flex border-b border-white/20">
             <button
-              className={`flex-1 p-2 text-sm ${
-                activeTab === "chat"
-                  ? "bg-white/20 text-white"
-                  : "text-white/70 hover:bg-white/10"
-              }`}
+              className={`flex-1 p-2 text-sm ${activeTab === "chat"
+                ? "bg-white/20 text-white"
+                : "text-white/70 hover:bg-white/10"
+                }`}
               onClick={() => handleTabChange("chat")}
             >
               Chat
             </button>
             <button
-              className={`flex-1 p-2 text-sm ${
-                activeTab === "ai"
-                  ? "bg-white/20 text-white"
-                  : "text-white/70 hover:bg-white/10"
-              }`}
+              className={`flex-1 p-2 text-sm ${activeTab === "ai"
+                ? "bg-white/20 text-white"
+                : "text-white/70 hover:bg-white/10"
+                }`}
               onClick={() => handleTabChange("ai")}
             >
               Asistente IA
@@ -190,9 +231,8 @@ export const Chat = () => {
 
         {/* Chat Messages Area */}
         <div
-          className={`flex-1 p-3 overflow-auto transition-all ${
-            !isOpen ? "hidden" : "block"
-          }`}
+          className={`flex-1 p-3 overflow-auto transition-all ${!isOpen ? "hidden" : "block"
+            }`}
         >
           {activeTab === "chat" ? (
             // Real-time chat messages
@@ -200,13 +240,12 @@ export const Chat = () => {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`text-sm mb-1 ${
-                    message.type === "system"
-                      ? "text-green-400"
-                      : message.type === "admin"
+                  className={`text-sm mb-1 ${message.type === "system"
+                    ? "text-green-400"
+                    : message.type === "admin"
                       ? "text-blue-400"
                       : "text-white"
-                  }`}
+                    }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   {message.content}
@@ -222,12 +261,15 @@ export const Chat = () => {
               {aiMessages.map((message) => (
                 <div
                   key={message.id}
-                  className={`text-sm mb-1 ${
-                    message.type === "system" ? "text-green-400" : "text-white"
-                  }`}
+                  className={`text-sm mb-1 ${message.type === "system" ? "text-green-400" : "text-white"
+                    }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
-                  {message.content}
+                  <div
+                    className="whitespace-pre-wrap break-words [&_a]:text-blue-400 [&_a]:underline [&_a]:cursor-pointer"
+                    style={{ whiteSpace: 'pre-wrap' }}
+                    dangerouslySetInnerHTML={{ __html: message.content }}
+                  />
                 </div>
               ))}
               {isLoading && (
@@ -242,9 +284,8 @@ export const Chat = () => {
 
         {/* Chat Input */}
         <div
-          className={`p-2 border-t border-white/20 flex transition-all ${
-            !isOpen ? "hidden" : "block"
-          }`}
+          className={`p-2 border-t border-white/20 flex transition-all ${!isOpen ? "hidden" : "block"
+            }`}
         >
           <input
             type="text"
@@ -254,8 +295,8 @@ export const Chat = () => {
                   ? "Escribe tu mensaje..."
                   : "Conectando..."
                 : isLoading
-                ? "Esperando respuesta..."
-                : "Escribe tu mensaje..."
+                  ? "Esperando respuesta..."
+                  : "Escribe tu mensaje..."
             }
             className="flex-1 bg-black/40 text-white p-2 rounded border border-white/30 text-sm focus:outline-none focus:border-white/50"
             value={inputValue}
@@ -266,12 +307,11 @@ export const Chat = () => {
             disabled={isInputDisabled}
           />
           <button
-            className={`ml-2 px-3 rounded ${
-              (activeTab === "chat" && !connected) ||
+            className={`ml-2 px-3 rounded ${(activeTab === "chat" && !connected) ||
               (activeTab === "ai" && isLoading)
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-white/10 hover:bg-white/20"
-            } text-white`}
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-white/10 hover:bg-white/20"
+              } text-white`}
             onClick={handleSendMessage}
             disabled={
               (activeTab === "chat" && !connected) ||

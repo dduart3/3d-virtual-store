@@ -24,6 +24,7 @@
     "@tanstack/react-router": "^1.112.18",
     "cohere-ai": "^7.16.0",
     "dotenv": "^16.4.7",
+    "esbuild": "0.25.1",
     "framer-motion": "^12.4.10",
     "jotai": "^2.11.3",
     "openai": "^4.86.2",
