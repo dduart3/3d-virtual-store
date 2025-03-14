@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
+import { UserProfile } from "../types/profile";
 
 // Get the current session
 export function useSession() {
@@ -12,23 +13,44 @@ export function useSession() {
   });
 }
 
-// Get the user profile
-export function useProfile(userId: string | undefined) {
+export function useProfile() {
   return useQuery({
-    queryKey: ["profile", userId],
-    queryFn: async () => {
-      if (!userId) throw new Error("User ID is required");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
+    queryKey: ['profile'],
+    queryFn: async (): Promise<UserProfile | null> => {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        throw new Error(`Error fetching user: ${userError.message}`);
+      }
+      
+      if (!user) return null;
+      
+      // Fetch profile data from profiles table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
         .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!userId,
+      
+      if (profileError && profileError.code !== 'PGRST116') { // PGRST116 is "not found" which we handle gracefully
+        throw new Error(`Error fetching profile: ${profileError.message}`);
+      }
+      
+      // Return combined user and profile data
+      return {
+        id: user.id,
+        email: user.email || '',
+        first_name: profile?.first_name || null,
+        last_name: profile?.last_name || null,
+        username: profile?.username || null,
+        address: profile?.address || null,
+        phone: profile?.phone || null,
+        avatar_url: profile?.avatar_url || null,
+        created_at: profile?.created_at || null,
+        updated_at: profile?.updated_at || null
+      };
+    }
   });
 }
 
@@ -182,7 +204,7 @@ export function updateAvatar() {
 export function useAuth() {
   const sessionQuery = useSession();
   const userId = sessionQuery.data?.user?.id;
-  const profileQuery = useProfile(userId);
+  const profileQuery = useProfile();
   const signInMutation = useSignIn();
   const signUpMutation = useSignUp();
   const signOutMutation = useSignOut();

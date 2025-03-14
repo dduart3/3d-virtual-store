@@ -20,7 +20,7 @@ export const Chat = () => {
     initializeChannel,
     checkAndAnnounceJoin,
     initializeWelcomeMessages,
-    isLoading // Combined loading state
+    isLoading, // Combined loading state
   } = useChat();
 
   const [newChatMessage, setNewChatMessage] = useState<string>("");
@@ -35,45 +35,42 @@ export const Chat = () => {
 
   // Initialize chat when profile is available
   useEffect(() => {
-    if (profile) {
+    if (profile && profile.username && profile.avatar_url) {
       // Create user object from profile
       const user = {
         id: profile.id,
-        username: profile.username || profile.full_name || "",
+        username: profile.username,
         avatar_url: profile.avatar_url,
       };
-     
+
       // Initialize the chat channel
       initializeChannel(user);
-     
+
       // Initialize welcome messages
       initializeWelcomeMessages();
     }
   }, [profile]);
- 
   // Check and announce join when profile and username are available
   useEffect(() => {
-    if (profile && (profile.username || profile.full_name)) {
+    if (profile && profile.username && profile.avatar_url) {
       // Create user object from profile with proper username
       const user = {
         id: profile.id,
-        username: profile.username || profile.full_name,
+        username: profile.username,
         avatar_url: profile.avatar_url,
       };
-     
+
       // Check and announce join if needed
       checkAndAnnounceJoin(user);
     }
-  }, [profile?.username, profile?.full_name]);
+  }, [profile?.username]);
 
   // Mark all messages as read when opening the chat
   useEffect(() => {
     if (isOpen && unreadCount > 0) {
       // Mark messages as read
-      messages
-        .filter(msg => !msg.read)
-        .forEach(msg => markAsRead(msg.id));
-       
+      messages.filter((msg) => !msg.read).forEach((msg) => markAsRead(msg.id));
+
       setUnreadCount(0);
     }
   }, [isOpen, unreadCount, messages]);
@@ -83,10 +80,9 @@ export const Chat = () => {
     if (!isOpen && messages.length > prevMessageCountRef.current) {
       const newMessages = messages.slice(prevMessageCountRef.current);
       const newUnreadCount = newMessages.filter(
-        (m) => m.sender !== profile?.username &&
-               m.sender !== (profile?.full_name || "Usuario")
+        (m) => m.sender !== profile?.username
       ).length;
-     
+
       if (newUnreadCount > 0) {
         setUnreadCount((prev) => prev + newUnreadCount);
       }
@@ -110,7 +106,7 @@ export const Chat = () => {
       sendMessage(newAIChatMessage, true); // true = AI message
       setNewAIChatMessage("");
     }
-    setChatInputFocused(false)
+    setChatInputFocused(false);
   };
 
   const handleTabChange = (tab: "chat" | "ai") => {
@@ -126,8 +122,9 @@ export const Chat = () => {
       setNewAIChatMessage(value);
     }
   };
- 
-  const isInputDisabled = (activeTab === 'chat' && !connected) || (activeTab === 'ai' && isLoading);
+
+  const isInputDisabled =
+    (activeTab === "chat" && !connected) || (activeTab === "ai" && isLoading);
 
   return (
     <div className="absolute bottom-5 left-5 pointer-events-auto">
