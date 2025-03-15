@@ -10,7 +10,7 @@ export function useAvatarSync() {
 
   useEffect(() => {
     // When profile data is loaded and available
-    if (!loading && profile?.avatar_url) {
+    if (!loading && profile && profile.avatar_url) {
       setAvatarUrl(profile.avatar_url);
       setAvatarId(profile.avatar_url.split('/').pop()?.split('.')[0] || '');
     }

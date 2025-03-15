@@ -157,7 +157,8 @@ export function useUpdateProfile() {
         username: string;
         first_name: string;
         last_name: string;
-        avatar_url: string;
+        address: string;
+        phone: string;
       };
     }) => {
       const { error } = await supabase
@@ -174,7 +175,7 @@ export function useUpdateProfile() {
   });
 }
 
-export function updateAvatar() {
+export function useUpdateAvatar() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -210,7 +211,7 @@ export function useAuth() {
   const signOutMutation = useSignOut();
   const checkUsernameMutation = useCheckUsername();
   const updateProfileMutation = useUpdateProfile();
-  const updateAvatarMutation = updateAvatar();
+  const updateAvatarMutation = useUpdateAvatar();
 
   return {
     user: sessionQuery.data?.user || null,

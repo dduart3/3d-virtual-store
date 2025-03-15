@@ -10,13 +10,14 @@ import {
 } from "@react-three/postprocessing";
 import { useEffect, useState } from "react";
 import { Annotation } from "../../../../shared/components/Annotation";
-import { useSections, useSectionProducts } from "../../../../lib/api";
+import { useSections } from "../hooks/useSections";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { fadeRefAtom } from "../../../../shared/state/fade";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { Jukebox } from "./Jukebox";
+import { useSectionProducts } from "../hooks/useProducts";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);

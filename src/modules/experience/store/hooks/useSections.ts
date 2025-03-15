@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../supabase';
-import { SectionWithModel, parsePosition, parseRotation, parseScale } from '../../shared/types/app';
+import { supabase } from '../../../../lib/supabase';
+import { SectionWithModel, parsePosition, parseRotation, parseScale } from '../../../../shared/types/app';
 
 // Fetch all sections with their models
 export function useSections() {
