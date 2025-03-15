@@ -3,7 +3,6 @@ import { useOrders, useOrderWithItems } from '../hooks/useOrders';
 import { OrderStatus } from '../types/order';
 import { formatCurrency } from '../utils/orders';
 
-
 // Function to generate status badge based on order status
 const StatusBadge = ({ status }: { status: OrderStatus }) => {
   const statusConfig = {
@@ -30,9 +29,9 @@ export function OrderHistory() {
   const { data: orderDetails } = useOrderWithItems(expandedOrderId);
 
   useEffect(() => {
-    if(!orders ) return
-    console.log(orders)
-  }, [orders])
+    if(!orders) return;
+    console.log(orders);
+  }, [orders]);
 
   const toggleOrderDetails = (orderId: string) => {
     if (expandedOrderId === orderId) {
@@ -45,8 +44,10 @@ export function OrderHistory() {
   // Handle loading state
   if (isLoading) {
     return (
-      <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 p-6">
-        <h2 className="text-xl font-light mb-6">Historial de órdenes</h2>
+      <div>
+        <h2 className="text-xl font-light tracking-[0.1em] uppercase mb-8">
+          Historial de Pedidos
+        </h2>
         <div className="flex justify-center py-8">
           <svg className="animate-spin h-8 w-8 text-white/60" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"></circle>
@@ -60,25 +61,38 @@ export function OrderHistory() {
   // Handle error state
   if (error) {
     return (
-      <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 p-6">
-        <h2 className="text-xl font-light mb-6">Historial de órdenes</h2>
+      <div>
+        <h2 className="text-xl font-light tracking-[0.1em] uppercase mb-8">
+          Historial de Pedidos
+        </h2>
         <div className="text-center py-8 text-red-400">
-          <p className="mb-2">Error al cargar las órdenes</p>
-          <p className="text-sm opacity-70">{error instanceof Error ? error.message : 'Se produjo un error desconocido'}</p>
+          <p className="mb-2 font-light">Error al cargar las órdenes</p>
+          <p className="text-sm opacity-70 font-light">{error instanceof Error ? error.message : 'Se produjo un error desconocido'}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 p-6">
-      <h2 className="text-xl font-light mb-6">Historial de órdenes</h2>
+    <div>
+      <h2 className="text-xl font-light tracking-[0.1em] uppercase mb-8">
+        Historial de Pedidos
+      </h2>
 
       {orders && orders.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-gray-400 mb-4">No tienes órdenes todavía</p>
-          <button className="px-4 py-2 bg-white text-black rounded hover:bg-white/90">
-            Explorar productos
+        <div className="text-center py-12 border border-white/10 bg-black/20">
+          <div className="mb-4">
+            <svg className="w-12 h-12 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+          </div>
+          <p className="text-gray-400 font-light tracking-wide mb-6">No tienes pedidos realizados todavía</p>
+          <button 
+            className="px-8 py-3 bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+            onClick={() => window.location.href = '/store'}
+          >
+            <span className="relative z-10">Explorar la tienda</span>
+            <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           </button>
         </div>
       ) : (
@@ -86,24 +100,24 @@ export function OrderHistory() {
           {orders && orders.map((order) => (
             <div
               key={order.id}
-              className="border border-white/10 rounded-lg overflow-hidden"
+              className="border rounded-md border-white/10 bg-black/20 overflow-hidden"
             >
               {/* Order summary row */}
               <div
-                className="flex flex-wrap justify-between items-center p-4 cursor-pointer hover:bg-white/5"
+                className="flex flex-wrap justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-300"
                 onClick={() => toggleOrderDetails(order.id)}
               >
                 <div className="flex flex-col mb-2 md:mb-0">
-                  <span className="text-white font-medium">Orden #{order.id.slice(0, 8)}</span>
-                  <span className="text-gray-400 text-sm">
+                  <span className="text-white font-light tracking-wide">Orden #{order.id.slice(0, 8)}</span>
+                  <span className="text-gray-400 text-sm font-light">
                     {new Date(order.created_at).toLocaleDateString()}
                   </span>
                 </div>
-                
+               
                 <div className="flex items-center space-x-4">
                   <StatusBadge status={order.status} />
-                  <span className="font-medium">{formatCurrency(order.total)}</span>
-                  <span className="text-gray-400">
+                  <span className="font-light">{formatCurrency(order.total)}</span>
+                  <span className="text-gray-400 transition-transform duration-300 transform">
                     {expandedOrderId === order.id ? '▲' : '▼'}
                   </span>
                 </div>
@@ -111,55 +125,55 @@ export function OrderHistory() {
 
               {/* Order details - Only visible when expanded and details are loaded */}
               {expandedOrderId === order.id && orderDetails && (
-                <div className="border-t border-white/10 p-4 bg-black/20">
-                  <h3 className="text-sm text-gray-400 mb-2">Productos</h3>
-                  <ul className="space-y-2">
+                <div className="border-t border-white/10 p-5 bg-black/30">
+                  <h3 className="text-sm text-gray-400 mb-4 tracking-wider uppercase font-light">Productos</h3>
+                  <ul className="space-y-3">
                     {orderDetails.items.map((item) => (
-                      <li key={item.id} className="flex justify-between items-center py-1">
+                      <li key={item.id} className="flex justify-between items-center py-2 border-b border-white/5">
                         <div className="flex items-center">
                           {item.product.thumbnail_path ? (
-                            <div className="w-10 h-10 bg-white/10 rounded mr-3 flex items-center justify-center overflow-hidden">
-                              <img 
-                                src={`/thumbnails/${item.product.thumbnail_path}`} 
+                            <div className="w-12 h-12 bg-white/5 border rounded-lg border-white/10 mr-4 flex items-center justify-center overflow-hidden">
+                              <img
+                                src={`/thumbnails/${item.product.thumbnail_path}`}
                                 alt={item.product.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover rounded-sm"
                               />
                             </div>
                           ) : (
-                            <div className="w-10 h-10 bg-white/10 rounded mr-3 flex items-center justify-center">
-                              <span className="text-xs">{item.product.name[0]}</span>
+                            <div className="w-12 h-12 bg-white/5 border border-white/10 mr-4 flex items-center justify-center">
+                              <span className="text-xs text-white/70">{item.product.name[0]}</span>
                             </div>
                           )}
                           <div>
-                            <span>{item.product.name}</span>
-                            <span className="text-gray-400 ml-2">x{item.quantity}</span>
+                            <span className="font-light">{item.product.name}</span>
+                            <span className="text-gray-400 ml-2 font-light">x{item.quantity}</span>
                           </div>
                         </div>
-                        <span>{formatCurrency(item.price_at_purchase)}</span>
+                        <span className="font-light">{formatCurrency(item.price_at_purchase)}</span>
                       </li>
                     ))}
                   </ul>
-                  
-                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between">
-                    <span>Total</span>
-                    <span className="font-medium">{formatCurrency(orderDetails.total)}</span>
+                 
+                  <div className="mt-6 pt-4 border-t border-white/10 flex justify-between">
+                    <span className="text-sm text-gray-400 tracking-wider uppercase font-light">Total</span>
+                    <span className="font-light">{formatCurrency(orderDetails.total)}</span>
                   </div>
-                  
+                 
                   {orderDetails.shipping_address && (
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h3 className="text-sm text-gray-400 mb-2">Dirección de envío</h3>
-                      <p>{orderDetails.shipping_address.name}</p>
-                      <p>{orderDetails.shipping_address.street}</p>
-                      <p>{orderDetails.shipping_address.city}, {orderDetails.shipping_address.state} {orderDetails.shipping_address.zip}</p>
-                      <p>{orderDetails.shipping_address.country}</p>
+                    <div className="mt-6 pt-4 border-t border-white/10">
+                      <h3 className="text-sm text-gray-400 mb-3 tracking-wider uppercase font-light">Dirección de envío</h3>
+                      <p className="font-light">{orderDetails.shipping_address.name}</p>
+                      <p className="font-light">{orderDetails.shipping_address.street}</p>
+                      <p className="font-light">{orderDetails.shipping_address.city} {orderDetails.shipping_address.state} {orderDetails.shipping_address.zip}</p>
+                      <p className="font-light">{orderDetails.shipping_address.country}</p>
                     </div>
                   )}
-                  
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <h3 className="text-sm text-gray-400 mb-2">Estado de la orden</h3>
+                 
+                  <div className="mt-6 pt-4 border-t border-white/10">
+                    <h3 className="text-sm text-gray-400 mb-3 tracking-wider uppercase font-light">Estado de la orden</h3>
                     <div className="flex items-center">
                       <StatusBadge status={orderDetails.status} />
-                      <span className="ml-2">
+                      <span className="ml-3 font-light">
                         {orderDetails.status === 'created' && 'Esperando confirmación'}
                         {orderDetails.status === 'processing' && 'Procesando tu pedido'}
                         {orderDetails.status === 'shipped' && 'En camino a tu dirección'}
@@ -168,32 +182,33 @@ export function OrderHistory() {
                       </span>
                     </div>
                   </div>
-                  
+                 
                   {/* Action buttons based on order status */}
-                  <div className="mt-4 flex justify-end space-x-3">
+                  <div className="mt-6 flex justify-end space-x-4">
                     {orderDetails.status === 'delivered' && (
-                      <button 
-                        className="px-3 py-1.5 text-sm bg-white/10 hover:bg-white/20 rounded"
+                      <button
+                        className="px-6 py-2 border border-white/20 text-white/80 hover:text-white hover:border-white/40 rounded-none tracking-[0.15em] uppercase text-xs font-light transition-all duration-300"
                         type="button"
                       >
                         Escribir reseña
                       </button>
                     )}
-                    
+                   
                     {(orderDetails.status === 'created' || orderDetails.status === 'processing') && (
-                      <button 
-                        className="px-3 py-1.5 text-sm border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded"
+                      <button
+                        className="px-6 py-2 bg-transparent border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-none tracking-[0.15em] uppercase text-xs font-light transition-all duration-300"
                         type="button"
                       >
                         Cancelar orden
                       </button>
                     )}
-                    
-                    <button 
-                      className="px-3 py-1.5 text-sm bg-white text-black rounded hover:bg-white/90"
+                   
+                    <button
+                      className="px-8 py-3 bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                       type="button"
                     >
-                      Ver detalles completos
+                      <span className="relative z-10">Ver detalles</span>
+                      <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     </button>
                   </div>
                 </div>

@@ -12,9 +12,8 @@ export function useAvatarSync() {
     // When profile data is loaded and available
     if (!loading && profile?.avatar_url) {
       setAvatarUrl(profile.avatar_url);
-      setAvatarId(profile.avatar_url.split('/').pop().split('.')[0]);
+      setAvatarId(profile.avatar_url.split('/').pop()?.split('.')[0] || '');
     }
   }, [profile, loading, setAvatarUrl]);
-
   return null; // This hook doesn't need to return anything
 }
