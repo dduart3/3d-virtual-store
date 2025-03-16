@@ -1,4 +1,4 @@
-import { ProductWithModel } from "../../../../shared/types/app";
+import { ProductWithModel } from "../../store/types/product";
 
 export type ViewerState = {
     isOpen: boolean;

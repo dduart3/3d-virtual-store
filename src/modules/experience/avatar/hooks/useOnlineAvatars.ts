@@ -2,18 +2,16 @@ import { useAtom } from "jotai";
 import { useRef, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { onlineAvatarsAtom, currentAvatarIdAtom, OnlineAvatar } from "../state/onlineAvatars";
-import { useQueryClient } from "@tanstack/react-query";
 import { Vector3 } from "three";
 
 // Constants
 const AVATAR_CHANNEL = "avatars";
-const POSITION_UPDATE_INTERVAL = 100; // ms - how often to broadcast position
+//const POSITION_UPDATE_INTERVAL = 100; // ms - how often to broadcast position
 const POSITION_THRESHOLD = 0.1; // minimum distance to trigger update
 
 export function useOnlineAvatars(userId: string, username: string, avatarUrl: string) {
   const [onlineAvatars, setOnlineAvatars] = useAtom(onlineAvatarsAtom);
   const [, setCurrentAvatarId] = useAtom(currentAvatarIdAtom);
-  const queryClient = useQueryClient();
   
   // Refs to avoid unnecessary re-renders
   const channelRef = useRef<any>(null);

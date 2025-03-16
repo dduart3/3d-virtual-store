@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { ProductWithModel } from "../../../shared/types/app";
+import { ProductWithModel } from "../../experience/store/types/product";
 
 export interface CartItem {
   product: ProductWithModel;

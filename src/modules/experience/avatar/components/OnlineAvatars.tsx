@@ -52,6 +52,7 @@ const OnlineAvatar = ({
   isRunning
 }: OnlineAvatarProps) => {
   const modelRef = useRef<Group>(null);
+  console.log(id, isMoving, isRunning);
   
   // Load the avatar model
   const { scene } = useGLTF(
