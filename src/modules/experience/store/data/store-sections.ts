@@ -10,7 +10,7 @@ import { womenSkirtsSection } from "./sections/women-skirts";
 import { womenAccessoriesSection } from "./sections/women-accessories";
 import { womenShoesSection } from "./sections/women-shoes";
 import { womenBagsSection } from "./sections/women-bags";
-import { SectionId } from "../types/store";
+import { SectionId } from "../types/section";
 
 // Models should match your database schema
 export interface ModelData {

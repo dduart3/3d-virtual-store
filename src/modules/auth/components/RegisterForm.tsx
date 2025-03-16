@@ -108,7 +108,8 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
           username,
           first_name: firstName,
           last_name: lastName,
-          avatar_url: avatarUrl,
+          address: "",
+          phone: ""
         },
       },
       {

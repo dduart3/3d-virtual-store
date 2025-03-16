@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../../lib/supabase';
-import { ProductWithModel, parsePosition, parseRotation, parseScale } from '../../../../shared/types/app';
+import { parsePosition, parseRotation, parseScale } from '../../types/model';
+import { ProductWithModel } from '../types/product';
+
 
 // Fetch products for a specific section
 export function useSectionProducts(sectionId: string | undefined) {

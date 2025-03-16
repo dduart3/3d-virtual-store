@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
-import { UserProfile } from "../types/profile";
+import {UserData, UserProfileData} from "../types/profile";
 
 // Get the current session
 export function useSession() {
@@ -16,7 +16,7 @@ export function useSession() {
 export function useProfile() {
   return useQuery({
     queryKey: ['profile'],
-    queryFn: async (): Promise<UserProfile | null> => {
+    queryFn: async (): Promise<UserData | null> => {
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -153,13 +153,7 @@ export function useUpdateProfile() {
       profileData,
     }: {
       userId: string;
-      profileData: {
-        username: string;
-        first_name: string;
-        last_name: string;
-        address: string;
-        phone: string;
-      };
+      profileData: UserProfileData
     }) => {
       const { error } = await supabase
         .from("profiles")

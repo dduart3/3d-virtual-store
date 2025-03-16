@@ -1,4 +1,4 @@
-import { STORE_SECTION_IDS } from "../../types/store";
+import { STORE_SECTION_IDS } from "../../types/section";
 import { SectionData } from "../store-sections";
 
 export const menShirtsSection = {
