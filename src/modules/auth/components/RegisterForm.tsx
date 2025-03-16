@@ -72,7 +72,6 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
         {
           email,
           password,
-          userData: { username },
         },
         {
           onSuccess: (data) => {
@@ -108,8 +107,6 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
           username,
           first_name: firstName,
           last_name: lastName,
-          address: "",
-          phone: ""
         },
       },
       {

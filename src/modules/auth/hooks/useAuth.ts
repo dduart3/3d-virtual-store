@@ -89,16 +89,13 @@ export function useSignUp() {
     mutationFn: async ({
       email,
       password,
-      userData,
     }: {
       email: string;
       password: string;
-      userData: any;
     }) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: userData },
       });
 
       if (error) throw error;
