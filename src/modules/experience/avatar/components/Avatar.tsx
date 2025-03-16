@@ -39,8 +39,7 @@ export const Avatar = () => {
 
   // Other hooks for camera, animations, etc.
   useAvatarCamera(rigidBodyRef);
-  const { updateAnimation, update: updateAnimations } =
-    useAvatarAnimations(modelRef);
+  const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
 
   // Update animations
   useFrame((_, delta) => {
