@@ -163,8 +163,8 @@ export function OrderHistory() {
                     <div className="mt-6 pt-4 border-t border-white/10">
                       <h3 className="text-sm text-gray-400 mb-3 tracking-wider uppercase font-light">Dirección de envío</h3>
                       <p className="font-light">{orderDetails.shipping_address.name}</p>
-                      <p className="font-light">{orderDetails.shipping_address.street}</p>
-                      <p className="font-light">{orderDetails.shipping_address.city} {orderDetails.shipping_address.state} {orderDetails.shipping_address.zip}</p>
+                      <p className="font-light">{orderDetails.shipping_address.line1}</p>
+                      <p className="font-light">{orderDetails.shipping_address.city}, {orderDetails.shipping_address.state}, {orderDetails.shipping_address.postal_code}</p>
                       <p className="font-light">{orderDetails.shipping_address.country}</p>
                     </div>
                   )}
@@ -202,14 +202,7 @@ export function OrderHistory() {
                         Cancelar orden
                       </button>
                     )}
-                   
-                    <button
-                      className="px-8 py-3 bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-                      type="button"
-                    >
-                      <span className="relative z-10">Ver detalles</span>
-                      <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                    </button>
+                  
                   </div>
                 </div>
               )}

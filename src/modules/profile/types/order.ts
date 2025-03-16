@@ -2,10 +2,11 @@ export type OrderStatus = 'created' | 'processing' | 'shipped' | 'delivered' | '
 
 export interface ShippingAddress {
   name: string;
-  street: string;
+  line1: string;
+  line2?: string;
   city: string;
   state: string;
-  zip: string;
+  postal_code: string;
   country: string;
 }
 

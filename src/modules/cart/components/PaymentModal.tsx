@@ -152,7 +152,7 @@ function PaymentModal({
   const createOrder = useCreateOrder();
 
   const handleAddressChange = (event: any) => {
-    setShippingAddress(event.value);
+    setShippingAddress(event.value.address);
     // Check if the address is complete based on the event
     setAddressComplete(event.complete === true);
   };
@@ -164,17 +164,17 @@ function PaymentModal({
 
   const handleContinueToPayment = () => {
     if (!isAddressElementReady) {
-      showToast("Address form is still loading", "error");
+      showToast("Cargando...", "error");
       return;
     }
     
     if (!addressComplete) {
-      showToast("Please complete all required address fields", "error");
+      showToast("Por favor completa todos los campos de dirección", "error");
       return;
     }
     
     if (!shippingAddress) {
-      showToast("Please enter a valid shipping address", "error");
+      showToast("Por favor introduce una dirección de envío válida.", "error");
       return;
     }
     
@@ -185,7 +185,7 @@ function PaymentModal({
     );
     
     if (missingFields.length > 0) {
-      showToast(`Please complete the following fields: ${missingFields.join(', ')}`, "error");
+      showToast(`Por favor completa los siguientes campos faltantes: ${missingFields.join(', ')}`, "error");
       return;
     }
     
@@ -353,8 +353,9 @@ function PaymentModal({
             <div className="p-4 border text-white border-white/20 rounded bg-white/5 relative z-[60] pointer-events-auto">
               <AddressElement
                 options={{
+                  autocomplete: {mode: 'automatic'},
                   mode: 'shipping',
-                  allowedCountries: ['ES', 'US', 'MX', 'CO', 'VE'],
+                  
                   fields: {
                     phone: 'always',
                   },
