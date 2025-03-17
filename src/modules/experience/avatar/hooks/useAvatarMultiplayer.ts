@@ -4,8 +4,6 @@ import { Vector3 } from "three";
 import { RapierRigidBody } from "@react-three/rapier";
 import { Group } from "three";
 import { useOnlineAvatars } from "./useOnlineAvatars";
-import { useAtom } from "jotai";
-import { avatarUrlAtom } from "../state/avatar";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 enum Controls {
@@ -25,14 +23,13 @@ export function useAvatarMultiplayer(
   const [, get] = useKeyboardControls<Controls>();
   
   // Get user info for multiplayer
-  const { user } = useAuth();
-  const [avatarUrl] = useAtom(avatarUrlAtom);
+  const { profile } = useAuth();
   
   // Initialize online avatars system
   const { broadcastPosition } = useOnlineAvatars(
-    user?.id || "anonymous",
-    user?.user_metadata?.username || "Usuario",
-    avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
+    profile?.id || "anonymous",
+    profile?.username || "Usuario",
+    profile?.avatar_url || "https://readyplayerme.github.io/visage/male.glb"
   );
 
   // Broadcast position in each frame
