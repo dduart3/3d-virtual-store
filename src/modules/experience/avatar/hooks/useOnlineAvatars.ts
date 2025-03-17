@@ -4,11 +4,6 @@ import { supabase } from "../../../../lib/supabase";
 import { onlineAvatarsAtom, currentAvatarIdAtom, OnlineAvatar } from "../state/onlineAvatars";
 import { Vector3 } from "three";
 
-// Constants
-const AVATAR_CHANNEL = "avatars";
-//const POSITION_UPDATE_INTERVAL = 100; // ms - how often to broadcast position
-const POSITION_THRESHOLD = 0.1; // minimum distance to trigger update
-
 export function useOnlineAvatars(userId: string, username: string, avatarUrl: string) {
   const [onlineAvatars, setOnlineAvatars] = useAtom(onlineAvatarsAtom);
   const [, setCurrentAvatarId] = useAtom(currentAvatarIdAtom);
@@ -17,7 +12,6 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
   const channelRef = useRef<any>(null);
   const lastPositionRef = useRef<Vector3>(new Vector3());
   const lastRotationRef = useRef<number>(0);
-  const updateIntervalRef = useRef<number | null>(null);
   
   // Initialize avatar synchronization
   useEffect(() => {
@@ -28,7 +22,7 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
     
     // Create the channel if it doesn't exist
     if (!channelRef.current) {
-      const channel = supabase.channel(AVATAR_CHANNEL, {
+      const channel = supabase.channel(`avatars`, {
         config: {
           broadcast: { self: false }, // Don't receive our own broadcasts
           presence: {
@@ -154,11 +148,6 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
       return () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
         
-        if (updateIntervalRef.current) {
-          clearInterval(updateIntervalRef.current);
-          updateIntervalRef.current = null;
-        }
-        
         if (channelRef.current) {
           channelRef.current.untrack();
           channelRef.current.unsubscribe();
@@ -179,9 +168,9 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
     
     // Check if position or state has changed significantly
     const positionChanged = 
-      Math.abs(position.x - lastPositionRef.current.x) > POSITION_THRESHOLD ||
-      Math.abs(position.y - lastPositionRef.current.y) > POSITION_THRESHOLD ||
-      Math.abs(position.z - lastPositionRef.current.z) > POSITION_THRESHOLD;
+      Math.abs(position.x - lastPositionRef.current.x) > 0.1 ||
+      Math.abs(position.y - lastPositionRef.current.y) > 0.1 ||
+      Math.abs(position.z - lastPositionRef.current.z) > 0.1;
       
     const rotationChanged = Math.abs(rotation - lastRotationRef.current) > 0.05;
     
@@ -219,18 +208,8 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
     }
   };
   
-  // Function to manually reconnect
-  const reconnect = () => {
-    if (channelRef.current) {
-      console.log("Attempting to reconnect avatar channel...");
-      channelRef.current.unsubscribe();
-      channelRef.current.subscribe();
-    }
-  };
-  
   return {
     onlineAvatars,
     broadcastPosition,
-    reconnect,
   };
 }

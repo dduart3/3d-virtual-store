@@ -12,7 +12,9 @@ import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { avatarUrlAtom } from "../state/avatar";
+import { useAvatarMultiplayer } from "../hooks/useAvatarMultiplayer";
 import { isSceneReadyAtom } from "../../../../shared/state/loading";
+
 enum Controls {
   forward = "forward",
   backward = "backward",
@@ -41,6 +43,9 @@ export const Avatar = () => {
   useAvatarCamera(rigidBodyRef);
   const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
 
+  // Add multiplayer functionality
+  useAvatarMultiplayer(rigidBodyRef, modelRef);
+
   // Update animations
   useFrame((_, delta) => {
     // Animation updates only - movement handled in useAvatarMovement
@@ -58,7 +63,6 @@ export const Avatar = () => {
     if (isSceneReady) {
       // Wait a moment for floor colliders to fully initialize
       // Add null check here
-
       rigidBodyRef.current.setBodyType(0, true); // 1 = dynamic (with physics)
     } else {
       // Already checked above, but being explicit for clarity
