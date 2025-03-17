@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { onlineAvatarsAtom, currentAvatarIdAtom } from "../state/onlineAvatars";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { Text, useGLTF } from "@react-three/drei";
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect } from "react";
 import { Group } from "three";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
@@ -18,7 +18,7 @@ export const OnlineAvatars = () => {
         if (avatar.id === currentAvatarId) return null;
         
         return (
-          <OnlineAvatar 
+          <OnlineAvatar
             key={avatar.id}
             id={avatar.id}
             username={avatar.username}
@@ -44,25 +44,20 @@ interface OnlineAvatarProps {
   isRunning: boolean;
 }
 
-const OnlineAvatar = ({ 
-  username, 
-  avatarUrl, 
-  position, 
+const OnlineAvatar = ({
+  username,
+  avatarUrl,
+  position,
   rotation,
   isMoving,
   isRunning
 }: OnlineAvatarProps) => {
   const modelRef = useRef<Group>(null);
   
-  // Load the avatar model
+  // Load the avatar model directly
   const { scene } = useGLTF(
     avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
   );
-  
-  // Create a deep clone of the scene to avoid sharing issues
-  const avatarScene = useMemo(() => {
-    return scene.clone(true);
-  }, [scene]);
   
   // Use the same animation system as the main avatar
   const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
@@ -82,32 +77,38 @@ const OnlineAvatar = ({
         modelRef.current.remove(modelRef.current.children[0]);
       }
       
-      // Add the cloned scene
-      modelRef.current.add(avatarScene);
+      // Add the scene directly without cloning
+      modelRef.current.add(scene);
     }
     
     // Cleanup function
     return () => {
       if (modelRef.current) {
+        // Remove the scene from the group before unmounting
+        if (scene && modelRef.current.children.includes(scene)) {
+          modelRef.current.remove(scene);
+        }
+        
+        // Clear any remaining children
         while (modelRef.current.children.length > 0) {
           modelRef.current.remove(modelRef.current.children[0]);
         }
       }
     };
-  }, [avatarScene]);
+  }, [scene]);
   
   return (
     <RigidBody
       type="kinematicPosition"
       position={position}
-      rotation={[0, rotation, 0]} 
+      rotation={[0, rotation, 0]}
       enabledRotations={[false, false, false]}
       mass={1}
       friction={1}
       colliders={false}
     >
       <CuboidCollider
-        args={[0.2, 0.9, 0.3]} 
+        args={[0.2, 0.9, 0.3]}
         position={[0, -0.1, 0]}
       />
       
