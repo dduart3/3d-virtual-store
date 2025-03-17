@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
+
 import { onlineAvatarsAtom, currentUserIdAtom, OnlineAvatar } from "../state/onlineAvatars";
 import { Vector3 } from "three";
 import { supabase } from "../../../../lib/supabase";
@@ -171,10 +172,10 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
       isMoving !== lastBroadcastRef.current.isMoving || 
       isRunning !== lastBroadcastRef.current.isRunning;
     
-    // Broadcast at least every 100ms if moving, or 1000ms if stationary
-    const minInterval = isMoving ? 100 : 1000;
+    // Broadcast at most 10 times per second if moving, or once every 3 seconds if stationary
+    const minInterval = isMoving ? 100 : 3000;
     
-    if (positionChanged || rotationChanged || movementChanged || timeSinceLastBroadcast > minInterval) {
+    if ((positionChanged || rotationChanged || movementChanged) && timeSinceLastBroadcast > minInterval) {
       // Update last broadcast values
       lastBroadcastRef.current = {
         position: position.clone(),
