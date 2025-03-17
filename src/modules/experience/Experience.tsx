@@ -10,7 +10,6 @@ import { Physics } from "@react-three/rapier";
 import { fadeRefAtom } from "../../shared/state/fade";
 import { hideCanvasLoader } from "../../shared/utils/loaderUtils";
 import { avatarUrlAtom } from "./avatar/state/avatar";
-import { MultiplayerProvider } from "./multiplayer/components/MultiplayerProvider";
 import { OnlineAvatars } from "./avatar/components/OnlineAvatars";
 
 export const Experience = () => {
@@ -32,7 +31,6 @@ export const Experience = () => {
   }, []);
 
   return (
-    <MultiplayerProvider>
     <group>
       <ambientLight intensity={0.8} />
       <Environment preset="dawn" />
@@ -46,7 +44,7 @@ export const Experience = () => {
         >
           <StoreScene />
           <Avatar key={avataUrl} />
-          <OnlineAvatars  />
+          <OnlineAvatars />
         </Physics>
       ) : (
         <ViewerScene />
@@ -54,6 +52,5 @@ export const Experience = () => {
 
       <Fade ref={fadeRef} />
     </group>
-    </MultiplayerProvider>
   );
 };

@@ -1,30 +1,35 @@
 import { useAtom } from "jotai";
-import { useRef, useEffect } from "react";
-import { supabase } from "../../../../lib/supabase";
-import { onlineAvatarsAtom, currentAvatarIdAtom, OnlineAvatar } from "../state/onlineAvatars";
+import { useEffect, useRef } from "react";
+import { onlineAvatarsAtom, currentUserIdAtom, OnlineAvatar } from "../state/onlineAvatars";
 import { Vector3 } from "three";
+import { supabase } from "../../../../lib/supabase";
 
 export function useOnlineAvatars(userId: string, username: string, avatarUrl: string) {
   const [onlineAvatars, setOnlineAvatars] = useAtom(onlineAvatarsAtom);
-  const [, setCurrentAvatarId] = useAtom(currentAvatarIdAtom);
-  
-  // Refs to avoid unnecessary re-renders
+  const [, setCurrentUserId] = useAtom(currentUserIdAtom);
   const channelRef = useRef<any>(null);
-  const lastPositionRef = useRef<Vector3>(new Vector3());
-  const lastRotationRef = useRef<number>(0);
   
-  // Initialize avatar synchronization
+  // Track last broadcast values to avoid unnecessary updates
+  const lastBroadcastRef = useRef({
+    position: new Vector3(),
+    rotation: 0,
+    isMoving: false,
+    isRunning: false,
+    timestamp: 0
+  });
+  
+  // Set up Supabase Realtime channel for avatar synchronization
   useEffect(() => {
-    if (!userId || !username) return;
+    if (!userId) return;
     
-    console.log("Initializing online avatars for user:", username);
-    setCurrentAvatarId(userId);
+    console.log("Setting up avatar synchronization for:", username);
+    setCurrentUserId(userId);
     
-    // Create the channel if it doesn't exist
+    // Create a Supabase Realtime channel if it doesn't exist
     if (!channelRef.current) {
-      const channel = supabase.channel(`avatars`, {
+      const channel = supabase.channel('avatars', {
         config: {
-          broadcast: { self: false }, // Don't receive our own broadcasts
+          broadcast: { self: false },
           presence: {
             key: userId,
           },
@@ -32,47 +37,56 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
       });
       
       // Handle avatar position updates
-      channel.on("broadcast", { event: "avatar_update" }, ({ payload }) => {
+      channel.on('broadcast', { event: 'avatar_update' }, ({ payload }) => {
         const avatarData = payload as OnlineAvatar;
         
-        // Update the avatar in our state
-        setOnlineAvatars((prev) => ({
+        setOnlineAvatars(prev => ({
           ...prev,
-          [avatarData.id]: avatarData,
+          [avatarData.id]: {
+            ...avatarData,
+            position: new Vector3(
+              avatarData.position.x,
+              avatarData.position.y,
+              avatarData.position.z
+            ),
+            lastUpdated: Date.now()
+          }
         }));
       });
       
-      // Handle presence events for avatars joining/leaving
-      channel.on("presence", { event: "join" }, ({ key, newPresences }) => {
-        console.log("Avatar joined:", key, newPresences);
-        if (newPresences && newPresences.length > 0) {
-          const userInfo = newPresences[0] as any;
+      // Handle presence events (users joining)
+      channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('User joined:', key, newPresences);
+        
+        if (newPresences && newPresences.length > 0 && key !== userId) {
+          const presence = newPresences[0] as any;
           
-          // Add new avatar to our state
-          if (key !== userId && userInfo.username) {
-            setOnlineAvatars((prev) => ({
-              ...prev,
-              [key]: {
-                id: key,
-                username: userInfo.username,
-                avatar_url: userInfo.avatar_url || "",
-                position: userInfo.position || [-165, 0, -59],
-                rotation: userInfo.rotation || 0,
-                isMoving: false,
-                isRunning: false,
-                last_updated: Date.now(),
-              },
-            }));
-          }
+          setOnlineAvatars(prev => ({
+            ...prev,
+            [key]: {
+              id: key,
+              username: presence.username || 'Usuario',
+              avatar_url: presence.avatar_url || '',
+              position: new Vector3(
+                presence.position?.x || -165,
+                presence.position?.y || 0,
+                presence.position?.z || -59
+              ),
+              rotation: presence.rotation || 0,
+              isMoving: presence.isMoving || false,
+              isRunning: presence.isRunning || false,
+              lastUpdated: Date.now()
+            }
+          }));
         }
       });
       
-      channel.on("presence", { event: "leave" }, ({ key }) => {
-        console.log("Avatar left:", key);
+      // Handle presence events (users leaving)
+      channel.on('presence', { event: 'leave' }, ({ key }) => {
+        console.log('User left:', key);
         
-        // Remove avatar from our state
         if (key !== userId) {
-          setOnlineAvatars((prev) => {
+          setOnlineAvatars(prev => {
             const newState = { ...prev };
             delete newState[key];
             return newState;
@@ -80,136 +94,126 @@ export function useOnlineAvatars(userId: string, username: string, avatarUrl: st
         }
       });
       
-      channel.on("presence", { event: "sync" }, () => {
-        console.log("Avatar presence state synchronized");
+      // Handle presence sync
+      channel.on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        console.log('Presence state synchronized:', state);
         
-        // Get list of online avatars from presence state
-        const presenceState = channel.presenceState();
+        // Update our state with all online users
         const avatars: Record<string, OnlineAvatar> = {};
         
-        Object.entries(presenceState).forEach(([avatarId, presences]) => {
-          if (avatarId !== userId) {
-            const userInfo = presences[0] as any;
-            avatars[avatarId] = {
-              id: avatarId,
-              username: userInfo.username || "Usuario",
-              avatar_url: userInfo.avatar_url || "",
-              position: userInfo.position || [-165, 0, -59],
-              rotation: userInfo.rotation || 0,
-              isMoving: userInfo.isMoving || false,
-              isRunning: userInfo.isRunning || false,
-              last_updated: userInfo.last_updated || Date.now(),
+        Object.entries(state).forEach(([key, presences]) => {
+          if (key !== userId && presences.length > 0) {
+            const presence = presences[0] as any;
+            
+            avatars[key] = {
+              id: key,
+              username: presence.username || 'Usuario',
+              avatar_url: presence.avatar_url || '',
+              position: new Vector3(
+                presence.position?.x || -165,
+                presence.position?.y || 0,
+                presence.position?.z || -59
+              ),
+              rotation: presence.rotation || 0,
+              isMoving: presence.isMoving || false,
+              isRunning: presence.isRunning || false,
+              lastUpdated: Date.now()
             };
           }
         });
         
-        // Update online avatars state
         setOnlineAvatars(avatars);
       });
       
       // Subscribe to the channel
       channel.subscribe(async (status) => {
-        console.log(`Avatar channel status: ${status}`);
-        
-        if (status === "SUBSCRIBED") {
-          console.log("Successfully connected to avatar channel");
-          
-          // Track our presence with initial position
-          try {
-            await channel.track({
-              username,
-              avatar_url: avatarUrl,
-              position: [-165, 0, -59], // Initial position
-              rotation: 0,
-              isMoving: false,
-              isRunning: false,
-              last_updated: Date.now(),
-            });
-            console.log("Successfully tracked avatar presence");
-          } catch (error) {
-            console.error("Failed to track avatar presence:", error);
-          }
+        if (status === 'SUBSCRIBED') {
+          // Track our presence
+          await channel.track({
+            username,
+            avatar_url: avatarUrl,
+            position: { x: -165, y: 0, z: -59 },
+            rotation: 0,
+            isMoving: false,
+            isRunning: false
+          });
         }
       });
       
-      // Store channel reference
       channelRef.current = channel;
       
-      // Handle page close/refresh - untrack presence
-      const handleBeforeUnload = () => {
-        if (channelRef.current) {
-          channelRef.current.untrack();
-        }
-      };
-      
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      
-      // Cleanup function
+      // Clean up on unmount
       return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-        
         if (channelRef.current) {
           channelRef.current.untrack();
           channelRef.current.unsubscribe();
-          channelRef.current = null;
         }
       };
     }
   }, [userId, username, avatarUrl]);
   
-  // Function to broadcast avatar position update
+  // Function to broadcast position updates
   const broadcastPosition = (
-    position: Vector3, 
-    rotation: number, 
-    isMoving: boolean, 
+    position: Vector3,
+    rotation: number,
+    isMoving: boolean,
     isRunning: boolean
   ) => {
-    if (!channelRef.current) return;
+    if (!channelRef.current || !userId) return;
     
-    // Check if position or state has changed significantly
-    const positionChanged = 
-      Math.abs(position.x - lastPositionRef.current.x) > 0.1 ||
-      Math.abs(position.y - lastPositionRef.current.y) > 0.1 ||
-      Math.abs(position.z - lastPositionRef.current.z) > 0.1;
-      
-    const rotationChanged = Math.abs(rotation - lastRotationRef.current) > 0.05;
+    // Only broadcast if something significant changed or enough time has passed
+    const now = Date.now();
+    const timeSinceLastBroadcast = now - lastBroadcastRef.current.timestamp;
+    const positionChanged = position.distanceTo(lastBroadcastRef.current.position) > 0.1;
+    const rotationChanged = Math.abs(rotation - lastBroadcastRef.current.rotation) > 0.1;
+    const movementChanged = 
+      isMoving !== lastBroadcastRef.current.isMoving || 
+      isRunning !== lastBroadcastRef.current.isRunning;
     
-    if (positionChanged || rotationChanged) {
-      // Update last known position and rotation
-      lastPositionRef.current.copy(position);
-      lastRotationRef.current = rotation;
-      
-      // Broadcast position update
-      channelRef.current.send({
-        type: "broadcast",
-        event: "avatar_update",
-        payload: {
-          id: userId,
-          username,
-          avatar_url: avatarUrl,
-          position: [position.x, position.y, position.z],
-          rotation,
-          isMoving,
-          isRunning,
-          last_updated: Date.now(),
-        },
-      });
-      
-      // Also update presence data
-      channelRef.current.track({
-        username,
-        avatar_url: avatarUrl,
-        position: [position.x, position.y, position.z],
+    // Broadcast at least every 100ms if moving, or 1000ms if stationary
+    const minInterval = isMoving ? 100 : 1000;
+    
+    if (positionChanged || rotationChanged || movementChanged || timeSinceLastBroadcast > minInterval) {
+      // Update last broadcast values
+      lastBroadcastRef.current = {
+        position: position.clone(),
         rotation,
         isMoving,
         isRunning,
-        last_updated: Date.now(),
+        timestamp: now
+      };
+      
+      // Broadcast update
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'avatar_update',
+        payload: {
+          id: userId,
+          username: channelRef.current.presenceState()[userId]?.[0]?.username || 'Usuario',
+          avatar_url: channelRef.current.presenceState()[userId]?.[0]?.avatar_url || '',
+          position,
+          rotation,
+          isMoving,
+          isRunning,
+          lastUpdated: now
+        }
+      });
+      
+      // Update presence data
+      channelRef.current.track({
+        username: channelRef.current.presenceState()[userId]?.[0]?.username || 'Usuario',
+        avatar_url: channelRef.current.presenceState()[userId]?.[0]?.avatar_url || '',
+        position: { x: position.x, y: position.y, z: position.z },
+        rotation,
+        isMoving,
+        isRunning
       });
     }
   };
   
   return {
     onlineAvatars,
-    broadcastPosition,
+    broadcastPosition
   };
 }

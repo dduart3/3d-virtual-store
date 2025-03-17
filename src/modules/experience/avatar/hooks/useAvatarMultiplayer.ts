@@ -15,14 +15,13 @@ enum Controls {
   run = "run",
 }
 
-// This hook adds multiplayer functionality to your avatar
 export function useAvatarMultiplayer(
   rigidBodyRef: React.RefObject<RapierRigidBody>,
   modelRef: React.RefObject<Group>
 ) {
   const [, get] = useKeyboardControls<Controls>();
   
-  // Get user info for multiplayer
+  // Get user info
   const { profile } = useAuth();
   
   // Initialize online avatars system
@@ -31,11 +30,11 @@ export function useAvatarMultiplayer(
     profile?.username || "Usuario",
     profile?.avatar_url || "https://readyplayerme.github.io/visage/male.glb"
   );
-
+  
   // Broadcast position in each frame
   useFrame(() => {
     if (!rigidBodyRef.current || !modelRef.current) return;
-
+    
     const { forward, backward, left, right, run } = get();
     const isMoving = forward || backward || left || right;
     const isRunning = isMoving && run;

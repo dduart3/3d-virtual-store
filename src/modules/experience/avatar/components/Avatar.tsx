@@ -12,8 +12,8 @@ import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { avatarUrlAtom } from "../state/avatar";
-import { useAvatarMultiplayer } from "../hooks/useAvatarMultiplayer";
 import { isSceneReadyAtom } from "../../../../shared/state/loading";
+import { useAvatarMultiplayer } from "../hooks/useAvatarMultiplayer";
 
 enum Controls {
   forward = "forward",
@@ -43,7 +43,6 @@ export const Avatar = () => {
   useAvatarCamera(rigidBodyRef);
   const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
 
-  // Add multiplayer functionality
   useAvatarMultiplayer(rigidBodyRef, modelRef);
 
   // Update animations

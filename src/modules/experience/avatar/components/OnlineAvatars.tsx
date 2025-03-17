@@ -1,26 +1,25 @@
 import { useAtom } from "jotai";
-import { onlineAvatarsAtom, currentAvatarIdAtom } from "../state/onlineAvatars";
-import { RigidBody, CuboidCollider } from "@react-three/rapier";
+import { onlineAvatarsAtom, currentUserIdAtom } from "../state/onlineAvatars";
+import { RigidBody, CuboidCollider, RapierRigidBody } from "@react-three/rapier";
 import { Text, useGLTF } from "@react-three/drei";
-import { useRef, useEffect } from "react";
-import { Group } from "three";
+import { useRef} from "react";
+import { Group, Vector3 } from "three";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 
 export const OnlineAvatars = () => {
   const [onlineAvatars] = useAtom(onlineAvatarsAtom);
-  const [currentAvatarId] = useAtom(currentAvatarIdAtom);
+  const [currentUserId] = useAtom(currentUserIdAtom);
   
   return (
     <>
       {Object.values(onlineAvatars).map((avatar) => {
         // Don't render our own avatar
-        if (avatar.id === currentAvatarId) return null;
+        if (avatar.id === currentUserId) return null;
         
         return (
           <OnlineAvatar
             key={avatar.id}
-            id={avatar.id}
             username={avatar.username}
             avatarUrl={avatar.avatar_url}
             position={avatar.position}
@@ -35,10 +34,9 @@ export const OnlineAvatars = () => {
 };
 
 interface OnlineAvatarProps {
-  id: string;
   username: string;
   avatarUrl: string;
-  position: [number, number, number];
+  position: Vector3;
   rotation: number;
   isMoving: boolean;
   isRunning: boolean;
@@ -52,9 +50,10 @@ const OnlineAvatar = ({
   isMoving,
   isRunning
 }: OnlineAvatarProps) => {
+  const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<Group>(null);
   
-  // Load the avatar model directly
+  // Load the avatar model
   const { scene } = useGLTF(
     avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
   );
@@ -62,46 +61,30 @@ const OnlineAvatar = ({
   // Use the same animation system as the main avatar
   const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
   
-  // Update animations based on movement state
+  // Update animations and position
   useFrame((_, delta) => {
-    // Update animations based on the received movement state
+    if (!rigidBodyRef.current) return;
+    
+    // Update position
+    rigidBodyRef.current.setTranslation(
+      { x: position.x, y: position.y, z: position.z },
+      true
+    );
+    
+    // Update rotation
+    if (modelRef.current) {
+      modelRef.current.rotation.y = rotation;
+    }
+    
+    // Update animations
     updateAnimation(isMoving, isRunning, false);
     updateAnimations(delta);
   });
   
-  // Add the model to the scene
-  useEffect(() => {
-    if (modelRef.current) {
-      // Clear any existing children
-      while (modelRef.current.children.length > 0) {
-        modelRef.current.remove(modelRef.current.children[0]);
-      }
-      
-      // Add the scene directly without cloning
-      modelRef.current.add(scene);
-    }
-    
-    // Cleanup function
-    return () => {
-      if (modelRef.current) {
-        // Remove the scene from the group before unmounting
-        if (scene && modelRef.current.children.includes(scene)) {
-          modelRef.current.remove(scene);
-        }
-        
-        // Clear any remaining children
-        while (modelRef.current.children.length > 0) {
-          modelRef.current.remove(modelRef.current.children[0]);
-        }
-      }
-    };
-  }, [scene]);
-  
   return (
     <RigidBody
+      ref={rigidBodyRef}
       type="kinematicPosition"
-      position={position}
-      rotation={[0, rotation, 0]}
       enabledRotations={[false, false, false]}
       mass={1}
       friction={1}
@@ -112,7 +95,9 @@ const OnlineAvatar = ({
         position={[0, -0.1, 0]}
       />
       
-      <group ref={modelRef} scale={1} position={[0, -1, 0]} />
+      <group ref={modelRef} scale={1} position={[0, -1, 0]}>
+        <primitive object={scene} />
+      </group>
       
       {/* Username label */}
       <Text
