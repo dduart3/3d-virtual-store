@@ -8,8 +8,8 @@ import { useToast } from "../../../../shared/context/ToastContext";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
 export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
-  const [avatarUrl, setAvatarUrl] = useAtom(avatarUrlAtom);
-  const [avatarId, setAvatarId] = useAtom(avatarIdAtom);
+  const [, setAvatarUrl] = useAtom(avatarUrlAtom);
+  const [, setAvatarId] = useAtom(avatarIdAtom);
   const { showToast } = useToast();
   const { user, updateAvatar } = useAuth();
 
@@ -18,7 +18,7 @@ export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
     const url = event.data?.url;
     const id = event.data?.avatarId;
 
-    if (avatarId && avatarUrl && user) {
+    if (user) {
       updateAvatar({ userId: user.id, avatarUrl: url });
       showToast("Avatar actualizado con éxito", "success");
     }
