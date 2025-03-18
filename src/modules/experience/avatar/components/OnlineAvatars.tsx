@@ -88,15 +88,9 @@ export const OnlineAvatarInstance = ({
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<Group>(null);
   
-  // State for smooth interpolation
-  const currentPositionRef = useRef(position.clone());
-  const currentRotationRef = useRef(rotation);
+  // Single source of truth for position and rotation
   const targetPositionRef = useRef(position.clone());
   const targetRotationRef = useRef(rotation);
-  const lastUpdateTimeRef = useRef(Date.now());
-  
-  // Flag to track if we're still interpolating to target position
-  const isInterpolatingRef = useRef(false);
   
   // Load the avatar model
   const { scene } = useGLTF(
@@ -108,82 +102,70 @@ export const OnlineAvatarInstance = ({
   
   // Update target position and rotation when props change
   useEffect(() => {
-    // Only update target if position actually changed
-    if (!targetPositionRef.current.equals(position)) {
-      targetPositionRef.current = position.clone();
-      isInterpolatingRef.current = true;
-    }
-    
+    targetPositionRef.current = position.clone();
     targetRotationRef.current = rotation;
-    lastUpdateTimeRef.current = Date.now();
   }, [position, rotation]);
   
-  // Smooth interpolation and animation updates
+  // Handle smooth movement and animation updates
   useFrame((_, delta) => {
     if (!rigidBodyRef.current || !modelRef.current) return;
     
+    // Get current position from rigid body
+    const currentPos = rigidBodyRef.current.translation();
+    const currentPosVector = new Vector3(currentPos.x, currentPos.y, currentPos.z);
+    
     // Calculate distance to target
-    const distanceToTarget = currentPositionRef.current.distanceTo(targetPositionRef.current);
+    const distanceToTarget = currentPosVector.distanceTo(targetPositionRef.current);
     
-    // Determine if we should be interpolating
-    if (distanceToTarget > 0.05) {
-      isInterpolatingRef.current = true;
-    } else if (distanceToTarget <= 0.05 && isInterpolatingRef.current) {
-      // We've reached the target, stop interpolating
-      isInterpolatingRef.current = false;
-      // Snap to exact position to avoid tiny movements
-      currentPositionRef.current.copy(targetPositionRef.current);
-    }
-    
-    // Only interpolate position if we're actually moving or recently received an update
-    const timeSinceUpdate = Date.now() - lastUpdateTimeRef.current;
-    const shouldInterpolate = isInterpolatingRef.current && (isMoving || timeSinceUpdate < 1000);
-    
-    if (shouldInterpolate) {
-      // Position interpolation - smoother for online avatars
-      const posLerpFactor = Math.min(1, delta * 4);
-      currentPositionRef.current.lerp(targetPositionRef.current, posLerpFactor);
+    // Only interpolate if we need to move
+    if (distanceToTarget > 0.01) {
+      // Calculate interpolated position
+      const lerpFactor = Math.min(1, delta * (isMoving ? 10 : 5)); // Faster when moving
+      const newPos = currentPosVector.clone().lerp(targetPositionRef.current, lerpFactor);
       
-      // Apply position to rigid body
+      // Apply position directly to rigid body
+      rigidBodyRef.current.setTranslation(
+        { x: newPos.x, y: newPos.y, z: newPos.z },
+        true
+      );
+    } else if (distanceToTarget > 0 && distanceToTarget <= 0.01) {
+      // If very close to target, snap to exact position to avoid tiny movements
       rigidBodyRef.current.setTranslation(
         { 
-          x: currentPositionRef.current.x, 
-          y: currentPositionRef.current.y, 
-          z: currentPositionRef.current.z 
+          x: targetPositionRef.current.x, 
+          y: targetPositionRef.current.y, 
+          z: targetPositionRef.current.z 
         },
         true
       );
     }
     
-    // Rotation interpolation - much slower to prevent jittering
-    const rotLerpFactor = Math.min(1, delta * 2.5);
-    
-    // Calculate shortest path for rotation
-    let targetRot = targetRotationRef.current;
-    let currentRot = currentRotationRef.current;
+    // Handle rotation
+    const currentRotY = modelRef.current.rotation.y;
+    const targetRotY = targetRotationRef.current;
     
     // Normalize rotations to [-PI, PI] range
-    while (targetRot > Math.PI) targetRot -= Math.PI * 2;
-    while (targetRot < -Math.PI) targetRot += Math.PI * 2;
-    while (currentRot > Math.PI) currentRot -= Math.PI * 2;
-    while (currentRot < -Math.PI) currentRot += Math.PI * 2;
+    let normalizedCurrentRot = currentRotY;
+    let normalizedTargetRot = targetRotY;
+    
+    while (normalizedCurrentRot > Math.PI) normalizedCurrentRot -= Math.PI * 2;
+    while (normalizedCurrentRot < -Math.PI) normalizedCurrentRot += Math.PI * 2;
+    while (normalizedTargetRot > Math.PI) normalizedTargetRot -= Math.PI * 2;
+    while (normalizedTargetRot < -Math.PI) normalizedTargetRot += Math.PI * 2;
     
     // Find shortest rotation path
-    let rotDiff = targetRot - currentRot;
+    let rotDiff = normalizedTargetRot - normalizedCurrentRot;
     if (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
     if (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
     
     // Only apply rotation if there's a significant difference
     if (Math.abs(rotDiff) > 0.01) {
       // Apply smooth rotation
-      currentRotationRef.current = currentRot + rotDiff * rotLerpFactor;
-      
-      // Apply rotation to model
-      modelRef.current.rotation.y = currentRotationRef.current;
+      const rotLerpFactor = Math.min(1, delta * 5);
+      modelRef.current.rotation.y = normalizedCurrentRot + rotDiff * rotLerpFactor;
     }
     
     // Update animations based on actual movement state
-    // This ensures we go to idle when not moving
     updateAnimation(isMoving, isRunning, false);
     updateAnimations(delta);
   });
