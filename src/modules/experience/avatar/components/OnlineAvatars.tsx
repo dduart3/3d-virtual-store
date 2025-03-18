@@ -1,204 +1,186 @@
-import { useAtom } from "jotai";
-import { onlineAvatarsAtom, currentUserIdAtom } from "../state/onlineAvatars";
-import { RigidBody, CuboidCollider, RapierRigidBody } from "@react-three/rapier";
-import { Text, useGLTF } from "@react-three/drei";
-import { useRef, useEffect } from "react";
+import { useEffect, useState, useRef, createRef } from "react";
+import { Text } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { Group, Vector3 } from "three";
-import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
+import { useAvatarAnimations } from "../../avatar/hooks/useAvatarAnimations";
+import { useAuth } from "../../../auth/hooks/useAuth";
+import { useSocket } from "../../multiplayer/context/SocketProvider";
 
-export const OnlineAvatars = () => {
-  const [onlineAvatars] = useAtom(onlineAvatarsAtom);
-  const [currentUserId] = useAtom(currentUserIdAtom);
-  
-  // Keep track of when avatars were last seen to handle cleanup
-  const lastSeenRef = useRef<Record<string, number>>({});
-  
-  // Clean up stale avatars that haven't been updated in a while
-  useEffect(() => {
-    const cleanupInterval = setInterval(() => {
-      const now = Date.now();
-      const staleThreshold = 10000; // 10 seconds
-      
-      Object.entries(lastSeenRef.current).forEach(([id, lastSeen]) => {
-        if (now - lastSeen > staleThreshold && !onlineAvatars[id]) {
-          // Remove from lastSeen if not in onlineAvatars for 10+ seconds
-          const newLastSeen = { ...lastSeenRef.current };
-          delete newLastSeen[id];
-          lastSeenRef.current = newLastSeen;
-        }
-      });
-    }, 5000);
-    
-    return () => clearInterval(cleanupInterval);
-  }, []);
-  
-  // Update lastSeen for all current avatars
-  useEffect(() => {
-    const now = Date.now();
-    const newLastSeen = { ...lastSeenRef.current };
-    
-    Object.keys(onlineAvatars).forEach(id => {
-      newLastSeen[id] = now;
-    });
-    
-    lastSeenRef.current = newLastSeen;
-  }, [onlineAvatars]);
-  
-  return (
-    <>
-      {Object.values(onlineAvatars).map((avatar) => {
-        // Don't render our own avatar
-        if (avatar.id === currentUserId) return null;
-        
-        return (
-          <OnlineAvatarInstance
-            key={avatar.id}
-            username={avatar.username}
-            avatarUrl={avatar.avatar_url}
-            position={avatar.position}
-            rotation={avatar.rotation}
-            isMoving={avatar.isMoving}
-            isRunning={avatar.isRunning}
-          />
-        );
-      })}
-    </>
-  );
-};
-
-
-interface OnlineAvatarProps {
+interface RemotePlayer {
+  id: string;
   username: string;
   avatarUrl: string;
-  position: Vector3;
+  position: { x: number; y: number; z: number };
   rotation: number;
   isMoving: boolean;
   isRunning: boolean;
+  lastUpdate: number;
+  modelRef: React.RefObject<Group>;
 }
 
-export const OnlineAvatarInstance = ({
-  username,
-  avatarUrl,
-  position,
-  rotation,
-  isMoving,
-  isRunning
-}: OnlineAvatarProps) => {
-  const rigidBodyRef = useRef<RapierRigidBody>(null);
-  const modelRef = useRef<Group>(null);
-  
-  // Single source of truth for position and rotation
-  const targetPositionRef = useRef(position.clone());
-  const targetRotationRef = useRef(rotation);
-  
+export function OnlineAvatars() {
+  const { socket } = useSocket();
+  const { profile } = useAuth();
+  const [players, setPlayers] = useState<Record<string, RemotePlayer>>({});
+
+  useEffect(() => {
+    if (!socket || !profile) return;
+
+    // Handle initial players list
+    const handleInitialPlayers = (initialPlayers: any[]) => {
+      const playersMap: Record<string, RemotePlayer> = {};
+
+      initialPlayers.forEach((player) => {
+        // Skip self - compare with our own user ID
+        if (player.id !== profile.id) {
+          playersMap[player.id] = {
+            ...player,
+            lastUpdate: Date.now(),
+            modelRef: createRef<Group>(),
+          };
+        }
+      });
+
+      setPlayers(playersMap);
+    };
+
+    // Handle player updates
+    const handlePlayerUpdate = (update: any) => {
+      // Skip self - compare with our own user ID
+      if (update.id === profile.id) return;
+
+      setPlayers((prev) => {
+        // If player doesn't exist yet, add them
+        if (!prev[update.id]) {
+          return {
+            ...prev,
+            [update.id]: {
+              id: update.id,
+              username: update.username,
+              avatarUrl: update.avatarUrl,
+              position: update.position,
+              rotation: update.rotation,
+              isMoving: update.isMoving,
+              isRunning: update.isRunning,
+              lastUpdate: Date.now(),
+              modelRef: createRef<Group>(),
+            },
+          };
+        }
+
+        // Otherwise update existing player
+        return {
+          ...prev,
+          [update.id]: {
+            ...prev[update.id],
+            position: update.position,
+            rotation: update.rotation,
+            isMoving: update.isMoving,
+            isRunning: update.isRunning,
+            lastUpdate: Date.now(),
+          },
+        };
+      });
+    };
+
+    // Handle player disconnection
+    const handlePlayerDisconnect = (playerId: string) => {
+      setPlayers((prev) => {
+        const newPlayers = { ...prev };
+        delete newPlayers[playerId];
+        return newPlayers;
+      });
+    };
+
+    // Subscribe to events
+    socket.on("users:initial", handleInitialPlayers);
+    socket.on("avatar:update", handlePlayerUpdate);
+    socket.on("user:disconnect", handlePlayerDisconnect);
+
+    return () => {
+      socket.off("users:initial", handleInitialPlayers);
+      socket.off("avatar:update", handlePlayerUpdate);
+      socket.off("user:disconnect", handlePlayerDisconnect);
+    };
+  }, [socket, profile]);
+
+  return (
+    <>
+      {Object.values(players).map((player) => (
+        <OnlineAvatar key={player.id} player={player} />
+      ))}
+    </>
+  );
+}
+
+interface OnlineAvatarProps {
+  player: RemotePlayer;
+}
+
+function OnlineAvatar({ player }: OnlineAvatarProps) {
+  const {
+    position,
+    rotation,
+    isMoving,
+    isRunning,
+    username,
+    avatarUrl,
+    modelRef,
+  } = player;
+  const positionRef = useRef(new Vector3(position.x, position.y, position.z));
+  const targetPositionRef = useRef(
+    new Vector3(position.x, position.y, position.z)
+  );
+
+  // Use the same animation system as the main avatar
+  const { updateAnimation, update } = useAvatarAnimations(modelRef);
+
   // Load the avatar model
   const { scene } = useGLTF(
     avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
   );
-  
-  // Use the same animation system as the main avatar
-  const { updateAnimation, update: updateAnimations } = useAvatarAnimations(modelRef);
-  
-  // Update target position and rotation when props change
+
+  // Update target position when player data changes
   useEffect(() => {
-    targetPositionRef.current = position.clone();
-    targetRotationRef.current = rotation;
-  }, [position, rotation]);
-  
-  // Handle smooth movement and animation updates
+    targetPositionRef.current.set(position.x, position.y, position.z);
+  }, [position]);
+
+  // Smooth movement and animation updates
   useFrame((_, delta) => {
-    if (!rigidBodyRef.current || !modelRef.current) return;
-    
-    // Get current position from rigid body
-    const currentPos = rigidBodyRef.current.translation();
-    const currentPosVector = new Vector3(currentPos.x, currentPos.y, currentPos.z);
-    
-    // Calculate distance to target
-    const distanceToTarget = currentPosVector.distanceTo(targetPositionRef.current);
-    
-    // Only interpolate if we need to move
-    if (distanceToTarget > 0.01) {
-      // Calculate interpolated position
-      const lerpFactor = Math.min(1, delta * (isMoving ? 10 : 5)); // Faster when moving
-      const newPos = currentPosVector.clone().lerp(targetPositionRef.current, lerpFactor);
-      
-      // Apply position directly to rigid body
-      rigidBodyRef.current.setTranslation(
-        { x: newPos.x, y: newPos.y, z: newPos.z },
-        true
-      );
-    } else if (distanceToTarget > 0 && distanceToTarget <= 0.01) {
-      // If very close to target, snap to exact position to avoid tiny movements
-      rigidBodyRef.current.setTranslation(
-        { 
-          x: targetPositionRef.current.x, 
-          y: targetPositionRef.current.y, 
-          z: targetPositionRef.current.z 
-        },
-        true
-      );
-    }
-    
-    // Handle rotation
-    const currentRotY = modelRef.current.rotation.y;
-    const targetRotY = targetRotationRef.current;
-    
-    // Normalize rotations to [-PI, PI] range
-    let normalizedCurrentRot = currentRotY;
-    let normalizedTargetRot = targetRotY;
-    
-    while (normalizedCurrentRot > Math.PI) normalizedCurrentRot -= Math.PI * 2;
-    while (normalizedCurrentRot < -Math.PI) normalizedCurrentRot += Math.PI * 2;
-    while (normalizedTargetRot > Math.PI) normalizedTargetRot -= Math.PI * 2;
-    while (normalizedTargetRot < -Math.PI) normalizedTargetRot += Math.PI * 2;
-    
-    // Find shortest rotation path
-    let rotDiff = normalizedTargetRot - normalizedCurrentRot;
-    if (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
-    if (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
-    
-    // Only apply rotation if there's a significant difference
-    if (Math.abs(rotDiff) > 0.01) {
-      // Apply smooth rotation
-      const rotLerpFactor = Math.min(1, delta * 5);
-      modelRef.current.rotation.y = normalizedCurrentRot + rotDiff * rotLerpFactor;
-    }
-    
-    // Update animations based on actual movement state
+    // Smooth position interpolation
+    positionRef.current.lerp(
+      targetPositionRef.current,
+      Math.min(delta * 10, 1)
+    );
+
+    // Update animations
     updateAnimation(isMoving, isRunning, false);
-    updateAnimations(delta);
+    update(delta);
   });
-  
+
   return (
-    <RigidBody
-      ref={rigidBodyRef}
-      type="kinematicPosition"
-      enabledRotations={[false, false, false]}
-      colliders={false}
-      position={[position.x, position.y, position.z]}
+    <group
+      position={[
+        positionRef.current.x,
+        positionRef.current.y,
+        positionRef.current.z,
+      ]}
     >
-      <CuboidCollider
-        args={[0.2, 0.9, 0.3]}
-        position={[0, 0.9, 0]}
-      />
-      
-      <group ref={modelRef} position={[0, 0, 0]}>
+      <group ref={modelRef} rotation={[0, rotation, 0]}>
         <primitive object={scene} />
       </group>
-      
-      {/* Username label */}
       <Text
         position={[0, 2.2, 0]}
-        fontSize={0.3}
+        fontSize={0.5}
         color="white"
         anchorX="center"
         anchorY="middle"
         outlineWidth={0.05}
-        outlineColor="black"
+        outlineColor="#000000"
       >
         {username}
       </Text>
-    </RigidBody>
+    </group>
   );
-};
+}

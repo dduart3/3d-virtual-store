@@ -1,7 +1,8 @@
 import { useAtom } from "jotai";
 import { useState, useEffect, useRef } from "react";
 import { chatInputFocusedAtom } from "../state/chat";
-import { useChat } from "../hooks/useChat";
+import { useSocketChat } from "../hooks/useSocketChat";
+import { useAIChat } from "../hooks/useAIChat";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 export const Chat = () => {
@@ -46,18 +47,19 @@ export const Chat = () => {
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<"chat" | "ai">("chat");
 
-  // Use the updated useChat hook which now handles both regular and AI messages
+  // Use the separate hooks for socket chat and AI chat
   const {
     messages,
-    aiMessages, // Now provided by the hook
-    sendMessage, // Unified send message function
-    connected,
+    sendMessage: sendSocketMessage,
     markAsRead,
-    initializeChannel,
-    checkAndAnnounceJoin,
-    initializeWelcomeMessages,
-    isLoading, // Combined loading state
-  } = useChat();
+    isLoading: isSocketLoading,
+  } = useSocketChat();
+
+  const {
+    aiMessages,
+    sendAIMessage,
+    isLoading: isAILoading,
+  } = useAIChat();
 
   const [newChatMessage, setNewChatMessage] = useState<string>("");
   const [newAIChatMessage, setNewAIChatMessage] = useState<string>("");
@@ -69,47 +71,14 @@ export const Chat = () => {
   const formattedUnreadCount =
     unreadCount > 99 ? "99+" : unreadCount.toString();
 
-  // Initialize chat when profile is available
-  useEffect(() => {
-    if (profile && profile.username && profile.avatar_url) {
-      // Create user object from profile
-      const user = {
-        id: profile.id,
-        username: profile.username,
-        avatar_url: profile.avatar_url,
-      };
-
-      // Initialize the chat channel
-      initializeChannel(user);
-
-      // Initialize welcome messages
-      initializeWelcomeMessages();
-    }
-  }, [profile]);
-  // Check and announce join when profile and username are available
-  useEffect(() => {
-    if (profile && profile.username && profile.avatar_url) {
-      // Create user object from profile with proper username
-      const user = {
-        id: profile.id,
-        username: profile.username,
-        avatar_url: profile.avatar_url,
-      };
-
-      // Check and announce join if needed
-      checkAndAnnounceJoin(user);
-    }
-  }, [profile?.username]);
-
   // Mark all messages as read when opening the chat
   useEffect(() => {
     if (isOpen && unreadCount > 0) {
       // Mark messages as read
       messages.filter((msg) => !msg.read).forEach((msg) => markAsRead(msg.id));
-
       setUnreadCount(0);
     }
-  }, [isOpen, unreadCount, messages]);
+  }, [isOpen, unreadCount, messages, markAsRead]);
 
   // Track new messages for unread count
   useEffect(() => {
@@ -133,13 +102,13 @@ export const Chat = () => {
   }, [messages.length, isOpen, profile]);
 
   const handleSendMessage = async () => {
-    if (activeTab === "chat" && newChatMessage.trim() && connected) {
+    if (activeTab === "chat" && newChatMessage.trim()) {
       // Send regular chat message
-      sendMessage(newChatMessage, false); // false = not AI message
+      sendSocketMessage(newChatMessage);
       setNewChatMessage("");
-    } else if (activeTab === "ai" && newAIChatMessage.trim() && !isLoading) {
+    } else if (activeTab === "ai" && newAIChatMessage.trim() && !isAILoading) {
       // Send AI message
-      sendMessage(newAIChatMessage, true); // true = AI message
+      sendAIMessage(newAIChatMessage);
       setNewAIChatMessage("");
     }
     setChatInputFocused(false);
@@ -160,7 +129,9 @@ export const Chat = () => {
   };
 
   const isInputDisabled =
-    (activeTab === "chat" && !connected) || (activeTab === "ai" && isLoading);
+    (activeTab === "chat" && isSocketLoading) || (activeTab === "ai" && isAILoading);
+
+  const isLoading = activeTab === "chat" ? isSocketLoading : isAILoading;
 
   return (
     <div className="absolute bottom-5 left-5 pointer-events-auto">
@@ -184,19 +155,21 @@ export const Chat = () => {
         >
           <div className="text-white flex items-center">
             <div
-              className={`w-2 h-2 rounded-full ${activeTab === "chat"
-                ? connected
-                  ? "bg-green-500"
-                  : "bg-red-500 animate-pulse"
-                : unreadCount > 0
-                  ? "bg-red-500 animate-pulse"
-                  : "bg-green-500"
-                } mr-2`}
+              className={`w-2 h-2 rounded-full ${
+                activeTab === "chat"
+                  ? !isSocketLoading
+                    ? "bg-green-500"
+                    : "bg-red-500 animate-pulse"
+                  : unreadCount > 0
+                    ? "bg-red-500 animate-pulse"
+                    : "bg-green-500"
+              } mr-2`}
             ></div>
             <span>
               {!isOpen && unreadCount > 0
-                ? `Chat (${formattedUnreadCount} mensaje${unreadCount > 1 ? "s" : ""
-                } nuevo${unreadCount > 1 ? "s" : ""})`
+                ? `Chat (${formattedUnreadCount} mensaje${
+                    unreadCount > 1 ? "s" : ""
+                  } nuevo${unreadCount > 1 ? "s" : ""})`
                 : "Chat"}
             </span>
           </div>
@@ -209,19 +182,21 @@ export const Chat = () => {
         {isOpen && (
           <div className="flex border-b border-white/20">
             <button
-              className={`flex-1 p-2 text-sm ${activeTab === "chat"
-                ? "bg-white/20 text-white"
-                : "text-white/70 hover:bg-white/10"
-                }`}
+              className={`flex-1 p-2 text-sm ${
+                activeTab === "chat"
+                  ? "bg-white/20 text-white"
+                  : "text-white/70 hover:bg-white/10"
+              }`}
               onClick={() => handleTabChange("chat")}
             >
               Chat
             </button>
             <button
-              className={`flex-1 p-2 text-sm ${activeTab === "ai"
-                ? "bg-white/20 text-white"
-                : "text-white/70 hover:bg-white/10"
-                }`}
+              className={`flex-1 p-2 text-sm ${
+                activeTab === "ai"
+                  ? "bg-white/20 text-white"
+                  : "text-white/70 hover:bg-white/10"
+              }`}
               onClick={() => handleTabChange("ai")}
             >
               Asistente IA
@@ -231,8 +206,9 @@ export const Chat = () => {
 
         {/* Chat Messages Area */}
         <div
-          className={`flex-1 p-3 overflow-auto transition-all ${!isOpen ? "hidden" : "block"
-            }`}
+          className={`flex-1 p-3 overflow-auto transition-all ${
+            !isOpen ? "hidden" : "block"
+          }`}
         >
           {activeTab === "chat" ? (
             // Real-time chat messages
@@ -240,12 +216,13 @@ export const Chat = () => {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`text-sm mb-1 ${message.type === "system"
-                    ? "text-green-400"
-                    : message.type === "admin"
-                      ? "text-blue-400"
-                      : "text-white"
-                    }`}
+                  className={`text-sm mb-1 ${
+                    message.type === "system"
+                      ? "text-green-400"
+                      : message.type === "admin"
+                        ? "text-blue-400"
+                        : "text-white"
+                  }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   {message.content}
@@ -256,13 +233,14 @@ export const Chat = () => {
               ))}
             </>
           ) : (
-            // AI chat messages - now using aiMessages from the hook
+            // AI chat messages
             <>
               {aiMessages.map((message) => (
                 <div
                   key={message.id}
-                  className={`text-sm mb-1 ${message.type === "system" ? "text-green-400" : "text-white"
-                    }`}
+                  className={`text-sm mb-1 ${
+                    message.type === "system" ? "text-green-400" : "text-white"
+                  }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   <div
@@ -272,7 +250,7 @@ export const Chat = () => {
                   />
                 </div>
               ))}
-              {isLoading && (
+              {isAILoading && (
                 <div className="text-sm text-gray-400 italic">
                   El asistente está escribiendo...
                 </div>
@@ -284,17 +262,18 @@ export const Chat = () => {
 
         {/* Chat Input */}
         <div
-          className={`p-2 border-t border-white/20 flex transition-all ${!isOpen ? "hidden" : "block"
-            }`}
+          className={`p-2 border-t border-white/20 flex transition-all ${
+            !isOpen ? "hidden" : "block"
+          }`}
         >
           <input
             type="text"
             placeholder={
               activeTab === "chat"
-                ? connected
+                ? !isSocketLoading
                   ? "Escribe tu mensaje..."
                   : "Conectando..."
-                : isLoading
+                : isAILoading
                   ? "Esperando respuesta..."
                   : "Escribe tu mensaje..."
             }
@@ -307,16 +286,13 @@ export const Chat = () => {
             disabled={isInputDisabled}
           />
           <button
-            className={`ml-2 px-3 rounded ${(activeTab === "chat" && !connected) ||
-              (activeTab === "ai" && isLoading)
-              ? "bg-gray-600 cursor-not-allowed"
-              : "bg-white/10 hover:bg-white/20"
-              } text-white`}
+            className={`ml-2 px-3 rounded ${
+              isInputDisabled
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-white/10 hover:bg-white/20"
+            } text-white`}
             onClick={handleSendMessage}
-            disabled={
-              (activeTab === "chat" && !connected) ||
-              (activeTab === "ai" && isLoading)
-            }
+            disabled={isInputDisabled}
           >
             Enviar
           </button>

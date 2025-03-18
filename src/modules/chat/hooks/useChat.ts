@@ -4,7 +4,6 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { ChatMessage, ChatUser } from "../types/chat";
 import { useAIChat } from "./useAIChat";
 
-
 // Constants
 const CHANNEL_NAME = "public-chat";
 const MESSAGES_QUERY_KEY = "chat-messages";
@@ -16,7 +15,6 @@ export function useChat() {
   const queryClient = useQueryClient();
   const aiChat = useAIChat();
   const [isLoading, setIsLoading] = useState(false);
-
 
   // References to maintain state without causing re-renders
   const channelRef = useRef<any>(null);
@@ -44,13 +42,13 @@ export function useChat() {
     initialData: [],
   });
 
-    // Separate query for AI chat messages
-    const { data: aiMessages = [] } = useQuery<ChatMessage[]>({
-      queryKey: [AI_MESSAGES_QUERY_KEY],
-      queryFn: () => [],
-      staleTime: Infinity,
-      initialData: [],
-    });
+  // Separate query for AI chat messages
+  const { data: aiMessages = [] } = useQuery<ChatMessage[]>({
+    queryKey: [AI_MESSAGES_QUERY_KEY],
+    queryFn: () => [],
+    staleTime: Infinity,
+    initialData: [],
+  });
 
   // Connection status tracking
   const { data: connected = false } = useQuery({
@@ -68,23 +66,23 @@ export function useChat() {
     initialData: [],
   });
 
- // Add message mutation for public chat
- const addMessage = useMutation({
-  mutationFn: (message: ChatMessage) => Promise.resolve(message),
-  onSuccess: (newMessage) => {
-    // Check if we already have this message to prevent duplicates
-    if (messageIdsRef.current.has(newMessage.id)) {
-      return;
-    }
+  // Add message mutation for public chat
+  const addMessage = useMutation({
+    mutationFn: (message: ChatMessage) => Promise.resolve(message),
+    onSuccess: (newMessage) => {
+      // Check if we already have this message to prevent duplicates
+      if (messageIdsRef.current.has(newMessage.id)) {
+        return;
+      }
 
-    messageIdsRef.current.add(newMessage.id);
-    
-    queryClient.setQueryData<ChatMessage[]>(
-      [MESSAGES_QUERY_KEY],
-      (oldMessages = []) => [...oldMessages, newMessage]
-    );
-  },
-});
+      messageIdsRef.current.add(newMessage.id);
+
+      queryClient.setQueryData<ChatMessage[]>(
+        [MESSAGES_QUERY_KEY],
+        (oldMessages = []) => [...oldMessages, newMessage]
+      );
+    },
+  });
 
   const addAIMessage = useMutation({
     mutationFn: (message: ChatMessage) => Promise.resolve(message),
@@ -119,58 +117,62 @@ export function useChat() {
   });
 
   // Reconnect function
- // Replace the current reconnect function with this:
-const reconnect = () => {
-  if (channelRef.current) {
-    console.log("Attempting to reconnect to chat channel...");
-    
-    // First, unsubscribe from the current channel
-    channelRef.current.unsubscribe();
-    
-    // Then create a new channel instance
-    const user = currentUserRef.current;
-    if (user) {
-      const newChannel = supabase.channel(CHANNEL_NAME, {
-        config: {
-          broadcast: { self: true },
-          presence: {
-            key: user.id,
+  // Replace the current reconnect function with this:
+  const reconnect = () => {
+    if (channelRef.current) {
+      console.log("Attempting to reconnect to chat channel...");
+
+      // First, unsubscribe from the current channel
+      channelRef.current.unsubscribe();
+
+      // Then create a new channel instance
+      const user = currentUserRef.current;
+      if (user) {
+        const newChannel = supabase.channel(CHANNEL_NAME, {
+          config: {
+            broadcast: { self: true },
+            presence: {
+              key: user.id,
+            },
           },
-        },
-      });
-      
-      // Set up all the same event handlers...
-      // (Copy the same event handlers from the original channel setup)
-      
-      // Subscribe to the new channel
-      newChannel.subscribe(async (status) => {
-        // Same subscription handler as before
-        console.log(`Chat channel status: ${status}`);
-        
-        if (status === "SUBSCRIBED") {
-          console.log("Successfully reconnected to chat channel");
-          queryClient.setQueryData(["chat-connection-status"], true);
-          
-          try {
-            await newChannel.track({
-              username: user.username,
-              avatar_url: user.avatar_url,
-              last_seen: Date.now(),
-            });
-          } catch (error) {
-            console.error("Failed to track presence:", error);
+        });
+
+        // Set up all the same event handlers...
+        // (Copy the same event handlers from the original channel setup)
+
+        // Subscribe to the new channel
+        newChannel.subscribe(async (status) => {
+          // Same subscription handler as before
+          console.log(`Chat channel status: ${status}`);
+
+          if (status === "SUBSCRIBED") {
+            console.log("Successfully reconnected to chat channel");
+            queryClient.setQueryData(["chat-connection-status"], true);
+
+            try {
+              await newChannel.track({
+                username: user.username,
+                avatar_url: user.avatar_url,
+                last_seen: Date.now(),
+              });
+            } catch (error) {
+              console.error("Failed to track presence:", error);
+            }
+          } else if (
+            status === "CLOSED" ||
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT"
+          ) {
+            console.error(`Channel reconnection failed with status: ${status}`);
+            queryClient.setQueryData(["chat-connection-status"], false);
           }
-        } else if (status === "CLOSED" || status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          console.error(`Channel reconnection failed with status: ${status}`);
-          queryClient.setQueryData(["chat-connection-status"], false);
-        }
-      });
-      
-      // Update the channel reference
-      channelRef.current = newChannel;
+        });
+
+        // Update the channel reference
+        channelRef.current = newChannel;
+      }
     }
-  }
-};
+  };
 
   // Initialize the Supabase channel
   const initializeChannel = (user: ChatUser) => {
@@ -391,17 +393,18 @@ const reconnect = () => {
         {
           id: "admin-tip",
           sender: "Admin",
-          content: "Explora y añade productos a tu carrito. Puedes chatear con otros usuarios aquí.",
+          content:
+            "Explora y añade productos a tu carrito. Puedes chatear con otros usuarios aquí.",
           type: "admin",
           timestamp: Date.now() + 100,
           read: true,
         },
       ];
-      
+
       queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
-      welcomeMessages.forEach(msg => messageIdsRef.current.add(msg.id));
+      welcomeMessages.forEach((msg) => messageIdsRef.current.add(msg.id));
     }
-    
+
     // Initialize AI welcome message if needed
     if (aiMessages.length === 0) {
       const aiWelcomeMessage: ChatMessage = {
@@ -412,7 +415,7 @@ const reconnect = () => {
         timestamp: Date.now(),
         read: true,
       };
-      
+
       queryClient.setQueryData([AI_MESSAGES_QUERY_KEY], [aiWelcomeMessage]);
     }
   };
@@ -420,12 +423,14 @@ const reconnect = () => {
   // Send a message to the public chat
   const sendMessage = async (content: string, recipientAI: boolean = false) => {
     if (!content.trim() || !currentUserRef.current) {
-      console.log("Cannot send message - missing content or user not initialized");
+      console.log(
+        "Cannot send message - missing content or user not initialized"
+      );
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       // Create user message
       const userMessage: ChatMessage = {
@@ -437,26 +442,29 @@ const reconnect = () => {
         timestamp: Date.now(),
         read: true, // Our own messages are always read
       };
-      
+
       if (recipientAI) {
         // Handle as AI message
         console.log("Sending message to AI:", content);
-        
+
         // Create user message for AI chat with a different ID
         const aiUserMessage = {
           ...userMessage,
-          id: `ai-msg-${CLIENT_ID}-${Date.now()}`
+          id: `ai-msg-${CLIENT_ID}-${Date.now()}`,
         };
-        
+
         // Add to AI chat history
         addAIMessage.mutate(aiUserMessage);
-        
+
         // Collect context from previous AI messages (last 5)
         const contextMessages = aiMessages.slice(-5);
-        
+
         // Get AI response
-        const aiResponse = await aiChat.sendMessage([...contextMessages, aiUserMessage]);
-        
+        const aiResponse = await aiChat.sendMessage([
+          ...contextMessages,
+          aiUserMessage,
+        ]);
+
         // Add AI response to AI chat history
         addAIMessage.mutate({
           ...aiResponse,
@@ -466,7 +474,7 @@ const reconnect = () => {
       } else {
         // Handle as regular message to public chat
         console.log("Sending message to public chat:", content);
-        
+
         // Broadcast user message to all clients
         channelRef.current.send({
           type: "broadcast",
@@ -476,13 +484,14 @@ const reconnect = () => {
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       if (recipientAI) {
         // Add error message to AI chat
         addAIMessage.mutate({
           id: `ai-error-${Date.now()}`,
           sender: "Sistema",
-          content: "Lo siento, ha ocurrido un error al procesar tu mensaje. Por favor, inténtalo de nuevo.",
+          content:
+            "Lo siento, ha ocurrido un error al procesar tu mensaje. Por favor, inténtalo de nuevo.",
           type: "system",
           timestamp: Date.now(),
           read: true,
@@ -492,13 +501,12 @@ const reconnect = () => {
       setIsLoading(false);
     }
   };
-  
+
   // Function to clear AI chat history
   const clearAIChat = () => {
     queryClient.setQueryData([AI_MESSAGES_QUERY_KEY], []);
   };
-  
-  
+
   return {
     // Include existing return values
     messages,
@@ -511,9 +519,9 @@ const reconnect = () => {
     checkAndAnnounceJoin,
     initializeWelcomeMessages,
     reconnect,
-    
+
     // Add new return values for AI chat
     aiMessages,
-    clearAIChat
+    clearAIChat,
   };
 }

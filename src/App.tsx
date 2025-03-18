@@ -7,6 +7,7 @@ import { AuthProvider } from "./modules/auth/context/AuthProvider";
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./router";
 import { AuthDataLoader } from "./shared/components/AuthDataLoader";
+import { SocketProvider } from "./modules/experience/multiplayer/context/SocketProvider";
 
 enum Controls {
   forward = "forward",
@@ -30,16 +31,18 @@ function App() {
     []
   );
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AuthDataLoader />
-        <ToastProvider>
-          <KeyboardControls map={map}>
-            <RouterProvider router={router} />
-          </KeyboardControls>
-        </ToastProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ToastProvider>
+      <KeyboardControls map={map}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <SocketProvider>
+              <AuthDataLoader />
+              <RouterProvider router={router} />
+            </SocketProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </KeyboardControls>
+    </ToastProvider>
   );
 }
 

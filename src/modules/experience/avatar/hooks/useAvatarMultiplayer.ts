@@ -1,12 +1,9 @@
+import { RefObject, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useKeyboardControls } from "@react-three/drei";
-import { Vector3 } from "three";
+import { Group, Vector3, Quaternion } from "three";
 import { RapierRigidBody } from "@react-three/rapier";
-import { Group } from "three";
-import { useOnlineAvatars } from "./useOnlineAvatars";
-
-import { useRef } from "react";
-import { useAuth } from "../../../auth/hooks/useAuth";
+import { useKeyboardControls } from "@react-three/drei";
+import { useSocket } from "../../multiplayer/context/SocketProvider";
 
 enum Controls {
   forward = "forward",
@@ -17,72 +14,81 @@ enum Controls {
   run = "run",
 }
 
+// Throttle rate for position updates (in milliseconds)
+const UPDATE_RATE = 100;
+
 export function useAvatarMultiplayer(
-  rigidBodyRef: React.RefObject<RapierRigidBody>,
-  modelRef: React.RefObject<Group>
+  rigidBodyRef: RefObject<RapierRigidBody>,
+  modelRef: RefObject<Group>
 ) {
-  const [, get] = useKeyboardControls<Controls>();
-  
-  // Get user info
-  const { profile } = useAuth();
-  
-  // Track last broadcast time to limit frequency
-  const lastBroadcastTimeRef = useRef(0);
+  const { socket, isConnected } = useSocket();
+  const [, getKeys] = useKeyboardControls<Controls>();
+
+  // Use refs to track last update time and values
+  const lastUpdateTimeRef = useRef(0);
   const lastPositionRef = useRef(new Vector3());
   const lastRotationRef = useRef(0);
-  const lastMovingRef = useRef(false);
-  const lastRunningRef = useRef(false);
-  
-  // Initialize online avatars system
-  const { broadcastPosition } = useOnlineAvatars(
-    profile?.id || "anonymous",
-    profile?.username || "Usuario",
-    profile?.avatar_url || "https://readyplayerme.github.io/visage/male.glb"
-  );
-  
-  // Broadcast position in each frame, but with rate limiting
-  useFrame(() => {
-    if (!rigidBodyRef.current || !modelRef.current) return;
-    
-    const { forward, backward, left, right, run } = get();
+  const lastIsMovingRef = useRef(false);
+  const lastIsRunningRef = useRef(false);
+
+  // Send position updates at a throttled rate
+  useFrame(({ clock }) => {
+    if (!socket || !isConnected || !rigidBodyRef.current || !modelRef.current)
+      return;
+
+    const time = clock.getElapsedTime() * 1000;
+
+    // Check if we should send an update
+    if (time - lastUpdateTimeRef.current < UPDATE_RATE) return;
+
+    // Get current input state
+    const { forward, backward, left, right, run } = getKeys();
     const isMoving = forward || backward || left || right;
     const isRunning = isMoving && run;
-    
-    // Get current position and rotation
-    const position = rigidBodyRef.current.translation();
-    const positionVector = new Vector3(position.x, position.y, position.z);
-    const rotation = modelRef.current.rotation.y;
-    
-    // Determine if we should broadcast based on time and movement
-    const now = Date.now();
-    const timeSinceLastBroadcast = now - lastBroadcastTimeRef.current;
-    
-    // Calculate position and rotation changes
-    const positionChanged = lastPositionRef.current.distanceTo(positionVector) > 0.1;
-    const rotationChanged = Math.abs(lastRotationRef.current - rotation) > 0.1;
-    const movementStateChanged = 
-      isMoving !== lastMovingRef.current || 
-      isRunning !== lastRunningRef.current;
-    
-    // Broadcast rates:
-    // - When movement state changes (start/stop moving): immediately
-    // - When moving: up to 10 times per second (100ms)
-    // - When stationary: once every 3 seconds
-    const broadcastInterval = isMoving ? 100 : 3000;
-    
-    // Critical: Always broadcast immediately when movement state changes
-    if (movementStateChanged || 
-        ((positionChanged || rotationChanged) && timeSinceLastBroadcast > broadcastInterval)) {
-      
-      // Update refs
-      lastBroadcastTimeRef.current = now;
-      lastPositionRef.current.copy(positionVector);
-      lastRotationRef.current = rotation;
-      lastMovingRef.current = isMoving;
-      lastRunningRef.current = isRunning;
-      
-      // Broadcast position to other players
-      broadcastPosition(positionVector, rotation, isMoving, isRunning);
+
+    // Get current position from rigid body
+    const physicsPos = rigidBodyRef.current.translation();
+    const currentPosition = new Vector3(
+      physicsPos.x,
+      physicsPos.y,
+      physicsPos.z
+    );
+
+    // Get current rotation from model
+    const currentRotation = modelRef.current.rotation.y;
+
+    // Check if anything has changed
+    const positionChanged =
+      Math.abs(currentPosition.x - lastPositionRef.current.x) > 0.01 ||
+      Math.abs(currentPosition.y - lastPositionRef.current.y) > 0.01 ||
+      Math.abs(currentPosition.z - lastPositionRef.current.z) > 0.01;
+
+    const rotationChanged =
+      Math.abs(currentRotation - lastRotationRef.current) > 0.01;
+    const movingChanged = isMoving !== lastIsMovingRef.current;
+    const runningChanged = isRunning !== lastIsRunningRef.current;
+
+    // Only send update if something changed
+    if (positionChanged || rotationChanged || movingChanged || runningChanged) {
+      socket.emit("avatar:update", {
+        position: {
+          x: currentPosition.x,
+          y: currentPosition.y,
+          z: currentPosition.z,
+        },
+        rotation: currentRotation,
+        isMoving,
+        isRunning,
+      });
+
+      // Update last values
+      lastPositionRef.current.copy(currentPosition);
+      lastRotationRef.current = currentRotation;
+      lastIsMovingRef.current = isMoving;
+      lastIsRunningRef.current = isRunning;
+      lastUpdateTimeRef.current = time;
     }
   });
+
+  return null;
 }
