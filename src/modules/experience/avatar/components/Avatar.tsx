@@ -80,10 +80,10 @@ export const Avatar = () => {
     >
       <CuboidCollider
         args={[0.2, 0.9, 0.3]} // Width, height, depth (half-extents)
-        position={[0, -0.1, 0]}
+        position={[0, 0.9, 0]}
       />
       <Stats />;
-      <group ref={modelRef} scale={1} position={[0, -1, 0]}>
+      <group ref={modelRef} scale={1} position={[0, 0, 0]}>
         <primitive object={scene} />
       </group>
     </RigidBody>
