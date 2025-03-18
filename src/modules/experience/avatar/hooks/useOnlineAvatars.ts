@@ -207,74 +207,71 @@ export function useOnlineAvatars(
   }, [userId, username, avatarUrl]);
 
   // Function to broadcast position updates
-  const broadcastPosition = (
-    position: Vector3,
-    rotation: number,
-    isMoving: boolean,
-    isRunning: boolean,
-    force = false
-  ) => {
-    if (!channelRef.current || !userId) return;
+// Inside the broadcast function in useOnlineAvatars.ts
 
-    // Only broadcast if something significant changed or enough time has passed
-    const now = Date.now();
-    const timeSinceLastBroadcast = now - lastBroadcastRef.current.timestamp;
-    const positionChanged =
-      position.distanceTo(lastBroadcastRef.current.position) > 0.1;
-    const rotationChanged =
-      Math.abs(rotation - lastBroadcastRef.current.rotation) > 0.1;
-    const movementChanged =
-      isMoving !== lastBroadcastRef.current.isMoving ||
-      isRunning !== lastBroadcastRef.current.isRunning;
-
-    // Broadcast at most 10 times per second if moving, or once every 3 seconds if stationary
-    const minInterval = isMoving ? 100 : 3000;
-
-    if (
-      force ||
-      ((positionChanged || rotationChanged || movementChanged) &&
-        timeSinceLastBroadcast > minInterval)
-    ) {
-      // Update last broadcast values
-      lastBroadcastRef.current = {
-        position: position.clone(),
-        rotation,
-        isMoving,
-        isRunning,
-        timestamp: now,
-      };
-
-      // Get current presence state for this user
-      const currentPresence =
-        channelRef.current.presenceState()[userId]?.[0] || {};
-
-      // Broadcast update
-      channelRef.current.send({
-        type: "broadcast",
-        event: "avatar_update",
-        payload: {
-          id: userId,
-          username: currentPresence.username || username,
-          avatar_url: currentPresence.avatar_url || avatarUrl,
-          position,
-          rotation,
-          isMoving,
-          isRunning,
-          lastUpdated: now,
-        },
-      });
-
-      // Update presence data
-      channelRef.current.track({
+const broadcastPosition = (
+  position: Vector3,
+  rotation: number,
+  isMoving: boolean,
+  isRunning: boolean,
+  force = false
+) => {
+  if (!channelRef.current || !userId) return;
+  
+  // Only broadcast if something significant changed or enough time has passed
+  const now = Date.now();
+  const timeSinceLastBroadcast = now - lastBroadcastRef.current.timestamp;
+  const positionChanged = position.distanceTo(lastBroadcastRef.current.position) > 0.1;
+  const rotationChanged = Math.abs(rotation - lastBroadcastRef.current.rotation) > 0.1;
+  const movementChanged = 
+    isMoving !== lastBroadcastRef.current.isMoving || 
+    isRunning !== lastBroadcastRef.current.isRunning;
+  
+  // Always broadcast movement state changes immediately
+  // For position updates: 10 times per second if moving, once every 3 seconds if stationary
+  const minInterval = isMoving ? 100 : 3000;
+  
+  // Important: Always broadcast when movement state changes (start/stop)
+  if (force || movementChanged || ((positionChanged || rotationChanged) && timeSinceLastBroadcast > minInterval)) {
+    // Update last broadcast values
+    lastBroadcastRef.current = {
+      position: position.clone(),
+      rotation,
+      isMoving,
+      isRunning,
+      timestamp: now
+    };
+    
+    // Get current presence state for this user
+    const currentPresence = channelRef.current.presenceState()[userId]?.[0] || {};
+    
+    // Broadcast update
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'avatar_update',
+      payload: {
+        id: userId,
         username: currentPresence.username || username,
         avatar_url: currentPresence.avatar_url || avatarUrl,
-        position: { x: position.x, y: position.y, z: position.z },
+        position,
         rotation,
         isMoving,
         isRunning,
-      });
-    }
-  };
+        lastUpdated: now
+      }
+    });
+    
+    // Update presence data
+    channelRef.current.track({
+      username: currentPresence.username || username,
+      avatar_url: currentPresence.avatar_url || avatarUrl,
+      position: { x: position.x, y: position.y, z: position.z },
+      rotation,
+      isMoving,
+      isRunning
+    });
+  }
+};
 
   return {
     onlineAvatars,

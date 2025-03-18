@@ -65,13 +65,13 @@ export function useAvatarMultiplayer(
       isRunning !== lastRunningRef.current;
     
     // Broadcast rates:
+    // - When movement state changes (start/stop moving): immediately
     // - When moving: up to 10 times per second (100ms)
-    // - When state changes (start/stop moving): immediately
     // - When stationary: once every 3 seconds
     const broadcastInterval = isMoving ? 100 : 3000;
     
-    // Broadcast immediately on movement state change, otherwise respect the interval
-    if ((movementStateChanged) || 
+    // Critical: Always broadcast immediately when movement state changes
+    if (movementStateChanged || 
         ((positionChanged || rotationChanged) && timeSinceLastBroadcast > broadcastInterval)) {
       
       // Update refs

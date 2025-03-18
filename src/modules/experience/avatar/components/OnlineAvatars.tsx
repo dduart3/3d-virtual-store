@@ -95,12 +95,8 @@ export const OnlineAvatarInstance = ({
   const targetRotationRef = useRef(rotation);
   const lastUpdateTimeRef = useRef(Date.now());
   
-  // Animation state tracking to prevent flickering
-  const animStateRef = useRef({
-    isMoving: isMoving,
-    isRunning: isRunning,
-    lastChanged: Date.now()
-  });
+  // Flag to track if we're still interpolating to target position
+  const isInterpolatingRef = useRef(false);
   
   // Load the avatar model
   const { scene } = useGLTF(
@@ -112,47 +108,55 @@ export const OnlineAvatarInstance = ({
   
   // Update target position and rotation when props change
   useEffect(() => {
-    targetPositionRef.current = position.clone();
+    // Only update target if position actually changed
+    if (!targetPositionRef.current.equals(position)) {
+      targetPositionRef.current = position.clone();
+      isInterpolatingRef.current = true;
+    }
+    
     targetRotationRef.current = rotation;
     lastUpdateTimeRef.current = Date.now();
-    
-    // Only update animation state if it actually changed or after a minimum time
-    // This prevents animation flickering from network jitter
-    const now = Date.now();
-    const timeSinceLastChange = now - animStateRef.current.lastChanged;
-    
-    if ((isMoving !== animStateRef.current.isMoving || 
-         isRunning !== animStateRef.current.isRunning) && 
-        timeSinceLastChange > 300) { // 300ms debounce for animation changes
-      
-      animStateRef.current = {
-        isMoving,
-        isRunning,
-        lastChanged: now
-      };
-    }
-  }, [position, rotation, isMoving, isRunning]);
+  }, [position, rotation]);
   
   // Smooth interpolation and animation updates
   useFrame((_, delta) => {
     if (!rigidBodyRef.current || !modelRef.current) return;
     
-    // Position interpolation - smoother for online avatars
-    const posLerpFactor = Math.min(1, delta * 4); // Adjust for smoother movement
-    currentPositionRef.current.lerp(targetPositionRef.current, posLerpFactor);
+    // Calculate distance to target
+    const distanceToTarget = currentPositionRef.current.distanceTo(targetPositionRef.current);
     
-    // Apply position to rigid body
-    rigidBodyRef.current.setTranslation(
-      { 
-        x: currentPositionRef.current.x, 
-        y: currentPositionRef.current.y, 
-        z: currentPositionRef.current.z 
-      },
-      true
-    );
+    // Determine if we should be interpolating
+    if (distanceToTarget > 0.05) {
+      isInterpolatingRef.current = true;
+    } else if (distanceToTarget <= 0.05 && isInterpolatingRef.current) {
+      // We've reached the target, stop interpolating
+      isInterpolatingRef.current = false;
+      // Snap to exact position to avoid tiny movements
+      currentPositionRef.current.copy(targetPositionRef.current);
+    }
+    
+    // Only interpolate position if we're actually moving or recently received an update
+    const timeSinceUpdate = Date.now() - lastUpdateTimeRef.current;
+    const shouldInterpolate = isInterpolatingRef.current && (isMoving || timeSinceUpdate < 1000);
+    
+    if (shouldInterpolate) {
+      // Position interpolation - smoother for online avatars
+      const posLerpFactor = Math.min(1, delta * 4);
+      currentPositionRef.current.lerp(targetPositionRef.current, posLerpFactor);
+      
+      // Apply position to rigid body
+      rigidBodyRef.current.setTranslation(
+        { 
+          x: currentPositionRef.current.x, 
+          y: currentPositionRef.current.y, 
+          z: currentPositionRef.current.z 
+        },
+        true
+      );
+    }
     
     // Rotation interpolation - much slower to prevent jittering
-    const rotLerpFactor = Math.min(1, delta * 2.5); // Slower rotation lerp
+    const rotLerpFactor = Math.min(1, delta * 2.5);
     
     // Calculate shortest path for rotation
     let targetRot = targetRotationRef.current;
@@ -169,34 +173,19 @@ export const OnlineAvatarInstance = ({
     if (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
     if (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
     
-    // Apply smooth rotation
-    currentRotationRef.current = currentRot + rotDiff * rotLerpFactor;
-    
-    // Apply rotation to model
-    modelRef.current.rotation.y = currentRotationRef.current;
-    
-    // Update animations with stable state from ref
-    updateAnimation(
-      animStateRef.current.isMoving,
-      animStateRef.current.isRunning,
-      false
-    );
-    
-    // Update animation mixer
-    updateAnimations(delta);
-    
-    // Optional: Predict movement for smoother animation when network updates are sparse
-    const timeSinceLastUpdate = Date.now() - lastUpdateTimeRef.current;
-    if (animStateRef.current.isMoving && timeSinceLastUpdate > 200) { // Only predict after 200ms without updates
-      const moveSpeed = animStateRef.current.isRunning ? 3.0 : 1.5;
-      const moveDir = new Vector3(
-        Math.sin(currentRotationRef.current),
-        0,
-        Math.cos(currentRotationRef.current)
-      ).normalize().multiplyScalar(moveSpeed * delta);
+    // Only apply rotation if there's a significant difference
+    if (Math.abs(rotDiff) > 0.01) {
+      // Apply smooth rotation
+      currentRotationRef.current = currentRot + rotDiff * rotLerpFactor;
       
-      targetPositionRef.current.add(moveDir);
+      // Apply rotation to model
+      modelRef.current.rotation.y = currentRotationRef.current;
     }
+    
+    // Update animations based on actual movement state
+    // This ensures we go to idle when not moving
+    updateAnimation(isMoving, isRunning, false);
+    updateAnimations(delta);
   });
   
   return (
