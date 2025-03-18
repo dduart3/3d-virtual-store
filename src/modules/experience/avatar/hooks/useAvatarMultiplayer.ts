@@ -4,8 +4,7 @@ import { Vector3 } from "three";
 import { RapierRigidBody } from "@react-three/rapier";
 import { Group } from "three";
 import { useOnlineAvatars } from "./useOnlineAvatars";
-import { useAtom } from "jotai";
-import { avatarUrlAtom } from "../state/avatar";
+
 import { useRef } from "react";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
@@ -26,7 +25,6 @@ export function useAvatarMultiplayer(
   
   // Get user info
   const { profile } = useAuth();
-  const [avatarUrl] = useAtom(avatarUrlAtom);
   
   // Track last broadcast time to limit frequency
   const lastBroadcastTimeRef = useRef(0);
@@ -39,7 +37,7 @@ export function useAvatarMultiplayer(
   const { broadcastPosition } = useOnlineAvatars(
     profile?.id || "anonymous",
     profile?.username || "Usuario",
-    avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
+    profile?.avatar_url || "https://readyplayerme.github.io/visage/male.glb"
   );
   
   // Broadcast position in each frame, but with rate limiting
