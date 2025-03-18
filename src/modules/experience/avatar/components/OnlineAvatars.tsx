@@ -213,7 +213,7 @@ export const OnlineAvatarInstance = ({
       />
       
       <group ref={modelRef} position={[0, 0, 0]}>
-        <primitive object={scene.clone()} />
+        <primitive object={scene} />
       </group>
       
       {/* Username label */}
