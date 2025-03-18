@@ -131,7 +131,7 @@ export const Chat = () => {
   const isInputDisabled =
     (activeTab === "chat" && isSocketLoading) || (activeTab === "ai" && isAILoading);
 
-  const isLoading = activeTab === "chat" ? isSocketLoading : isAILoading;
+  //const isLoading = activeTab === "chat" ? isSocketLoading : isAILoading;
 
   return (
     <div className="absolute bottom-5 left-5 pointer-events-auto">

@@ -1,6 +1,6 @@
 import { RefObject, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Group, Vector3, Quaternion } from "three";
+import { Group, Vector3 } from "three";
 import { RapierRigidBody } from "@react-three/rapier";
 import { useKeyboardControls } from "@react-three/drei";
 import { useSocket } from "../../multiplayer/context/SocketProvider";
