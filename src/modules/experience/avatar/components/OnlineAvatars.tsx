@@ -76,55 +76,48 @@ export function OnlineAvatars() {
 
     // Handle binary player updates
     // In the handlePlayerUpdate function:
-    const handlePlayerUpdate = (buffer: ArrayBuffer) => {
-      try {
-        // Ensure we have a valid buffer
-        if (!(buffer instanceof ArrayBuffer)) {
-          console.error("Received invalid data format:", typeof buffer);
-          return;
-        }
+    // In the handlePlayerUpdate function:
+    const handlePlayerUpdate = (update: any) => {
+      // Skip self - compare with our own user ID
+      if (update.userId === profile.id) return;
 
-        // Extract position data (first 16 bytes)
-        const positionBuffer = buffer.slice(0, 16);
-        const decodedUpdate = BinaryProtocol.decodeAvatarUpdate(positionBuffer);
+      // If we have binary data
+      if (update.data) {
+        try {
+          // Decode the binary data
+          const decodedUpdate = BinaryProtocol.decodeAvatarUpdate(update.data);
 
-        // Extract UUID (next 16 bytes)
-        const uuidBytes = new Uint8Array(buffer.slice(16, 32));
-        const userId = BinaryProtocol.bytesToUuid(uuidBytes);
+          setPlayers((prev) => {
+            // If player doesn't exist yet
+            if (!prev[update.userId]) {
+              return {
+                ...prev,
+                [update.userId]: {
+                  id: update.userId,
+                  username: update.username,
+                  avatarUrl: update.avatarUrl,
+                  position: decodedUpdate.position,
+                  rotation: decodedUpdate.rotation,
+                  isMoving: decodedUpdate.isMoving,
+                  isRunning: decodedUpdate.isRunning,
+                  lastUpdate: Date.now(),
+                  modelRef: createRef<Group>(),
+                  rigidBodyRef: createRef<RapierRigidBody>(),
+                  velocity: new Vector3(),
+                },
+              };
+            }
 
-        // Skip self - compare with our own user ID
-        if (userId === profile.id) return;
-
-        setPlayers((prev) => {
-          // If player doesn't exist yet but we have their info from initial state
-          if (!prev[userId] && playerInfo[userId]) {
-            return {
-              ...prev,
-              [userId]: {
-                ...playerInfo[userId],
-                position: decodedUpdate.position,
-                rotation: decodedUpdate.rotation,
-                isMoving: decodedUpdate.isMoving,
-                isRunning: decodedUpdate.isRunning,
-                lastUpdate: Date.now(),
-                modelRef: createRef<Group>(),
-                rigidBodyRef: createRef<RapierRigidBody>(),
-                velocity: new Vector3(),
-              },
-            };
-          }
-
-          // If player exists, update them
-          if (prev[userId]) {
             // Calculate velocity
-            const timeDelta = (Date.now() - prev[userId].lastUpdate) / 1000;
-            let velocity = prev[userId].velocity;
+            const timeDelta =
+              (Date.now() - prev[update.userId].lastUpdate) / 1000;
+            let velocity = prev[update.userId].velocity;
 
             if (timeDelta > 0 && timeDelta < 1) {
               const oldPos = new Vector3(
-                prev[userId].position.x,
-                prev[userId].position.y,
-                prev[userId].position.z
+                prev[update.userId].position.x,
+                prev[update.userId].position.y,
+                prev[update.userId].position.z
               );
 
               const newPos = new Vector3(
@@ -140,8 +133,8 @@ export function OnlineAvatars() {
             // Update existing player
             return {
               ...prev,
-              [userId]: {
-                ...prev[userId],
+              [update.userId]: {
+                ...prev[update.userId],
                 position: decodedUpdate.position,
                 rotation: decodedUpdate.rotation,
                 isMoving: decodedUpdate.isMoving,
@@ -150,12 +143,10 @@ export function OnlineAvatars() {
                 velocity,
               },
             };
-          }
-
-          return prev;
-        });
-      } catch (error) {
-        console.error("Error processing avatar update:", error);
+          });
+        } catch (error) {
+          console.error("Error decoding avatar update:", error);
+        }
       }
     };
 
