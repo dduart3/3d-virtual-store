@@ -6,6 +6,11 @@ import { useFrame } from "@react-three/fiber";
 import { useAvatarAnimations } from "../../avatar/hooks/useAvatarAnimations";
 import { useAuth } from "../../../auth/hooks/useAuth";
 import { useSocket } from "../../multiplayer/context/SocketProvider";
+import {
+  CuboidCollider,
+  RapierRigidBody,
+  RigidBody,
+} from "@react-three/rapier";
 
 interface RemotePlayer {
   id: string;
@@ -17,6 +22,7 @@ interface RemotePlayer {
   isRunning: boolean;
   lastUpdate: number;
   modelRef: React.RefObject<Group>;
+  rigidBodyRef: React.RefObject<RapierRigidBody>;
 }
 
 export function OnlineAvatars() {
@@ -38,6 +44,7 @@ export function OnlineAvatars() {
             ...player,
             lastUpdate: Date.now(),
             modelRef: createRef<Group>(),
+            rigidBodyRef: createRef<RapierRigidBody>(),
           };
         }
       });
@@ -65,6 +72,7 @@ export function OnlineAvatars() {
               isRunning: update.isRunning,
               lastUpdate: Date.now(),
               modelRef: createRef<Group>(),
+              rigidBodyRef: createRef<RapierRigidBody>(),
             },
           };
         }
@@ -127,6 +135,7 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
     username,
     avatarUrl,
     modelRef,
+    rigidBodyRef,
   } = player;
   const positionRef = useRef(new Vector3(position.x, position.y, position.z));
   const targetPositionRef = useRef(
@@ -160,27 +169,34 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
   });
 
   return (
-    <group
+    <RigidBody
+      ref={rigidBodyRef}
+      type="kinematicPosition"
+      enabledRotations={[false, false, false]}
+      colliders={false}
       position={[
         positionRef.current.x,
         positionRef.current.y,
         positionRef.current.z,
       ]}
     >
-      <group ref={modelRef} rotation={[0, rotation, 0]}>
-        <primitive object={scene} />
+      <CuboidCollider args={[0.2, 0.9, 0.3]} position={[0, 0.9, 0]} />
+      <group position={[0, 0, 0]}>
+        <group ref={modelRef} rotation={[0, rotation, 0]}>
+          <primitive object={scene} />
+        </group>
+        <Text
+          position={[0, 2.2, 0]}
+          fontSize={0.5}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.05}
+          outlineColor="#000000"
+        >
+          {username}
+        </Text>
       </group>
-      <Text
-        position={[0, 2.2, 0]}
-        fontSize={0.5}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.05}
-        outlineColor="#000000"
-      >
-        {username}
-      </Text>
-    </group>
+    </RigidBody>
   );
 }

@@ -3,15 +3,18 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { ChatMessage, ChatUser } from "../types/chat";
 import { useSocket } from "../../experience/multiplayer/context/SocketProvider";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useAtom } from "jotai";
+import { chatOpenAtom } from "../state/chat";
 
 // Constants
 const MESSAGES_QUERY_KEY = "chat-messages";
 const USERS_QUERY_KEY = "chat-users";
 const CLIENT_ID = Math.random().toString(36).substring(2, 15);
 
-export function useSocketChat() {
+export function useChat() {
   const queryClient = useQueryClient();
   const { socket, isConnected } = useSocket();
+  const [isChatOpen] = useAtom(chatOpenAtom);
   const { profile } = useAuth();
   const [isLoading] = useState(false);
 
@@ -49,7 +52,7 @@ export function useSocketChat() {
 
       socket.emit("chat:message", fullMessage);
       return fullMessage;
-    }
+    },
   });
 
   // Effect to handle socket events
@@ -65,10 +68,10 @@ export function useSocketChat() {
       // Update messages query data
       queryClient.setQueryData<ChatMessage[]>(
         [MESSAGES_QUERY_KEY],
-        (old = []) => [...old, { ...message, read: false }]
+        (old = []) => [...old, { ...message, read: isChatOpen ? true : false }]
       );
     };
- 
+
     // Handle user list updates
     const handleUsersInitial = (users: ChatUser[]) => {
       queryClient.setQueryData([USERS_QUERY_KEY], users);
@@ -103,14 +106,10 @@ export function useSocketChat() {
       socket.off("user:join", handleUserJoin);
       socket.off("user:disconnect", handleUserDisconnect);
     };
-  }, [socket, queryClient, profile]);
+  }, [socket, queryClient, profile, isChatOpen]);
 
   // Mark message as read
   const markAsRead = (messageId: string) => {
-    if (!socket || !isConnected) return;
-
-    socket.emit("chat:read", messageId);
-
     queryClient.setQueryData<ChatMessage[]>([MESSAGES_QUERY_KEY], (old = []) =>
       old.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
     );
@@ -128,10 +127,40 @@ export function useSocketChat() {
     });
   };
 
+  const initializeWelcomeMessages = () => {
+    if (messages.length === 0) {
+      console.log("Initializing welcome messages");
+      const welcomeMessages: ChatMessage[] = [
+        {
+          id: "system-welcome",
+          sender: "Sistema",
+          content: "¡Bienvenido a la Tienda Virtual!",
+          type: "system",
+          timestamp: Date.now(),
+          read: true,
+        },
+        {
+          id: "admin-tip",
+          sender: "Admin",
+          content:
+            "Explora y añade productos a tu carrito. Puedes chatear con otros usuarios aquí.",
+          type: "admin",
+          timestamp: Date.now() + 100,
+          read: true,
+        },
+      ];
+  
+      queryClient.setQueryData([MESSAGES_QUERY_KEY], welcomeMessages);
+      welcomeMessages.forEach((msg) => messageIdsRef.current.add(msg.id));
+    }
+  
+  };
+
   return {
     messages,
     onlineUsers,
     sendMessage,
+    initializeWelcomeMessages,
     markAsRead,
     isLoading: isLoading || sendMessageMutation.isPending,
   };

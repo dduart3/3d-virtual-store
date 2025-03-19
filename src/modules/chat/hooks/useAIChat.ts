@@ -59,14 +59,7 @@ export function useAIChat() {
         type: "system",
         timestamp: Date.now(),
       };
-    },
-    onSuccess: (message) => {
-      // Optimistically update the messages list
-      queryClient.setQueryData<ChatMessage[]>(
-        [AI_MESSAGES_QUERY_KEY],
-        (old = []) => [...old, message]
-      );
-    },
+    }
   });
 
   const sendAIMessageMutation = useMutation({
@@ -80,15 +73,15 @@ export function useAIChat() {
         timestamp: Date.now(),
       };
 
-      await sendMessageToAIModel.mutateAsync(fullMessage);
+      const aiResponse = await sendMessageToAIModel.mutateAsync(fullMessage);
 
-      return fullMessage;
+      return [fullMessage, aiResponse] ;
     },
     onSuccess: (message) => {
       // Optimistically update the messages list
       queryClient.setQueryData<ChatMessage[]>(
         [AI_MESSAGES_QUERY_KEY],
-        (old = []) => [...old, message]
+        (old = []) => [...old, ...message,]
       );
     },
   });
@@ -105,11 +98,29 @@ export function useAIChat() {
     });
   };
 
+    const initializeAIWelcomeMessages = () => {
+    
+      // Initialize AI welcome message if needed
+      if (aiMessages.length === 0) {
+        const aiWelcomeMessage: ChatMessage = {
+          id: "ai-welcome",
+          sender: "Asistente IA",
+          content: "Hola, soy el asistente virtual. ¿En qué puedo ayudarte?",
+          type: "system",
+          timestamp: Date.now(),
+          read: true,
+        };
+    
+        queryClient.setQueryData([AI_MESSAGES_QUERY_KEY], [aiWelcomeMessage]);
+      }
+    };
+
   return {
     isLoading: sendAIMessageMutation.isPending,
     isError: sendAIMessageMutation.isError,
     error: sendAIMessageMutation.error,
     aiMessages,
+    initializeAIWelcomeMessages,
     sendAIMessage,
   };
 }

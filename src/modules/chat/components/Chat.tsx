@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { useState, useEffect, useRef } from "react";
-import { chatInputFocusedAtom } from "../state/chat";
-import { useSocketChat } from "../hooks/useSocketChat";
+import { chatInputFocusedAtom, chatOpenAtom } from "../state/chat";
+import { useChat } from "../hooks/useChat";
 import { useAIChat } from "../hooks/useAIChat";
 import { useAuth } from "../../auth/hooks/useAuth";
 
@@ -33,17 +33,17 @@ export const Chat = () => {
   // Add effect for drag handling
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDrag);
-      window.addEventListener('mouseup', handleDragEnd);
+      window.addEventListener("mousemove", handleDrag);
+      window.addEventListener("mouseup", handleDragEnd);
     }
     return () => {
-      window.removeEventListener('mousemove', handleDrag);
-      window.removeEventListener('mouseup', handleDragEnd);
+      window.removeEventListener("mousemove", handleDrag);
+      window.removeEventListener("mouseup", handleDragEnd);
     };
   }, [isDragging]);
 
   const { profile } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useAtom(chatOpenAtom);
   const [, setChatInputFocused] = useAtom(chatInputFocusedAtom);
   const [activeTab, setActiveTab] = useState<"chat" | "ai">("chat");
 
@@ -52,12 +52,14 @@ export const Chat = () => {
     messages,
     sendMessage: sendSocketMessage,
     markAsRead,
+    initializeWelcomeMessages,
     isLoading: isSocketLoading,
-  } = useSocketChat();
+  } = useChat();
 
   const {
     aiMessages,
     sendAIMessage,
+    initializeAIWelcomeMessages,
     isLoading: isAILoading,
   } = useAIChat();
 
@@ -70,6 +72,18 @@ export const Chat = () => {
   // Format unread count with 99+ cap
   const formattedUnreadCount =
     unreadCount > 99 ? "99+" : unreadCount.toString();
+
+  useEffect(() => {
+    if (profile && profile.username && profile.avatar_url) {
+      // Create user object from profile
+
+      // Initialize the chat channel
+
+      // Initialize welcome messages
+      initializeWelcomeMessages();
+      initializeAIWelcomeMessages();
+    }
+  }, []);
 
   // Mark all messages as read when opening the chat
   useEffect(() => {
@@ -129,7 +143,8 @@ export const Chat = () => {
   };
 
   const isInputDisabled =
-    (activeTab === "chat" && isSocketLoading) || (activeTab === "ai" && isAILoading);
+    (activeTab === "chat" && isSocketLoading) ||
+    (activeTab === "ai" && isAILoading);
 
   //const isLoading = activeTab === "chat" ? isSocketLoading : isAILoading;
 
@@ -161,8 +176,8 @@ export const Chat = () => {
                     ? "bg-green-500"
                     : "bg-red-500 animate-pulse"
                   : unreadCount > 0
-                    ? "bg-red-500 animate-pulse"
-                    : "bg-green-500"
+                  ? "bg-red-500 animate-pulse"
+                  : "bg-green-500"
               } mr-2`}
             ></div>
             <span>
@@ -220,8 +235,8 @@ export const Chat = () => {
                     message.type === "system"
                       ? "text-green-400"
                       : message.type === "admin"
-                        ? "text-blue-400"
-                        : "text-white"
+                      ? "text-blue-400"
+                      : "text-white"
                   }`}
                 >
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
@@ -245,7 +260,7 @@ export const Chat = () => {
                   <span className="text-yellow-400">{message.sender}:</span>{" "}
                   <div
                     className="whitespace-pre-wrap break-words [&_a]:text-blue-400 [&_a]:underline [&_a]:cursor-pointer"
-                    style={{ whiteSpace: 'pre-wrap' }}
+                    style={{ whiteSpace: "pre-wrap" }}
                     dangerouslySetInnerHTML={{ __html: message.content }}
                   />
                 </div>
@@ -274,8 +289,8 @@ export const Chat = () => {
                   ? "Escribe tu mensaje..."
                   : "Conectando..."
                 : isAILoading
-                  ? "Esperando respuesta..."
-                  : "Escribe tu mensaje..."
+                ? "Esperando respuesta..."
+                : "Escribe tu mensaje..."
             }
             className="flex-1 bg-black/40 text-white p-2 rounded border border-white/30 text-sm focus:outline-none focus:border-white/50"
             value={inputValue}
