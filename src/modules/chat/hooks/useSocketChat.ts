@@ -49,14 +49,7 @@ export function useSocketChat() {
 
       socket.emit("chat:message", fullMessage);
       return fullMessage;
-    },
-    onSuccess: (message) => {
-      // Optimistically update the messages list
-      queryClient.setQueryData<ChatMessage[]>(
-        [MESSAGES_QUERY_KEY],
-        (old = []) => [...old, message]
-      );
-    },
+    }
   });
 
   // Effect to handle socket events
