@@ -4,7 +4,6 @@ import { Group, Vector3 } from "three";
 import { RapierRigidBody } from "@react-three/rapier";
 import { useKeyboardControls } from "@react-three/drei";
 import { useSocket } from "../../multiplayer/context/SocketProvider";
-import { BinaryProtocol } from "../../multiplayer/utils/BinaryProtocol";
 
 enum Controls {
   forward = "forward",
@@ -15,10 +14,8 @@ enum Controls {
   run = "run",
 }
 
-// Adaptive update rate based on movement
-const MIN_UPDATE_RATE = 50;  // ms (20 updates/sec when moving fast)
-const MAX_UPDATE_RATE = 200; // ms (5 updates/sec when idle)
-const DISTANCE_THRESHOLD = 0.01; // Minimum distance to trigger update
+// Update rate in milliseconds
+const UPDATE_RATE = 100;
 
 export function useAvatarMultiplayer(
   rigidBodyRef: RefObject<RapierRigidBody>,
@@ -33,17 +30,17 @@ export function useAvatarMultiplayer(
   const lastRotationRef = useRef(0);
   const lastIsMovingRef = useRef(false);
   const lastIsRunningRef = useRef(false);
-  
-  // Track velocity for adaptive update rate
-  const velocityRef = useRef(new Vector3());
 
-  // Send position updates at an adaptive rate
+  // Send position updates at a throttled rate
   useFrame(({ clock }) => {
     if (!socket || !isConnected || !rigidBodyRef.current || !modelRef.current)
       return;
 
     const time = clock.getElapsedTime() * 1000;
-    
+
+    // Check if we should send an update
+    if (time - lastUpdateTimeRef.current < UPDATE_RATE) return;
+
     // Get current input state
     const { forward, backward, left, right, run } = getKeys();
     const isMoving = forward || backward || left || right;
@@ -56,38 +53,18 @@ export function useAvatarMultiplayer(
       physicsPos.y,
       physicsPos.z
     );
-    
+
     // Get current rotation from model
     const currentRotation = modelRef.current.rotation.y;
-    
-    // Calculate velocity and distance moved
-    const timeDelta = (time - lastUpdateTimeRef.current) / 1000;
-    if (timeDelta > 0) {
-      const positionDelta = currentPosition.clone().sub(lastPositionRef.current);
-      velocityRef.current.copy(positionDelta.divideScalar(timeDelta));
-    }
-    
-    const distanceMoved = currentPosition.distanceTo(lastPositionRef.current);
-    
-    // Calculate adaptive update rate based on movement
-    let updateRate = MAX_UPDATE_RATE;
-    if (isMoving) {
-      // Scale update rate based on speed (faster movement = more frequent updates)
-      const speed = velocityRef.current.length();
-      updateRate = Math.max(MIN_UPDATE_RATE, MAX_UPDATE_RATE - speed * 20);
-    }
-
-    // Check if we should send an update
-    const timeSinceLastUpdate = time - lastUpdateTimeRef.current;
-    const shouldUpdate = 
-      timeSinceLastUpdate >= updateRate || 
-      (distanceMoved > DISTANCE_THRESHOLD && timeSinceLastUpdate >= MIN_UPDATE_RATE);
-      
-    if (!shouldUpdate) return;
 
     // Check if anything has changed
-    const positionChanged = distanceMoved > DISTANCE_THRESHOLD;
-    const rotationChanged = Math.abs(currentRotation - lastRotationRef.current) > 0.01;
+    const positionChanged =
+      Math.abs(currentPosition.x - lastPositionRef.current.x) > 0.01 ||
+      Math.abs(currentPosition.y - lastPositionRef.current.y) > 0.01 ||
+      Math.abs(currentPosition.z - lastPositionRef.current.z) > 0.01;
+
+    const rotationChanged =
+      Math.abs(currentRotation - lastRotationRef.current) > 0.01;
     const movingChanged = isMoving !== lastIsMovingRef.current;
     const runningChanged = isRunning !== lastIsRunningRef.current;
 
@@ -103,10 +80,9 @@ export function useAvatarMultiplayer(
         isMoving,
         isRunning,
       };
-      
-      // Use binary protocol for position updates
-      const binaryData = BinaryProtocol.encodeAvatarUpdate(update);
-      socket.emit("avatar:update", binaryData);
+
+      // Send update in JSON format (like your original code)
+      socket.emit("avatar:update", update);
 
       // Update last values
       lastPositionRef.current.copy(currentPosition);
