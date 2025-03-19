@@ -147,7 +147,6 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
   const targetRotationRef = useRef(rotation);
 
   // Store previous state for smoother transitions
-  const prevIsMovingRef = useRef(isMoving);
 
   // Use the same animation system as the main avatar
   const { updateAnimation, update } = useAvatarAnimations(modelRef);
