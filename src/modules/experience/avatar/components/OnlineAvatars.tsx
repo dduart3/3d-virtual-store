@@ -137,43 +137,102 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
     modelRef,
     rigidBodyRef,
   } = player;
-  
-  // Position tracking with simple lerp
+
+  // Position tracking with improved interpolation
   const positionRef = useRef(new Vector3(position.x, position.y, position.z));
-  const targetPositionRef = useRef(new Vector3(position.x, position.y, position.z));
+  const targetPositionRef = useRef(
+    new Vector3(position.x, position.y, position.z)
+  );
   const rotationRef = useRef(rotation);
+  const targetRotationRef = useRef(rotation);
+
+  // Store previous state for smoother transitions
+  const prevIsMovingRef = useRef(isMoving);
 
   // Use the same animation system as the main avatar
   const { updateAnimation, update } = useAvatarAnimations(modelRef);
 
   // Load the avatar model
   const { scene } = useGLTF(
-    avatarUrl || "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb"
+    avatarUrl ||
+      "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb"
   );
 
-  // Update target position when player data changes
+  const velocityRef = useRef(new Vector3());
+  const lastUpdateTimeRef = useRef(Date.now());
+
+  // Update the useEffect to calculate velocity:
   useEffect(() => {
+    const now = Date.now();
+    const timeDelta = (now - lastUpdateTimeRef.current) / 1000;
+
+    if (timeDelta > 0 && timeDelta < 0.5) {
+      // Ignore very old updates
+      // Calculate position delta
+      const oldPosition = targetPositionRef.current.clone();
+      const newPosition = new Vector3(position.x, position.y, position.z);
+      const positionDelta = newPosition.clone().sub(oldPosition);
+
+      // Calculate velocity (units per second)
+      velocityRef.current.copy(positionDelta.divideScalar(timeDelta));
+
+      // Limit velocity to reasonable values to prevent jumps
+      const maxSpeed = 10; // Maximum reasonable speed
+      if (velocityRef.current.length() > maxSpeed) {
+        velocityRef.current.normalize().multiplyScalar(maxSpeed);
+      }
+    }
+
     targetPositionRef.current.set(position.x, position.y, position.z);
-    rotationRef.current = rotation;
+    targetRotationRef.current = rotation;
+    lastUpdateTimeRef.current = now;
   }, [position, rotation]);
 
   // Smooth movement and animation updates
   useFrame((_, delta) => {
-    // Simple position lerp
-    positionRef.current.lerp(targetPositionRef.current, Math.min(delta * 10, 1));
-    
+    const now = Date.now();
+    const timeSinceLastUpdate = (now - lastUpdateTimeRef.current) / 1000;
+
+    // Apply prediction only if we're moving and haven't received an update recently
+    if (isMoving && timeSinceLastUpdate > 0.1 && timeSinceLastUpdate < 0.3) {
+      // Apply very conservative prediction
+      const prediction = velocityRef.current
+        .clone()
+        .multiplyScalar(delta * 0.5);
+      targetPositionRef.current.add(prediction);
+    }
+    // Adaptive interpolation - faster when moving, slower when stationary
+    const lerpFactor = isMoving
+      ? Math.min(delta * 12, 0.25) // Faster when moving
+      : Math.min(delta * 8, 0.15); // Slower when stationary
+
+    // Apply position interpolation
+    positionRef.current.lerp(targetPositionRef.current, lerpFactor);
+
+    // Smooth rotation interpolation
+    const rotationDelta = targetRotationRef.current - rotationRef.current;
+    // Normalize to find shortest rotation path
+    const normalizedDelta =
+      ((rotationDelta + Math.PI) % (Math.PI * 2)) - Math.PI;
+    rotationRef.current += normalizedDelta * Math.min(delta * 8, 0.2);
+
     // Update rigid body position
     if (rigidBodyRef.current) {
       rigidBodyRef.current.setTranslation(
         {
           x: positionRef.current.x,
           y: positionRef.current.y,
-          z: positionRef.current.z
+          z: positionRef.current.z,
         },
         true
       );
     }
-    
+
+    // Update model rotation
+    if (modelRef.current) {
+      modelRef.current.rotation.y = rotationRef.current;
+    }
+
     // Update animations
     updateAnimation(isMoving, isRunning, false);
     update(delta);
@@ -185,7 +244,6 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
       type="kinematicPosition"
       enabledRotations={[false, false, false]}
       colliders={false}
-      position={[positionRef.current.x, positionRef.current.y, positionRef.current.z]}
     >
       <CuboidCollider args={[0.2, 0.9, 0.3]} position={[0, 0.9, 0]} />
       <group>
