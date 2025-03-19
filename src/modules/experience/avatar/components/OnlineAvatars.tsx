@@ -75,76 +75,88 @@ export function OnlineAvatars() {
     };
 
     // Handle binary player updates
+    // In the handlePlayerUpdate function:
     const handlePlayerUpdate = (buffer: ArrayBuffer) => {
-      // Extract user ID from the last 4 bytes
-      const view = new DataView(buffer);
-      const userId = view.getUint32(16, true).toString();
-
-      // Skip self - compare with our own user ID
-      if (userId === profile.id) return;
-
-      // Create a new buffer with just the update data (first 16 bytes)
-      const updateBuffer = buffer.slice(0, 16);
-      const update = BinaryProtocol.decodeAvatarUpdate(updateBuffer);
-
-      setPlayers((prev) => {
-        // If player doesn't exist yet but we have their info
-        if (!prev[userId] && playerInfo[userId]) {
-          return {
-            ...prev,
-            [userId]: {
-              ...playerInfo[userId],
-              position: update.position,
-              rotation: update.rotation,
-              isMoving: update.isMoving,
-              isRunning: update.isRunning,
-              lastUpdate: Date.now(),
-              modelRef: createRef<Group>(),
-              rigidBodyRef: createRef<RapierRigidBody>(),
-              velocity: new Vector3(),
-            },
-          };
+      try {
+        // Ensure we have a valid buffer
+        if (!(buffer instanceof ArrayBuffer)) {
+          console.error("Received invalid data format:", typeof buffer);
+          return;
         }
 
-        // If player exists, update them
-        if (prev[userId]) {
-          // Calculate velocity
-          const timeDelta = (Date.now() - prev[userId].lastUpdate) / 1000;
-          let velocity = prev[userId].velocity;
+        // Extract position data (first 16 bytes)
+        const positionBuffer = buffer.slice(0, 16);
+        const decodedUpdate = BinaryProtocol.decodeAvatarUpdate(positionBuffer);
 
-          if (timeDelta > 0 && timeDelta < 1) {
-            const oldPos = new Vector3(
-              prev[userId].position.x,
-              prev[userId].position.y,
-              prev[userId].position.z
-            );
+        // Extract UUID (next 16 bytes)
+        const uuidBytes = new Uint8Array(buffer.slice(16, 32));
+        const userId = BinaryProtocol.bytesToUuid(uuidBytes);
 
-            const newPos = new Vector3(
-              update.position.x,
-              update.position.y,
-              update.position.z
-            );
+        // Skip self - compare with our own user ID
+        if (userId === profile.id) return;
 
-            const posDelta = newPos.clone().sub(oldPos);
-            velocity = posDelta.divideScalar(timeDelta);
+        setPlayers((prev) => {
+          // If player doesn't exist yet but we have their info from initial state
+          if (!prev[userId] && playerInfo[userId]) {
+            return {
+              ...prev,
+              [userId]: {
+                ...playerInfo[userId],
+                position: decodedUpdate.position,
+                rotation: decodedUpdate.rotation,
+                isMoving: decodedUpdate.isMoving,
+                isRunning: decodedUpdate.isRunning,
+                lastUpdate: Date.now(),
+                modelRef: createRef<Group>(),
+                rigidBodyRef: createRef<RapierRigidBody>(),
+                velocity: new Vector3(),
+              },
+            };
           }
 
-          return {
-            ...prev,
-            [userId]: {
-              ...prev[userId],
-              position: update.position,
-              rotation: update.rotation,
-              isMoving: update.isMoving,
-              isRunning: update.isRunning,
-              lastUpdate: Date.now(),
-              velocity,
-            },
-          };
-        }
+          // If player exists, update them
+          if (prev[userId]) {
+            // Calculate velocity
+            const timeDelta = (Date.now() - prev[userId].lastUpdate) / 1000;
+            let velocity = prev[userId].velocity;
 
-        return prev;
-      });
+            if (timeDelta > 0 && timeDelta < 1) {
+              const oldPos = new Vector3(
+                prev[userId].position.x,
+                prev[userId].position.y,
+                prev[userId].position.z
+              );
+
+              const newPos = new Vector3(
+                decodedUpdate.position.x,
+                decodedUpdate.position.y,
+                decodedUpdate.position.z
+              );
+
+              const posDelta = newPos.clone().sub(oldPos);
+              velocity = posDelta.divideScalar(timeDelta);
+            }
+
+            // Update existing player
+            return {
+              ...prev,
+              [userId]: {
+                ...prev[userId],
+                position: decodedUpdate.position,
+                rotation: decodedUpdate.rotation,
+                isMoving: decodedUpdate.isMoving,
+                isRunning: decodedUpdate.isRunning,
+                lastUpdate: Date.now(),
+                velocity,
+              },
+            };
+          }
+
+          return prev;
+        });
+      } catch (error) {
+        console.error("Error processing avatar update:", error);
+      }
     };
 
     // Handle player disconnection
