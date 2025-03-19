@@ -42,7 +42,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       auth: {
         userId: profile.id,
         username: profile?.username || 'Usuario',
-        avatarUrl: avatarUrl || 'https://readyplayerme.github.io/visage/male.glb'
+        avatarUrl: avatarUrl || 'https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb'
       },
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

@@ -33,7 +33,7 @@ export const Avatar = () => {
 
   // Load character model
   const { scene } = useGLTF(
-    avatarUrl || "https://readyplayerme.github.io/visage/male.glb"
+    avatarUrl || "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb"
   );
 
   // Let the hook handle position, rotation and movement

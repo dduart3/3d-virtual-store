@@ -75,9 +75,6 @@ export const Chat = () => {
 
   useEffect(() => {
     if (profile && profile.username && profile.avatar_url) {
-      // Create user object from profile
-
-      // Initialize the chat channel
 
       // Initialize welcome messages
       initializeWelcomeMessages();
