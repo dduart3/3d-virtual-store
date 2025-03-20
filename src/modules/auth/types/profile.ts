@@ -21,4 +21,5 @@ export interface UserData extends UserProfileData {
     username?: string;
     address?: string;
     phone?: string;
+    email?: string;
   }
