@@ -18,6 +18,7 @@ import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { Jukebox } from "./Jukebox";
 import { useSectionProducts } from "../hooks/useProducts";
+import { paymentModalOpenAtom } from "../../../cart/state/cart";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -26,6 +27,7 @@ export const StoreScene = (props: GroupProps) => {
   );
   const [, setViewerState] = useAtom(viewerStateAtom);
   const [fadeRef] = useAtom(fadeRefAtom);
+  const [, setIsPaymentModalOpen] = useAtom(paymentModalOpenAtom);
 
   // Fetch all sections with their models
   const { data: sections, isLoading: sectionsLoading } = useSections();
@@ -126,9 +128,10 @@ export const StoreScene = (props: GroupProps) => {
             position={[-135.5, -.5, -56.5]}
             onPointerOver={() => handlePointerOver("checkoutCounter")}
             onPointerOut={handlePointerOut}
+            onClick={() => setIsPaymentModalOpen(true)}
           />
           {hoveredModel === "checkoutCounter" && (
-            <Annotation position={[-139.5, -.5, -56.5]} content="Pagar" />
+            <Annotation position={[-135.5, -.5, -56.5]} content="Pagar" />
           )}
         </Select>
 

@@ -1,14 +1,14 @@
 import { useAtom } from "jotai";
-import { cartAtom, cartActionsAtom } from "../state/cart";
+import { cartAtom, cartActionsAtom, paymentModalOpenAtom } from "../state/cart";
 import { useToast } from "../../../shared/context/ToastContext";
-import { useState } from "react";
 import { PaymentModalWrapper } from "./PaymentModal";
 
 export const CartPanel = () => {
   const [cart, setCart] = useAtom(cartAtom);
   const [, dispatch] = useAtom(cartActionsAtom);
   const { showToast } = useToast();
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useAtom(paymentModalOpenAtom);
+
   const handlePaymentSuccess = () => {
     showToast('Order completed successfully!', 'success');
     dispatch({ type: 'CLEAR' });

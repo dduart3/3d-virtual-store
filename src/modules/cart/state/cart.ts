@@ -12,6 +12,8 @@ export interface Cart {
   isOpen: boolean;
 }
 
+export const paymentModalOpenAtom = atom<boolean>(false);
+
 // Use atomWithStorage instead of regular atom to persist cart between sessions
 export const cartAtom = atomWithStorage<Cart>("store-cart", {
   items: [],
