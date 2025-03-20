@@ -146,7 +146,7 @@ export const Chat = () => {
   //const isLoading = activeTab === "chat" ? isSocketLoading : isAILoading;
 
   return (
-    <div className="absolute bottom-5 left-5 pointer-events-auto">
+    <div id="chat-container" className="absolute bottom-5 left-5 pointer-events-auto">
       <div
         className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 flex flex-col transition-all duration-300
         ${!isOpen ? "w-60 h-10" : "w-96"}`}

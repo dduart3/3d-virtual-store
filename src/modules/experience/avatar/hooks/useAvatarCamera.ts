@@ -4,11 +4,13 @@ import { Vector3 } from 'three';
 import { useThree } from '@react-three/fiber';
 import { useAtom } from 'jotai';
 import { avatarCameraRotationAtom, avatarCameraDistanceAtom } from '../state/avatar';
+import { chatOpenAtom } from '../../../chat/state/chat'; // Import the chat state
 import { RapierRigidBody } from '@react-three/rapier';
 
 export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
   const [cameraRotation, setCameraRotation] = useAtom(avatarCameraRotationAtom);
   const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
+  const [isChatOpen] = useAtom(chatOpenAtom); // Get chat open state
   const isDragging = useRef(false);
   const { gl } = useThree();
   
@@ -34,7 +36,11 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
   
   // Set up mouse controls for camera
   useEffect(() => {
-    const handleMouseDown = () => {
+    const handleMouseDown = (e: MouseEvent) => {
+      // Don't start dragging if we clicked on the chat
+      if (isChatOpen && isEventFromChat(e)) {
+        return;
+      }
       isDragging.current = true;
     };
     
@@ -49,13 +55,28 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
     };
     
     const handleWheel = (e: WheelEvent) => {
+      // Check if the wheel event originated from the chat
+      if (isChatOpen && isEventFromChat(e)) {
+        return; // Skip camera zoom if scrolling in chat
+      }
+      
       const zoomDirection = e.deltaY > 0 ? 1 : -1;
       setCameraDistance((prev) => 
         Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + zoomDirection * ZOOM_SPEED))
       );
     };
     
-    window.addEventListener('wheel', handleWheel);
+    // Helper function to check if an event originated from the chat
+    const isEventFromChat = (e: Event): boolean => {
+      // Check if the event target is inside the chat element
+      const chatElement = document.querySelector('#chat-container');
+      if (!chatElement) return false;
+      
+      return chatElement.contains(e.target as Node) || 
+             chatElement === e.target;
+    };
+    
+    window.addEventListener('wheel', handleWheel, { passive: false });
     gl.domElement.addEventListener('mousedown', handleMouseDown);
     gl.domElement.addEventListener('mouseup', handleMouseUp);
     gl.domElement.addEventListener('mousemove', handleMouseMove);
@@ -68,7 +89,7 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
       gl.domElement.removeEventListener('mousemove', handleMouseMove);
       gl.domElement.removeEventListener('mouseleave', handleMouseUp);
     };
-  }, [gl]);
+  }, [gl, isChatOpen]); // Add isChatOpen to dependencies
   
   // Update camera position to follow avatar with Sims-like perspective
   useFrame((state, delta) => {
