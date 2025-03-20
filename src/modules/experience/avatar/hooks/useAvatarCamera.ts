@@ -15,7 +15,7 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
   // Camera settings for Sims-like top-down view
   const CAMERA_HEIGHT_ANGLE = 0.7; // Angle between 0 (behind) and Math.PI/2 (directly above)
   const MIN_ZOOM = 8;
-  const MAX_ZOOM = 100;
+  const MAX_ZOOM = 25;
   const ZOOM_SPEED = 0.5;
   const MOUSE_SENSITIVITY = 0.003;
   
