@@ -40,7 +40,7 @@ export const Experience = () => {
           gravity={[0, -9.81, 0]} // Standard Earth gravity
           timeStep={1 / 60} // 60 FPS physics update
           interpolate={true} // Enable interpolation for smoother physics
-          debug={!false} // Disable debug rendering
+          debug={false} // Disable debug rendering
         >
           <StoreScene />
           <Avatar key={avataUrl} />
