@@ -65,15 +65,21 @@ export const Colliders = () => {
 
       <CuboidCollider
         name="store-front-left-wall"
-        args={[3.3, 2.1, 0.8]}
-        position={[-160.9, 1.7, -65.45]}
+        args={[3.45, 2.1, 0.8]}
+        position={[-160.9, 1.7, -65.3]}
         rotation={[0, Math.PI / 2, 0]}
       />
 
       <CuboidCollider
-        name="store-front-left-column"
+        name="store-front-left-column-1"
         args={[0.21, 1.25, 0.2]}
         position={[-161.9, 0.85, -61.84]}
+        rotation={[0, Math.PI / 2, 0]}
+      />
+      <CuboidCollider
+        name="store-front-left-column--2"
+        args={[0.46, 1.25, 0.28]}
+        position={[-161.36, 0.85, -61.69]}
         rotation={[0, Math.PI / 2, 0]}
       />
 
@@ -93,14 +99,21 @@ export const Colliders = () => {
 
       <CuboidCollider
         name="store-front-right-wall"
-        args={[3.3, 2.1, 0.8]}
-        position={[-160.9, 1.7, -54]}
+        args={[3.45, 2.1, 0.8]}
+        position={[-160.9, 1.7, -54.15]}
         rotation={[0, Math.PI / 2, 0]}
       />
       <CuboidCollider
-        name="store-front-right-column"
+        name="store-front-right-column-1"
         args={[0.21, 1.25, 0.2]}
         position={[-161.9, 0.85, -57.45]}
+        rotation={[0, Math.PI / 2, 0]}
+      />
+
+      <CuboidCollider
+        name="store-front-right-column-2"
+        args={[0.46, 1.25, 0.28]}
+        position={[-161.36, 0.85, -57.6]}
         rotation={[0, Math.PI / 2, 0]}
       />
       <CuboidCollider
@@ -138,21 +151,19 @@ export const Colliders = () => {
         position={[-170.3, 4, -55.5]}
       />
 
-<CuboidCollider
+      <CuboidCollider
         name="world-left-barrier"
         args={[0.001, 4.4, 5]}
         position={[-166, 4, -115.5]}
-        rotation={[0, Math.PI/2, 0]}
+        rotation={[0, Math.PI / 2, 0]}
       />
 
-<CuboidCollider
+      <CuboidCollider
         name="world-right-barrier"
         args={[0.001, 4.4, 5]}
         position={[-166, 4, -4]}
-        rotation={[0, Math.PI/2, 0]}
+        rotation={[0, Math.PI / 2, 0]}
       />
-      
-
     </>
   );
 };
