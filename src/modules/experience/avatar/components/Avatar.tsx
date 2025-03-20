@@ -79,7 +79,7 @@ export const Avatar = () => {
       colliders={false}
     >
       <CuboidCollider
-        args={[0.2, 0.9, 0.3]} // Width, height, depth (half-extents)
+        args={[0.2, 0.9, 0.25]} // Width, height, depth (half-extents)
         position={[0, 0.9, 0]}
       />
       <Stats />;

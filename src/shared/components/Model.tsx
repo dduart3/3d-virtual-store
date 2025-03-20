@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import { criticalModelsLoadingAtom, criticalModelsProgressAtom } from "../state/loading";
 
-interface ModelProps extends GroupProps {
+export interface ModelProps extends GroupProps {
   modelPath: string;
   isCritical?: boolean;
 }

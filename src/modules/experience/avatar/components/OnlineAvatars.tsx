@@ -31,15 +31,16 @@ export function OnlineAvatars() {
   const [players, setPlayers] = useState<Record<string, RemotePlayer>>({});
 
   useEffect(() => {
-    if (!socket || !profile) return;
+    if (!socket ) return;
 
     // Handle initial players list
     const handleInitialPlayers = (initialPlayers: any[]) => {
       const playersMap: Record<string, RemotePlayer> = {};
+      console.log("Initial players:", initialPlayers);
 
       initialPlayers.forEach((player) => {
         // Skip self - compare with our own user ID
-        if (player.id !== profile.id) {
+        if (player.id !== profile?.id) {
           playersMap[player.id] = {
             ...player,
             lastUpdate: Date.now(),
@@ -55,7 +56,7 @@ export function OnlineAvatars() {
     // Handle player updates
     const handlePlayerUpdate = (update: any) => {
       // Skip self - compare with our own user ID
-      if (update.id === profile.id) return;
+      if (update.id === profile?.id) return;
 
       setPlayers((prev) => {
         // If player doesn't exist yet, add them
@@ -133,7 +134,7 @@ function OnlineAvatar({ player }: OnlineAvatarProps) {
     rotation = 0,
     isMoving = false,
     isRunning = false,
-    username = "Player",
+    username = "Usuario",
     avatarUrl = "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb",
     modelRef,
     rigidBodyRef,

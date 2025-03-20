@@ -14,11 +14,13 @@ import { useSections } from "../hooks/useSections";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { fadeRefAtom } from "../../../../shared/state/fade";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { Jukebox } from "./Jukebox";
 import { useSectionProducts } from "../hooks/useProducts";
-import { paymentModalOpenAtom } from "../../../cart/state/cart";
+import { cartAtom, paymentModalOpenAtom } from "../../../cart/state/cart";
+import { useToast } from "../../../../shared/context/ToastContext";
+import { Colliders } from "./Colliders";
+import { SectionModel } from "./SectionModel";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -28,13 +30,14 @@ export const StoreScene = (props: GroupProps) => {
   const [, setViewerState] = useAtom(viewerStateAtom);
   const [fadeRef] = useAtom(fadeRefAtom);
   const [, setIsPaymentModalOpen] = useAtom(paymentModalOpenAtom);
+  const [cart] = useAtom(cartAtom);
+  const { showToast } = useToast();
 
   // Fetch all sections with their models
   const { data: sections, isLoading: sectionsLoading } = useSections();
 
   // Fetch products for the selected section
-  const { data: products } =
-    useSectionProducts(selectedSection);
+  const { data: products } = useSectionProducts(selectedSection);
 
   // When products are loaded, update the viewer
   useEffect(() => {
@@ -90,29 +93,20 @@ export const StoreScene = (props: GroupProps) => {
         <Model isCritical={true} modelPath="scene" />
 
         {sections?.map((section) => {
+          console.log(section)
           return (
             <Select key={section.id} enabled={hoveredModel === section.id}>
               {/* Wrap each model in a RigidBody for collisions */}
-              <RigidBody
-                type="fixed"
+              <SectionModel
                 position={section.model.position}
                 rotation={section.model.rotation}
-                colliders={false}
-              >
-                <CuboidCollider
-                  args={[1, 0.5, 0.8]} // Width, height, depth - use much smaller values
-                  position={[1, 0.5, -0.75]} // Centered on the model
-                />
-                <Model
-                  modelPath={section.model.path}
-                  scale={section.model.scale}
-                  onPointerOver={() => handlePointerOver(section.id)}
-                  onPointerOut={handlePointerOut}
-                  onClick={() => handleModelClick(section.id)}
-                  isCritical={true}
-                />
-              </RigidBody>
-
+                modelPath={section.model.path}
+                scale={section.model.scale}
+                onPointerOver={() => handlePointerOver(section.id)}
+                onPointerOut={handlePointerOut}
+                onClick={() => handleModelClick(section.id)}
+                isCritical={true}
+              />
               {hoveredModel === section.id && (
                 <Annotation
                   position={section.model.position}
@@ -125,13 +119,19 @@ export const StoreScene = (props: GroupProps) => {
         <Doors />
         <Select enabled={hoveredModel === "checkoutCounter"}>
           <CheckoutCounter
-            position={[-135.5, -.5, -56.5]}
+            position={[-135.5, -0.5, -56.5]}
             onPointerOver={() => handlePointerOver("checkoutCounter")}
             onPointerOut={handlePointerOut}
-            onClick={() => setIsPaymentModalOpen(true)}
+            onClick={() => {
+              if (cart.items.length > 0) {
+                setIsPaymentModalOpen(true);
+              } else {
+                showToast("No hay productos en el carrito", "info");
+              }
+            }}
           />
           {hoveredModel === "checkoutCounter" && (
-            <Annotation position={[-135.5, -.5, -56.5]} content="Pagar" />
+            <Annotation position={[-135.5, -0.5, -56.5]} content="Pagar" />
           )}
         </Select>
 
@@ -140,15 +140,19 @@ export const StoreScene = (props: GroupProps) => {
             position={[-157.5, -0.5, -51.9]}
             onPointerOver={() => handlePointerOver("jukebox")}
             onPointerOut={handlePointerOut}
-            rotation= {[0, Math.PI / 1, 0]}
+            rotation={[0, Math.PI / 1, 0]}
             scale={1.5}
           />
           {hoveredModel === "jukebox" && (
-            <Annotation position={[-157.5, -0.5, -51.9]} content="Escuchar musica" />
+            <Annotation
+              position={[-157.5, -0.5, -51.9]}
+              content="Escuchar musica"
+            />
           )}
         </Select>
 
         <Ground />
+        <Colliders />
       </group>
     </Selection>
   );
