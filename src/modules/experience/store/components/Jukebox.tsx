@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { CuboidCollider } from "@react-three/rapier";
 
 type GLTFResult = GLTF & {
   nodes: {

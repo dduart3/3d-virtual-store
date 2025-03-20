@@ -14,7 +14,7 @@ export function StorePage() {
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      
+      <LoadingScreen />
       <Canvas
         shadows
         camera={{
