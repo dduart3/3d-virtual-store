@@ -13,7 +13,6 @@ import { Annotation } from "../../../../shared/components/Annotation";
 import { useSections } from "../hooks/useSections";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
-import { fadeRefAtom } from "../../../../shared/state/fade";
 import { CheckoutCounter } from "./CheckoutCounter";
 import { Jukebox } from "./Jukebox";
 import { useSectionProducts } from "../hooks/useProducts";
@@ -21,6 +20,7 @@ import { cartAtom, paymentModalOpenAtom } from "../../../cart/state/cart";
 import { useToast } from "../../../../shared/context/ToastContext";
 import { Colliders } from "./Colliders";
 import { SectionModel } from "./SectionModel";
+import { fadeRefAtom } from "../../../../shared/state/fade";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -37,30 +37,36 @@ export const StoreScene = (props: GroupProps) => {
   const { data: sections, isLoading: sectionsLoading } = useSections();
 
   // Fetch products for the selected section
-  const { data: products } = useSectionProducts(selectedSection);
+  const { data: products, isLoading: productsLoading } = useSectionProducts(selectedSection);
 
   // When products are loaded, update the viewer
   useEffect(() => {
-    if (selectedSection && products && products.length > 0) {
-      // Fade out
-      fadeRef?.fadeToBlack();
-
-      // Update viewer state after fade
-      setTimeout(() => {
-        setViewerState({
-          isOpen: true,
-          currentIndex: 0,
-          currentProduct: products[0],
-          products: products,
-        });
-
-        fadeRef?.fadeFromBlack();
-
-        // Reset selected section
-        setSelectedSection(undefined);
-      }, 1000);
+    if (selectedSection && products && products.length > 0 && !productsLoading) {
+      const handleSectionClick = async () => {
+        // Start fade out transition
+        if (fadeRef) {
+          await fadeRef.fadeToBlack();
+          
+          // Add a delay to ensure the fade is complete and visible
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Now we're in the 'loading' state, update viewer state
+          setViewerState({
+            isOpen: true,
+            currentIndex: 0,
+            currentProduct: products[0],
+            products: products,
+            isLoading: true // Add loading state to viewer
+          });
+          
+          // Reset selected section
+          setSelectedSection(undefined);
+        }
+      };
+      
+      handleSectionClick();
     }
-  }, [products, selectedSection, setViewerState, fadeRef]);
+  }, [products, selectedSection, productsLoading, setViewerState, fadeRef]);
 
   const handleModelClick = (sectionId: string) => {
     setSelectedSection(sectionId);

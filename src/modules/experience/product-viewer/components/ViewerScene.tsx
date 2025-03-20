@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Background } from "./Background";
 import { Environment } from "@react-three/drei";
 import {
@@ -11,17 +11,43 @@ import {
 } from "@react-three/postprocessing";
 import { ProductStage } from "./ProductStage";
 import { useProductRotation } from "../hooks/useProductRotation";
+import { useAtom } from "jotai";
+import { viewerStateAtom } from "../state/viewer";
+import { fadeRefAtom } from "../../../../shared/state/fade";
+
 export const ViewerScene = () => {
   const { isDragging, rotationSpeed } = useProductRotation();
-
   const { camera } = useThree();
+  const [isSceneReady, setIsSceneReady] = useState(false);
+  const [viewerState, setViewerState] = useAtom(viewerStateAtom);
+  const [fadeRef] = useAtom(fadeRefAtom);
 
   // Set up the camera for the viewer scene
   useEffect(() => {
     camera.position.set(0, 0, 10);
-
     camera.lookAt(0, 0, 0);
+    
+    // Mark scene as ready after a short delay to ensure everything is loaded
+    const timer = setTimeout(() => {
+      setIsSceneReady(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [camera]);
+  
+  // When scene is ready, fade in if we were loading
+  useEffect(() => {
+    if (isSceneReady && viewerState.isLoading && fadeRef) {
+      // Scene is ready, start fade in
+      fadeRef.fadeFromBlack();
+      
+      // Update viewer state to not loading
+      setViewerState({
+        ...viewerState,
+        isLoading: false
+      });
+    }
+  }, [isSceneReady, viewerState, fadeRef, setViewerState]);
 
   return (
     <group>

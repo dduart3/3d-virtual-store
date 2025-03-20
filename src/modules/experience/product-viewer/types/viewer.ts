@@ -5,5 +5,6 @@ export type ViewerState = {
     currentProduct: ProductWithModel | null;
     products: ProductWithModel[] | null;
     currentIndex: number;
+    isLoading: boolean;
   };
   

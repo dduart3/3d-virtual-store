@@ -6,4 +6,6 @@ export const viewerStateAtom = atom<ViewerState>({
   currentProduct: null,
   products: null,
   currentIndex: 0,
+  isLoading: false
 });
+
