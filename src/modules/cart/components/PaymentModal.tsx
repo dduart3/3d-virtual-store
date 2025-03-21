@@ -11,7 +11,7 @@ import { stripePromise } from "../../../lib/stripe";
 import { useCreatePaymentIntent, useConfirmPayment } from "../hooks/usePayment";
 import { useCreateOrder } from "../hooks/useOrder";
 import { useAtom } from "jotai";
-import { cartActionsAtom, cartAtom } from "../state/cart";
+import { cartAtom } from "../state/cart";
 import { useQueryClient } from "@tanstack/react-query";
 import { viewerStateAtom } from "../../experience/product-viewer/state/viewer";
 
