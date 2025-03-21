@@ -14,6 +14,3 @@ export interface OnlineAvatar {
 
 // Store all online avatars
 export const onlineAvatarsAtom = atom<Record<string, OnlineAvatar>>({});
-
-// Current user's ID (to exclude from rendering)
-export const currentUserIdAtom = atom<string | null>(null);

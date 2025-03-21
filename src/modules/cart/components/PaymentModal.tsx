@@ -286,10 +286,6 @@ function PaymentModal({
                   });
                 }
                
-                // 3. Clear the cart
-                dispatch({ type: 'CLEAR' });
-               
-                showToast('Order completed successfully!', 'success');
                 onSuccess();
                 onClose();
               },

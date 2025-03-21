@@ -55,6 +55,11 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
         return;
       }
 
+      if (password.length < 6) {
+        setError("La contraseña debe tener al menos 6 caracteres");
+        return;
+      }
+
       if (password !== confirmPassword) {
         setError("Las contraseñas no coinciden");
         return;

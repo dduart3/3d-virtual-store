@@ -7,7 +7,7 @@ export const CartButton = () => {
   
   return (
     <button 
-      onClick={() => setCart(prev => ({ ...prev, isOpen: !prev.isOpen }))}
+    onClick={() => setCart({ ...cart, isOpen: !cart.isOpen })}
       className="bg-white/10 p-3 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 group shadow-lg relative cursor-pointer"
       aria-label="Shopping Cart"
     >

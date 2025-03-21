@@ -10,7 +10,7 @@ export const CartPanel = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] =useAtom(paymentModalOpenAtom);
 
   const handlePaymentSuccess = () => {
-    showToast("Order completed successfully!", "success");
+    showToast("Orden completada exitosamente!", "success");
     dispatch({ type: "CLEAR" });
   };
 
@@ -30,7 +30,7 @@ export const CartPanel = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-white text-2xl">Carrito</h2>
             <button
-              onClick={() => setCart((prev) => ({ ...prev, isOpen: false }))}
+              onClick={() => setCart({ ...cart, isOpen: false })}
               className="text-white opacity-60 hover:opacity-100 hover:cursor-pointer"
               type="button"
             >

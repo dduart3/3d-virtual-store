@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
 import {UserData, UserProfileData} from "../types/profile";
+import { useAtom } from "jotai";
+import { currentUserIdAtom } from "../../cart/state/cart";
 
 // Get the current session
 export function useSession() {
@@ -107,10 +109,12 @@ export function useSignUp() {
 // Sign out mutation
 export function useSignOut() {
   const queryClient = useQueryClient();
+  const [, setCurrentUserId] = useAtom(currentUserIdAtom);
 
   return useMutation({
     mutationFn: async () => {
       const { error } = await supabase.auth.signOut();
+      setCurrentUserId(null);
       if (error) throw error;
     },
     onSuccess: () => {
