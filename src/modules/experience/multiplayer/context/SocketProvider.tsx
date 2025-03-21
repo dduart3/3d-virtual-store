@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { useAtom } from 'jotai';
 import { useAuth } from '../../../auth/hooks/useAuth';
 import { avatarUrlAtom } from '../../avatar/state/avatar';
+import { onlineUsersAtom } from '../state/onlineUsers';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -27,16 +28,17 @@ interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { profile } = useAuth();
   const [avatarUrl] = useAtom(avatarUrlAtom);
+  const [, setOnlineUsers] = useAtom(onlineUsersAtom);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [userCount, setUserCount] = useState(0);
   const socketRef = useRef<Socket | null>(null);
-  
+ 
   const connectSocket = () => {
     if (!profile || socketRef.current) return;
-    
+   
     const SOCKET_URL = import.meta.env.VITE_SOCKET_SERVER_URL || 'http://localhost:3001';
-    
+   
     // Create socket connection
     const newSocket = io(SOCKET_URL, {
       auth: {
@@ -48,31 +50,39 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       reconnectionDelay: 1000,
       timeout: 10000
     });
-    
+   
     // Set up event handlers
     newSocket.on('connect', () => {
       console.log('Connected to socket server');
       setIsConnected(true);
+      
+      // Request the list of online users when connected
+      newSocket.emit('get_online_users');
     });
-    
+   
     newSocket.on('disconnect', () => {
       console.log('Disconnected from socket server');
       setIsConnected(false);
     });
-    
+   
     newSocket.on('connect_error', (err) => {
       console.error('Socket connection error:', err);
       setIsConnected(false);
     });
-    
+   
     newSocket.on('users:count', (count: number) => {
       setUserCount(count);
     });
     
+    // Add listener for online users
+    newSocket.on('online_users', (users) => {
+      setOnlineUsers(users);
+    });
+   
     // Store socket in ref and state
     socketRef.current = newSocket;
     setSocket(newSocket);
-    
+   
     return () => {
       newSocket.disconnect();
       socketRef.current = null;
@@ -80,7 +90,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setIsConnected(false);
     };
   };
-  
+ 
   // Connect when user is available
   useEffect(() => {
     if (profile && !socketRef.current) {
@@ -88,7 +98,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       return cleanup;
     }
   }, [profile, avatarUrl]);
-  
+ 
   // Reconnect function
   const reconnect = () => {
     if (socketRef.current) {
@@ -98,7 +108,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
     connectSocket();
   };
-  
+ 
   return (
     <SocketContext.Provider value={{ socket, isConnected, userCount, reconnect }}>
       {children}

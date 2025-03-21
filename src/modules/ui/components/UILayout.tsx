@@ -3,6 +3,7 @@ import { CartButton } from "../../cart/components/CartButton";
 import { Chat } from "../../chat/components/Chat";
 import { CartPanel } from "../../cart/components/CartPanel";
 import { UserMenuButton } from "./UserMenuButton";
+import { OnlineUsers } from "../../experience/multiplayer/components/OnlineUsers";
 
 interface UILayoutProps {
   children?: ReactNode;
@@ -19,6 +20,7 @@ export const UILayout = ({ children }: UILayoutProps) => {
 
       <Chat />
       <CartPanel />
+      <OnlineUsers />
       {children}
     </div>
   );
