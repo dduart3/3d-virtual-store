@@ -143,7 +143,6 @@ function PaymentModal({
   const [currentStep, setCurrentStep] = useState<'shipping' | 'payment'>('shipping');
   const [cart] = useAtom(cartAtom);
  
-  const [, dispatch] = useAtom(cartActionsAtom);
   const [viewerState, setViewerState] = useAtom(viewerStateAtom);
   const queryClient = useQueryClient();
  
