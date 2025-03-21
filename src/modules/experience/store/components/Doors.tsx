@@ -1,8 +1,11 @@
 import { GroupProps } from "@react-three/fiber";
 import { Model } from "../../../../shared/components/Model";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Euler, Vector3 } from "three";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { useAtom } from "jotai";
+import { doorStatusAtom } from "../../multiplayer/state/doors";
+import { useSocket } from "../../multiplayer/context/SocketProvider";
 
 type DoorsStatus = "open" | "closed";
 
@@ -47,16 +50,41 @@ const Door = ({
 );
 
 export const Doors = (props: GroupProps) => {
-  const [status, setStatus] = useState<DoorsStatus>("closed");
+  const [status, setStatus] = useAtom(doorStatusAtom);
+  const { socket, isConnected } = useSocket();
   const hoverProps = useHoverCursor();
+
+  // Listen for door state changes from the server
+  useEffect(() => {
+    if (!socket) return;
+    
+    const handleDoorState = (newState: DoorsStatus) => {
+      setStatus(newState);
+    };
+    
+    socket.on('door:state', handleDoorState);
+    
+    return () => {
+      socket.off('door:state', handleDoorState);
+    };
+  }, [socket, setStatus]);
+
+  const handleDoorToggle = () => {
+    if (!socket || !isConnected) {
+      // Fallback to local toggle if socket is not available
+      setStatus((prev) => (prev === "closed" ? "open" : "closed"));
+      return;
+    }
+    
+    // Emit door toggle event to server
+    socket.emit('door:toggle');
+  };
 
   return (
     <group
       {...props}
       {...hoverProps}
-      onClick={() =>
-        setStatus((prev) => (prev === "closed" ? "open" : "closed"))
-      }
+      onClick={handleDoorToggle}
     >
       <Door side="left" status={status} />
       <Door side="right" status={status} />
