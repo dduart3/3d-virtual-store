@@ -14,13 +14,14 @@ import { useSections } from "../hooks/useSections";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../../product-viewer/state/viewer";
 import { CheckoutCounter } from "./CheckoutCounter";
-import { Jukebox } from "./Jukebox";
+import { Jukebox } from "../../jukebox/components/Jukebox";
 import { useSectionProducts } from "../hooks/useProducts";
 import { cartAtom, paymentModalOpenAtom } from "../../../cart/state/cart";
 import { useToast } from "../../../../shared/context/ToastContext";
 import { Colliders } from "./Colliders";
 import { SectionModel } from "./SectionModel";
 import { fadeRefAtom } from "../../../../shared/state/fade";
+import { jukeboxModeAtom } from "../../jukebox/state/jukebox";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -32,6 +33,8 @@ export const StoreScene = (props: GroupProps) => {
   const [, setIsPaymentModalOpen] = useAtom(paymentModalOpenAtom);
   const [cart] = useAtom(cartAtom);
   const { showToast } = useToast();
+    const [jukeboxMode] = useAtom(jukeboxModeAtom);
+  
 
   // Fetch all sections with their models
   const { data: sections, isLoading: sectionsLoading } = useSections();
@@ -99,7 +102,6 @@ export const StoreScene = (props: GroupProps) => {
         <Model isCritical={true} modelPath="scene" />
 
         {sections?.map((section) => {
-          console.log(section)
           return (
             <Select key={section.id} enabled={hoveredModel === section.id}>
               {/* Wrap each model in a RigidBody for collisions */}
@@ -141,7 +143,7 @@ export const StoreScene = (props: GroupProps) => {
           )}
         </Select>
 
-        <Select enabled={hoveredModel === "jukebox"}>
+        <Select enabled={hoveredModel === "jukebox" && jukeboxMode === "inactive"}>
           <Jukebox
             position={[-157.5, -0.5, -51.9]}
             onPointerOver={() => handlePointerOver("jukebox")}
@@ -149,7 +151,7 @@ export const StoreScene = (props: GroupProps) => {
             rotation={[0, Math.PI / 1, 0]}
             scale={1.5}
           />
-          {hoveredModel === "jukebox" && (
+          {hoveredModel === "jukebox" && jukeboxMode === "inactive" && (
             <Annotation
               position={[-157.5, -0.5, -51.9]}
               content="Escuchar musica"

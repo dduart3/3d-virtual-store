@@ -4,13 +4,17 @@ import { Vector3 } from 'three';
 import { useThree } from '@react-three/fiber';
 import { useAtom } from 'jotai';
 import { avatarCameraRotationAtom, avatarCameraDistanceAtom } from '../state/avatar';
-import { chatOpenAtom } from '../../../chat/state/chat'; // Import the chat state
+import { chatOpenAtom } from '../../../chat/state/chat';
 import { RapierRigidBody } from '@react-three/rapier';
+import { jukeboxModeAtom, jukeboxCameraTargetAtom } from '../../jukebox/state/jukebox';
 
 export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
   const [cameraRotation, setCameraRotation] = useAtom(avatarCameraRotationAtom);
   const [cameraDistance, setCameraDistance] = useAtom(avatarCameraDistanceAtom);
-  const [isChatOpen] = useAtom(chatOpenAtom); // Get chat open state
+  const [isChatOpen] = useAtom(chatOpenAtom);
+  const [jukeboxMode] = useAtom(jukeboxModeAtom);
+  const [jukeboxCameraTarget] = useAtom(jukeboxCameraTargetAtom);
+  
   const isDragging = useRef(false);
   const { gl } = useThree();
   
@@ -41,6 +45,12 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
       if (isChatOpen && isEventFromChat(e)) {
         return;
       }
+      
+      // Don't allow camera rotation when jukebox is active
+      if (jukeboxMode === 'active') {
+        return;
+      }
+      
       isDragging.current = true;
     };
     
@@ -58,6 +68,11 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
       // Check if the wheel event originated from the chat
       if (isChatOpen && isEventFromChat(e)) {
         return; // Skip camera zoom if scrolling in chat
+      }
+      
+      // Don't allow camera zoom when jukebox is active
+      if (jukeboxMode === 'active') {
+        return;
       }
       
       const zoomDirection = e.deltaY > 0 ? 1 : -1;
@@ -81,7 +96,7 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
     gl.domElement.addEventListener('mouseup', handleMouseUp);
     gl.domElement.addEventListener('mousemove', handleMouseMove);
     gl.domElement.addEventListener('mouseleave', handleMouseUp);
-    
+
     return () => {
       window.removeEventListener('wheel', handleWheel);
       gl.domElement.removeEventListener('mousedown', handleMouseDown);
@@ -89,12 +104,48 @@ export function useAvatarCamera(rigidBodyRef: RefObject<RapierRigidBody>) {
       gl.domElement.removeEventListener('mousemove', handleMouseMove);
       gl.domElement.removeEventListener('mouseleave', handleMouseUp);
     };
-  }, [gl, isChatOpen]); // Add isChatOpen to dependencies
+  }, [gl, isChatOpen, jukeboxMode, setCameraRotation, setCameraDistance]);
   
   // Update camera position to follow avatar with Sims-like perspective
   useFrame((state, delta) => {
     if (!rigidBodyRef.current) return;
     
+    // Handle jukebox camera mode
+    if (jukeboxMode === 'active' && jukeboxCameraTarget) {
+      // When jukebox is active, move camera to face the jukebox
+      const targetPosition = jukeboxCameraTarget.position;
+      
+      // Calculate target camera position for jukebox view
+      // We want to be in front of the jukebox, looking at it
+      const jukeboxRotation = jukeboxCameraTarget.rotation;
+      const jukeboxDistance = jukeboxCameraTarget.distance;
+      
+      // Calculate position in front of the jukebox
+      const targetCameraPos = new Vector3(
+        targetPosition.x - Math.sin(jukeboxRotation) * jukeboxDistance,
+        targetPosition.y + 1, // Slightly above eye level
+        targetPosition.z - Math.cos(jukeboxRotation) * jukeboxDistance
+      );
+      
+      // Look directly at the jukebox
+      const targetLookAt = new Vector3(
+        targetPosition.x,
+        targetPosition.y + 1, // Look at the middle of the jukebox
+        targetPosition.z
+      );
+      
+      // Smoothly move to the target position
+      currentCameraPos.current.lerp(targetCameraPos, CAMERA_LERP_FACTOR * 1.5);
+      currentLookAt.current.lerp(targetLookAt, LOOKAT_LERP_FACTOR * 1.5);
+      
+      // Apply camera position and look target
+      state.camera.position.copy(currentCameraPos.current);
+      state.camera.lookAt(currentLookAt.current);
+      
+      return;
+    }
+    
+    // Normal camera behavior when not in jukebox mode
     // Update animation time for subtle camera movement
     cameraAnimTime.current += delta * CAMERA_ANIM_SPEED;
     

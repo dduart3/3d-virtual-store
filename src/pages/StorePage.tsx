@@ -7,9 +7,12 @@ import { useAtom } from "jotai";
 import { viewerStateAtom } from "../modules/experience/product-viewer/state/viewer";
 import { LoadingScreen } from "../shared/components/LoadingScreen";
 import { useRouteHistory } from "../shared/hooks/useRouteHistory";
+import { jukeboxModeAtom } from "../modules/experience/jukebox/state/jukebox";
+import { JukeboxUI } from "../modules/experience/jukebox/components/JukeboxUI";
 
 export function StorePage() {
   const [viewerState] = useAtom(viewerStateAtom);
+  const [jukeboxMode] = useAtom(jukeboxModeAtom);
   useRouteHistory();
 
   return (
@@ -27,12 +30,12 @@ export function StorePage() {
           <Experience />
         </Suspense>
       </Canvas>
-      
-        <>
-          <UILayout />
-          {viewerState.isOpen && <ViewerUI />}
-        </>
-   
+     
+      <>
+        <UILayout />
+        {viewerState.isOpen && <ViewerUI />}
+        {jukeboxMode === 'active' && <JukeboxUI />}
+      </>
     </div>
   );
 }

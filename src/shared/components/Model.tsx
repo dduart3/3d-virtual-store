@@ -98,7 +98,6 @@ export const Model = ({
   // Ensure model is properly marked as loaded when scene is available
   useEffect(() => {
     if (scene && isCritical && !progressUpdated.current) {
-      console.log(`Model ${modelPath} loaded, marking as complete`);
       setCriticalProgress(prev => ({
         ...prev,
         [modelPath]: 100

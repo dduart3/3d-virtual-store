@@ -6,6 +6,7 @@ import { RapierRigidBody } from '@react-three/rapier';
 import { useAtom } from 'jotai';
 import { avatarPositionAtom, avatarCameraRotationAtom, avatarRotationAtom } from '../state/avatar';
 import { chatInputFocusedAtom } from '../../../chat/state/chat';
+import { jukeboxModeAtom } from '../../jukebox/state/jukebox';
 import * as THREE from 'three';
 
 enum Controls {
@@ -25,6 +26,7 @@ export function useAvatarMovement(
   const [rotation, setRotation] = useAtom(avatarRotationAtom);
   const [cameraRotation] = useAtom(avatarCameraRotationAtom);
   const [chatInputFocused] = useAtom(chatInputFocusedAtom);
+  const [jukeboxMode] = useAtom(jukeboxModeAtom);
   const [, getKeys] = useKeyboardControls<Controls>();
   
   // Direction vector for smooth rotation
@@ -51,6 +53,20 @@ export function useAvatarMovement(
   
   useFrame((_state, delta) => {
     if (!rigidBodyRef.current || !modelRef.current || chatInputFocused) return;
+    
+    // Disable movement when jukebox is active
+    if (jukeboxMode === 'active') {
+      // Stop horizontal movement
+      if (rigidBodyRef.current) {
+        const physicsVel = rigidBodyRef.current.linvel();
+        rigidBodyRef.current.setLinvel({
+          x: 0,
+          y: physicsVel.y,
+          z: 0
+        }, true);
+      }
+      return;
+    }
     
     // Get input state
     const { forward, backward, left, right, run } = getKeys();
@@ -124,11 +140,6 @@ export function useAvatarMovement(
     
     // Update position atom
     setPosition(new Vector3(physicsPos.x, physicsPos.y, physicsPos.z));
-    
-    return {
-      isMoving,
-      isRunning: isMoving && run,
-    };
   });
   
   return { position, rotation };

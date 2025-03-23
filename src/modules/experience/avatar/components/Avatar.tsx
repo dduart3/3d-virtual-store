@@ -14,6 +14,7 @@ import { useAtom } from "jotai";
 import { avatarUrlAtom } from "../state/avatar";
 import { isSceneReadyAtom } from "../../../../shared/state/loading";
 import { useAvatarMultiplayer } from "../hooks/useAvatarMultiplayer";
+import { jukeboxModeAtom } from "../../jukebox/state/jukebox";
 
 enum Controls {
   forward = "forward",
@@ -30,6 +31,7 @@ export const Avatar = () => {
   const [, get] = useKeyboardControls<Controls>();
   const [avatarUrl] = useAtom(avatarUrlAtom);
   const [isSceneReady] = useAtom(isSceneReadyAtom);
+  const [jukeboxMode] = useAtom(jukeboxModeAtom);
 
   // Load character model
   const { scene } = useGLTF(
@@ -47,6 +49,13 @@ export const Avatar = () => {
 
   // Update animations
   useFrame((_, delta) => {
+    // If jukebox is active, force idle animation
+    if (jukeboxMode === 'active') {
+      updateAnimation(false, false, false);
+      updateAnimations(delta);
+      return;
+    }
+
     // Animation updates only - movement handled in useAvatarMovement
     const { forward, backward, left, right, run } = get();
     const isMoving = forward || backward || left || right;
