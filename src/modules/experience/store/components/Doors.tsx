@@ -1,6 +1,6 @@
 import { GroupProps } from "@react-three/fiber";
 import { Model } from "../../../../shared/components/Model";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Euler, Vector3 } from "three";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useAtom } from "jotai";
@@ -53,21 +53,36 @@ export const Doors = (props: GroupProps) => {
   const [status, setStatus] = useAtom(doorStatusAtom);
   const { socket, isConnected } = useSocket();
   const hoverProps = useHoverCursor();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Listen for door state changes from the server
   useEffect(() => {
     if (!socket) return;
-    
+
     const handleDoorState = (newState: DoorsStatus) => {
       setStatus(newState);
+      setIsInitialized(true);
     };
-    
-    socket.on('door:state', handleDoorState);
-    
+
+    socket.on("door:state", handleDoorState);
+
+    // Request initial door state if we haven't received it yet
+    if (!isInitialized && isConnected) {
+      socket.emit("door:getState");
+    }
+
     return () => {
-      socket.off('door:state', handleDoorState);
+      socket.off("door:state", handleDoorState);
     };
-  }, [socket, setStatus]);
+  }, [socket, setStatus, isInitialized, isConnected]);
+
+  // Add a reconnection handler to request door state when connection is restored
+  useEffect(() => {
+    if (isConnected && socket) {
+      // When connection is established/restored, request the current door state
+      socket.emit("door:getState");
+    }
+  }, [isConnected, socket]);
 
   const handleDoorToggle = () => {
     if (!socket || !isConnected) {
@@ -75,17 +90,13 @@ export const Doors = (props: GroupProps) => {
       setStatus((prev) => (prev === "closed" ? "open" : "closed"));
       return;
     }
-    
+
     // Emit door toggle event to server
-    socket.emit('door:toggle');
+    socket.emit("door:toggle");
   };
 
   return (
-    <group
-      {...props}
-      {...hoverProps}
-      onClick={handleDoorToggle}
-    >
+    <group {...props} {...hoverProps} onClick={handleDoorToggle}>
       <Door side="left" status={status} />
       <Door side="right" status={status} />
     </group>

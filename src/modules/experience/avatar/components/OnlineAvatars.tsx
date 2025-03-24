@@ -121,12 +121,6 @@ export function OnlineAvatars() {
     };
   }, [socket, profile, isInitialized]);
 
-  // Add a function to manually refresh the players list
-  const refreshPlayersList = () => {
-    if (socket) {
-      socket.emit("users:getList");
-    }
-  };
 
   return (
     <>
