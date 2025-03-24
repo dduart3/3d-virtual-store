@@ -29,9 +29,10 @@ export function OnlineAvatars() {
   const { socket } = useSocket();
   const { profile } = useAuth();
   const [players, setPlayers] = useState<Record<string, RemotePlayer>>({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!socket ) return;
+    if (!socket) return;
 
     // Handle initial players list
     const handleInitialPlayers = (initialPlayers: any[]) => {
@@ -51,6 +52,7 @@ export function OnlineAvatars() {
       });
 
       setPlayers(playersMap);
+      setIsInitialized(true);
     };
 
     // Handle player updates
@@ -107,12 +109,24 @@ export function OnlineAvatars() {
     socket.on("avatar:update", handlePlayerUpdate);
     socket.on("user:disconnect", handlePlayerDisconnect);
 
+    // Request initial players list if we haven't received it yet
+    if (!isInitialized) {
+      socket.emit("users:getList");
+    }
+
     return () => {
       socket.off("users:initial", handleInitialPlayers);
       socket.off("avatar:update", handlePlayerUpdate);
       socket.off("user:disconnect", handlePlayerDisconnect);
     };
-  }, [socket, profile]);
+  }, [socket, profile, isInitialized]);
+
+  // Add a function to manually refresh the players list
+  const refreshPlayersList = () => {
+    if (socket) {
+      socket.emit("users:getList");
+    }
+  };
 
   return (
     <>
@@ -122,6 +136,7 @@ export function OnlineAvatars() {
     </>
   );
 }
+
 
 interface OnlineAvatarProps {
   player: RemotePlayer;

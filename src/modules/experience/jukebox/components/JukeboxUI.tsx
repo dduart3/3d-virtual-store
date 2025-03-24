@@ -52,6 +52,25 @@ export function JukeboxUI() {
   const { profile } = useAuth();
   const urlInputRef = useRef<HTMLInputElement>(null);
 
+  // In JukeboxUI.tsx
+  useEffect(() => {
+    if (socket) {
+      // Listen for volume changes from the server
+      const handleVolumeChange = (data: { volume: number }) => {
+        setVolume(data.volume);
+      };
+
+      socket.on("jukebox:volumeChange", handleVolumeChange);
+
+      // Request the current volume when the component mounts
+      socket.emit("jukebox:getVolume");
+
+      return () => {
+        socket.off("jukebox:volumeChange", handleVolumeChange);
+      };
+    }
+  }, [socket]);
+
   // Get current queue and song info when UI opens
   useEffect(() => {
     if (socket) {
@@ -199,18 +218,18 @@ export function JukeboxUI() {
     const fileName = `${song.title}.mp3`;
 
     fetch(url)
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        })
-        .catch(error => console.error('Error downloading file:', error));
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      })
+      .catch((error) => console.error("Error downloading file:", error));
   }, []);
 
   // Processing overlay (only shown when processing)
@@ -404,18 +423,29 @@ export function JukeboxUI() {
                       <span>{item.addedBy}</span>
                       <span>{item.duration}</span>
                       {item.filePath && (
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleDownload(item);
-    }}
-    className="text-blue-400 hover:text-blue-300 transition-colors"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-    </svg>
-  </button>
-)}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(item);
+                          }}
+                          className="text-blue-400 hover:text-blue-300 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
