@@ -19,7 +19,6 @@ import {
   avatarCameraRotationAtom,
 } from "../../avatar/state/avatar";
 import { GroupProps } from "@react-three/fiber";
-import { JukeboxAudioPlayer } from "./JukeboxAudioPlayer";
 import { JukeboxCameraController } from "../../jukebox/components/JukeboxCameraController";
 
 type GLTFResult = GLTF & {
@@ -575,7 +574,6 @@ const handleJukeboxClick = () => {
           userData={{ name: "PuertaDelantera_Movil_Cristal_PBR_0" }}
         />
       </group>
-      <JukeboxAudioPlayer />
       <JukeboxCameraController />
       <CuboidCollider args={[0.5, 0.8, 0.4]} position={[-35, 0.67, -11.53]} />
     </group>

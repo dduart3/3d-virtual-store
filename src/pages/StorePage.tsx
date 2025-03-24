@@ -6,14 +6,12 @@ import { UILayout } from "../modules/ui/components/UILayout";
 import { useAtom } from "jotai";
 import { viewerStateAtom } from "../modules/experience/product-viewer/state/viewer";
 import { LoadingScreen } from "../shared/components/LoadingScreen";
-import { useRouteHistory } from "../shared/hooks/useRouteHistory";
 import { jukeboxModeAtom } from "../modules/experience/jukebox/state/jukebox";
 import { JukeboxUI } from "../modules/experience/jukebox/components/JukeboxUI";
 
 export function StorePage() {
   const [viewerState] = useAtom(viewerStateAtom);
   const [jukeboxMode] = useAtom(jukeboxModeAtom);
-  useRouteHistory();
 
   return (
     <div className="w-full h-screen relative overflow-hidden">

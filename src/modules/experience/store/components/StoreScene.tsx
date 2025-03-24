@@ -22,6 +22,7 @@ import { Colliders } from "./Colliders";
 import { SectionModel } from "./SectionModel";
 import { fadeRefAtom } from "../../../../shared/state/fade";
 import { jukeboxModeAtom } from "../../jukebox/state/jukebox";
+import { useJukeboxCamera } from "../../jukebox/hooks/useJukeboxCamera";
 
 export const StoreScene = (props: GroupProps) => {
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
@@ -33,40 +34,47 @@ export const StoreScene = (props: GroupProps) => {
   const [, setIsPaymentModalOpen] = useAtom(paymentModalOpenAtom);
   const [cart] = useAtom(cartAtom);
   const { showToast } = useToast();
-    const [jukeboxMode] = useAtom(jukeboxModeAtom);
-  
+  const [jukeboxMode] = useAtom(jukeboxModeAtom);
+
+  useJukeboxCamera();
 
   // Fetch all sections with their models
   const { data: sections, isLoading: sectionsLoading } = useSections();
 
   // Fetch products for the selected section
-  const { data: products, isLoading: productsLoading } = useSectionProducts(selectedSection);
+  const { data: products, isLoading: productsLoading } =
+    useSectionProducts(selectedSection);
 
   // When products are loaded, update the viewer
   useEffect(() => {
-    if (selectedSection && products && products.length > 0 && !productsLoading) {
+    if (
+      selectedSection &&
+      products &&
+      products.length > 0 &&
+      !productsLoading
+    ) {
       const handleSectionClick = async () => {
         // Start fade out transition
         if (fadeRef) {
           await fadeRef.fadeToBlack();
-          
+
           // Add a delay to ensure the fade is complete and visible
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
           // Now we're in the 'loading' state, update viewer state
           setViewerState({
             isOpen: true,
             currentIndex: 0,
             currentProduct: products[0],
             products: products,
-            isLoading: true // Add loading state to viewer
+            isLoading: true, // Add loading state to viewer
           });
-          
+
           // Reset selected section
           setSelectedSection(undefined);
         }
       };
-      
+
       handleSectionClick();
     }
   }, [products, selectedSection, productsLoading, setViewerState, fadeRef]);
@@ -143,7 +151,9 @@ export const StoreScene = (props: GroupProps) => {
           )}
         </Select>
 
-        <Select enabled={hoveredModel === "jukebox" && jukeboxMode === "inactive"}>
+        <Select
+          enabled={hoveredModel === "jukebox" && jukeboxMode === "inactive"}
+        >
           <Jukebox
             position={[-157.5, -0.5, -51.9]}
             onPointerOver={() => handlePointerOver("jukebox")}

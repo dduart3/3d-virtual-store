@@ -11,16 +11,15 @@ import { fadeRefAtom } from "../../shared/state/fade";
 import { hideCanvasLoader } from "../../shared/utils/loaderUtils";
 import { avatarUrlAtom } from "./avatar/state/avatar";
 import { OnlineAvatars } from "./avatar/components/OnlineAvatars";
-import { useJukeboxCamera } from "./jukebox/hooks/useJukeboxCamera";
+import { JukeboxAudioPlayer } from "./jukebox/components/JukeboxAudioPlayer";
 
 export const Experience = () => {
   const fadeRef = useRef<FadeHandle>(null!);
   const [viewerState] = useAtom(viewerStateAtom);
   const [, setFadeRef] = useAtom(fadeRefAtom);
   const [avatarUrl] = useAtom(avatarUrlAtom);
-  
+
   // Initialize jukebox camera system
-  useJukeboxCamera();
 
   // Make fadeRef accessible via atom
   useEffect(() => {
@@ -47,13 +46,14 @@ export const Experience = () => {
           debug={false} // Disable debug rendering
         >
           <StoreScene />
+
           <Avatar key={avatarUrl} />
           <OnlineAvatars />
         </Physics>
       ) : (
         <ViewerScene />
       )}
-
+      <JukeboxAudioPlayer />
       <Fade ref={fadeRef} />
     </group>
   );
