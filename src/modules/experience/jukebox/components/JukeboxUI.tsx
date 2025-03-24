@@ -37,7 +37,7 @@ export function JukeboxUI() {
   const [, setJukeboxMode] = useAtom(jukeboxModeAtom);
   const [jukeboxState, setJukeboxState] = useAtom(jukeboxStateAtom);
   const [currentSong] = useAtom(currentSongAtom);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(0.2);
 
   // UI state
   const [view, setView] = useState<"main" | "search" | "url">("main");
