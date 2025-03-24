@@ -45,7 +45,7 @@ export function useJukeboxAudio(options: JukeboxAudioOptions = {}) {
   // Use refs for all state that shouldn't trigger re-renders
   const audioInitializedRef = useRef(false);
   const initialStateRequestedRef = useRef(false);
-  const baseVolumeRef = useRef(0.8);
+  const baseVolumeRef = useRef(0.2);
   const currentSrcRef = useRef("");
   const isPlayingCustomSongRef = useRef(false);
   const serverTimeOffsetRef = useRef(0); // To track time difference between server and client
