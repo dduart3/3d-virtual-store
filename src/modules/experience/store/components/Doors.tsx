@@ -3,8 +3,6 @@ import { Model } from "../../../../shared/components/Model";
 import { useEffect, useState } from "react";
 import { Euler, Vector3 } from "three";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
-import { useAtom } from "jotai";
-import { doorStatusAtom } from "../../multiplayer/state/doors";
 import { useSocket } from "../../multiplayer/context/SocketProvider";
 
 type DoorsStatus = "open" | "closed";
@@ -50,7 +48,7 @@ const Door = ({
 );
 
 export const Doors = (props: GroupProps) => {
-  const [status, setStatus] = useAtom(doorStatusAtom);
+  const [status, setStatus] = useState<DoorsStatus>("closed");
   const { socket, isConnected } = useSocket();
   const hoverProps = useHoverCursor();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -74,7 +72,7 @@ export const Doors = (props: GroupProps) => {
     return () => {
       socket.off("door:state", handleDoorState);
     };
-  }, [socket, setStatus, isInitialized, isConnected]);
+  }, [socket, setStatus, isInitialized, isConnected, status]);
 
   // Add a reconnection handler to request door state when connection is restored
   useEffect(() => {
