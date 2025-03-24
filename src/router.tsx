@@ -10,7 +10,7 @@ import { StorePage } from "./pages/StorePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
-import { ResetPasswordPage } from "./pages/RessetPasswordPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { ConfirmEmailPage } from "./pages/ConfirmEmailPage";
 
 // Create routes
