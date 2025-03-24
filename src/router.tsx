@@ -8,7 +8,10 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { StorePage } from "./pages/StorePage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
+import { ResetPasswordPage } from "./pages/RessetPasswordPage";
+import { ConfirmEmailPage } from "./pages/ConfirmEmailPage";
 
 // Create routes
 const rootRoute = createRootRoute();
@@ -31,6 +34,18 @@ const registerRoute = createRoute({
   component: RegisterPage,
 });
 
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/forgot-password",
+  component: ForgotPasswordPage,
+});
+
+const resetPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/reset-password",
+  component: ResetPasswordPage,
+});
+
 const storeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/store",
@@ -51,11 +66,21 @@ const profileRoute = createRoute({
   ),
 });
 
-// Create and export the router
+// Add this to your existing routes
+const confirmEmailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/confirm",
+  component: ConfirmEmailPage,
+});
+
+// Add it to your routeTree
 const routeTree = rootRoute.addChildren([
   landingRoute,
   loginRoute,
   registerRoute,
+  forgotPasswordRoute,
+  resetPasswordRoute,
+  confirmEmailRoute, // Add this line
   storeRoute,
   profileRoute,
 ]);

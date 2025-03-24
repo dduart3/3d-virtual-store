@@ -1,7 +1,6 @@
 export interface UserData extends UserProfileData {
     id: string;
     email: string;
-    avatar_url: string | null;
     created_at: string | null;
     updated_at: string | null;
   }
@@ -22,4 +21,5 @@ export interface UserData extends UserProfileData {
     address?: string;
     phone?: string;
     email?: string;
+    avatar_url?: string;
   }

@@ -3,7 +3,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../hooks/useAuth";
 import { AvatarCreator } from "../../experience/avatar/components/AvatarCreator";
 import { useAtom } from "jotai";
-import { avatarUrlAtom, avatarIdAtom } from "../../experience/avatar/state/avatar";
+import {
+  avatarUrlAtom,
+  avatarIdAtom,
+} from "../../experience/avatar/state/avatar";
 import ReactDOM from "react-dom";
 import { isValidEmail } from "../../../shared/utils/validations";
 
@@ -105,6 +108,8 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
       return;
     }
 
+    // In the handleCompleteRegistration function, after successful registration:
+
     updateProfile(
       {
         userId,
@@ -113,11 +118,16 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
           first_name: firstName,
           last_name: lastName,
           email: email,
+          avatar_url: avatarUrl,
         },
       },
       {
         onSuccess: () => {
-          navigate({ to: "/store" });
+          // Instead of directly navigating to the store, show a message about email confirmation
+          navigate({
+            to: "/login",
+            search: { from: "registration-email-confirmation" },
+          });
         },
         onError: () => {
           setError(

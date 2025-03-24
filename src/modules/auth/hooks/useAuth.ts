@@ -86,6 +86,7 @@ export function useSignIn() {
 
 
 // Sign up mutation
+// Update the useSignUp function to include redirectTo
 export function useSignUp() {
   return useMutation({
     mutationFn: async ({
@@ -98,6 +99,9 @@ export function useSignUp() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        }
       });
 
       if (error) throw error;
@@ -105,6 +109,7 @@ export function useSignUp() {
     },
   });
 }
+
 
 // Sign out mutation
 export function useSignOut() {
@@ -197,6 +202,39 @@ export function useUpdateAvatar() {
   });
 }
 
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+      return { success: true };
+    },
+  });
+}
+
+// Update password with reset token
+export function useUpdatePassword() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newPassword: string) => {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
+    },
+  });
+}
+
+
 export function useAuth() {
   const sessionQuery = useSession();
   const userId = sessionQuery.data?.user?.id;
@@ -207,6 +245,8 @@ export function useAuth() {
   const checkUsernameMutation = useCheckUsername();
   const updateProfileMutation = useUpdateProfile();
   const updateAvatarMutation = useUpdateAvatar();
+  const resetPasswordMutation = useResetPassword();
+  const updatePasswordMutation = useUpdatePassword();
 
   return {
     user: sessionQuery.data?.user || null,
@@ -220,11 +260,15 @@ export function useAuth() {
     checkUsername: checkUsernameMutation.mutate,
     updateProfile: updateProfileMutation.mutate,
     updateAvatar: updateAvatarMutation.mutate,
+    resetPassword: resetPasswordMutation.mutate,
+    updatePassword: updatePasswordMutation.mutate,
     isSigningIn: signInMutation.isPending,
     isSigningUp: signUpMutation.isPending,
     isSigningOut: signOutMutation.isPending,
     isCheckingUsername: checkUsernameMutation.isPending,
     isUpdatingProfile: updateProfileMutation.isPending,
-    isUpdatingAvatar: updateAvatarMutation.isPending
+    isUpdatingAvatar: updateAvatarMutation.isPending,
+    isResettingPassword: resetPasswordMutation.isPending,
+    isUpdatingPassword: updatePasswordMutation.isPending,
   };
 }
