@@ -9,12 +9,18 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { StorePage } from "./pages/StorePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
-import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { ConfirmEmailPage } from "./pages/ConfirmEmailPage";
+import { RouteWrapper } from "./shared/components/RouteWrapper";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { ErrorPage } from "./pages/ErrorPage";
 
 // Create routes
-const rootRoute = createRootRoute();
+const rootRoute = createRootRoute({
+  component: () => <RouteWrapper />,
+  notFoundComponent: NotFoundPage,
+  errorComponent: ErrorPage
+});
 
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -49,21 +55,13 @@ const resetPasswordRoute = createRoute({
 const storeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/store",
-  component: () => (
-    <ProtectedRoute>
-      <StorePage />
-    </ProtectedRoute>
-  ),
+  component: StorePage
 });
 
 const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/profile",
-  component: () => (
-    <ProtectedRoute>
-      <ProfilePage />
-    </ProtectedRoute>
-  ),
+  component: ProfilePage
 });
 
 // Add this to your existing routes
