@@ -82,7 +82,7 @@ export function UserMenuButton() {
               className="block w-full text-left px-4 py-2 text-white hover:bg-white/10 rounded transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              Profile
+              Perfil
             </Link>
 
             <button
@@ -100,7 +100,7 @@ export function UserMenuButton() {
               onClick={handleSignOut}
               className="block w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/10 rounded transition-colors"
             >
-              Sign Out
+              Cerrar Sesión
             </button>
           </div>
         </div>
