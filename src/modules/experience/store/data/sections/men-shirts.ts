@@ -10,6 +10,7 @@ export const menShirtsSection = {
   },
   products: [
     {
+      id:"sweater",
       name: "Suéter Casual",
       description: "Suéter confortable y moderno para un estilo casual elegante.",
       price: 59.99,
@@ -18,6 +19,7 @@ export const menShirtsSection = {
       modelScale: 0.5
     },
     {
+      id:"shirt",
       name: "Camisa Informal",
       description: "Camisa ligera y versátil para un look relajado pero presentable.",
       price: 45.99,
@@ -26,6 +28,7 @@ export const menShirtsSection = {
       modelScale: 0.07
     },
     {
+      id:"long-shirt",
       name: "Camisa de Vestir",
       description: "Camisa elegante de corte ajustado, ideal para ocasiones formales.",
       price: 69.99,

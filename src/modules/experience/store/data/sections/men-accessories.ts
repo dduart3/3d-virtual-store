@@ -10,6 +10,7 @@ export const menAccessoriesSection = {
   },
   products: [
     {
+      id: "aviator-sunglasses",
       name: "Lentes de Sol Aviador",
       description: "Gafas de sol estilo aviador con montura metálica y protección UV.",
       price: 129.99,
@@ -18,6 +19,7 @@ export const menAccessoriesSection = {
       modelScale: 0.1
     },
     {
+      id: "wallet",
       name: "Cartera de Cuero",
       description: "Cartera elegante de cuero genuino con múltiples compartimentos.",
       price: 79.99,
@@ -26,6 +28,7 @@ export const menAccessoriesSection = {
       modelScale: 0.5
     },
     {
+      id: "seiko",
       name: "Reloj Seiko",
       description: "Reloj clásico Seiko con mecanismo automático y correa de acero inoxidable.",
       price: 249.99,

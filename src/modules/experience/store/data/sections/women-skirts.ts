@@ -10,6 +10,7 @@ export const womenSkirtsSection = {
   },
   products: [
     {
+      id: "blue-skirt",
       name: "Falda Azul Elegante",
       description: "Falda azul versátil que combina con diversos estilos y ocasiones.",
       price: 69.99,
@@ -18,6 +19,7 @@ export const womenSkirtsSection = {
       modelScale: 0.001
     },
     {
+      id: "skirt",
       name: "Falda Casual",
       description: "Falda de diseño casual para uso cotidiano con corte moderno.",
       price: 59.99,
@@ -25,6 +27,7 @@ export const womenSkirtsSection = {
       modelPosition: [0, -.9, 7.5]
     },
     {
+      id: "long-skirt",
       name: "Falda Larga",
       description: "Falda de longitud maxi con caída elegante y tejido premium.",
       price: 79.99,

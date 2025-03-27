@@ -10,6 +10,7 @@ export const womenBlousesSection = {
   },
   products: [
     {
+      id: "blouse",	
       name: "Blusa Casual",
       description: "Blusa versátil para uso diario con diseño moderno y cómodo.",
       price: 49.99,
@@ -17,6 +18,7 @@ export const womenBlousesSection = {
       modelPosition: [0, -0.05, 8.5]
     },
     {
+      id: "white-blouse",
       name: "Blusa Formal Blanca",
       description: "Elegante blusa blanca para entornos profesionales y eventos formales.",
       price: 59.99,
@@ -24,6 +26,7 @@ export const womenBlousesSection = {
       modelPosition: [0, -1.3, 8]
     },
     {
+      id: "pink-blouse",
       name: "Blusa Rosa",
       description: "Blusa ligera en tono rosa con detalles delicados y acabado premium.",
       price: 54.99,

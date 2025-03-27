@@ -10,6 +10,7 @@ export const menPantsSection = {
   },
   products: [
     {
+      id:"pants",
       name: "Pantalón Formal",
       description: "Pantalón de vestir con acabado elegante, perfecto para ocasiones formales.",
       price: 89.99,
@@ -18,6 +19,7 @@ export const menPantsSection = {
       modelScale: 0.025
     },
     {
+      id:"jeans",
       name: "Jeans Clásicos",
       description: "Jeans resistentes y cómodos para uso diario con corte tradicional.",
       price: 79.99,
@@ -25,9 +27,10 @@ export const menPantsSection = {
       modelPosition: [0, -1.5, 5],
       modelScale: 0.4
     },
-    {
-      name: "Jeans Premium",
-      description: "Jeans de alta calidad con tejido premium y acabado exclusivo.",
+    { 
+      id:"dark-jeans",
+      name: "Jeans Oscuros",
+      description: "Jeans oscuros con un acabado elegante y ajuste perfecto.",
       price: 129.99,
       modelId: "dark-jeans",
       modelPosition: [0, -0.8, 8],

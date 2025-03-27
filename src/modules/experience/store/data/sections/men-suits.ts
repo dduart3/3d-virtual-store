@@ -10,22 +10,25 @@ export const menSuitsSection = {
   },
   products: [
     {
-      name: "Traje Formal Negro",
-      description: "Elegante traje negro para ocasiones formales y eventos especiales.",
+      id: "suit",
+      name: "Traje Ejecutivo Azul",
+      description: "Traje azul marino de corte moderno, ideal para el ambiente corporativo.",
       price: 349.99,
       modelId: "suit",
       modelPosition: [0, -1.15, 8],
       modelScale: 0.01
     },
     {
-      name: "Traje Ejecutivo Azul",
-      description: "Traje azul marino de corte moderno, ideal para el ambiente corporativo.",
+      id: "black-suit",
+      name: "Traje Ejecutivo Negro",
+      description: "Traje negro elegante para ocasiones formales y eventos especiales.",
       price: 399.99,
       modelId: "black-suit",
       modelPosition: [0, -.35, 7.5],
       modelScale: 0.01
     },
     {
+      id: "tailcoat-suit",
       name: "Traje de Gala",
       description: "Sofisticado traje de gala con acabados premium para eventos de etiqueta.",
       price: 499.99,

@@ -10,6 +10,7 @@ export const womenAccessoriesSection = {
   },
   products: [
     {
+      id: "ring",
       name: "Anillo de Diamante",
       description: "Elegante anillo con diamante de alta calidad y diseño atemporal.",
       price: 1299.99,
@@ -19,6 +20,7 @@ export const womenAccessoriesSection = {
       modelScale: 0.3
     },
     {
+      id: "watch",
       name: "Reloj Cadisen",
       description: "Reloj sofisticado con detalles premium y estilo contemporáneo.",
       price: 179.99,
@@ -28,6 +30,7 @@ export const womenAccessoriesSection = {
       modelScale: 0.1
     },
     {
+      id: "necklace",
       name: "Collar de Rubí",
       description: "Collar exclusivo con rubí central y acabados delicados en oro.",
       price: 899.99,

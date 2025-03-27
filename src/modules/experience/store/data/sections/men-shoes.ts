@@ -10,6 +10,7 @@ export const menShoesSection = {
   },
   products: [
     {
+      id:"oxford",
       name: "Mocasines",
       description: "Elegantes mocasines de cuero genuino con costura detallada y diseño clásico.",
       price: 99.99,
@@ -18,6 +19,7 @@ export const menShoesSection = {
       modelScale: 3,
     },
     {
+      id: "magnanni",
       name: "Zapatos de vestir claros",
       description: "Zapatos formales de tono claro con acabado premium y diseño italiano sofisticado.",
       price: 299.99,
@@ -26,6 +28,7 @@ export const menShoesSection = {
       modelScale: 0.001,
     },
     {
+      id:"rossi",
       name: "Zapatos de vestir oscuros",
       description: "Zapatos de vestir en tono oscuro con cuero de alta calidad y suela resistente.",
       price: 249.99,

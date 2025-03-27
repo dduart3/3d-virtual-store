@@ -10,6 +10,7 @@ export const menHatsSection = {
   },
   products: [
     {
+      id: "fedora",
       name: "Sombrero Fedora Clásico",
       description: "Fedora tradicional de alta calidad para un estilo distinguido.",
       price: 69.99,
@@ -19,6 +20,7 @@ export const menHatsSection = {
       modelScale: 0.058
     },
     {
+      id: "summer-fedora",
       name: "Fedora de Verano",
       description: "Sombrero fedora de material ligero, perfecto para los días cálidos.",
       price: 59.99,
@@ -26,6 +28,7 @@ export const menHatsSection = {
       modelPosition: [0, 0.6, 7]
     },
     {
+      id: "flat-cap",
       name: "Gorra Inglesa",
       description: "Elegante gorra de estilo inglés con diseño atemporal.",
       price: 49.99,

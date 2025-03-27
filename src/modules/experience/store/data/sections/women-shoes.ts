@@ -11,6 +11,7 @@ export const womenShoesSection = {
   },
   products: [
     {
+      id: "high-heels",
       name: "Tacones Altos",
       description: "Elegantes tacones altos para ocasiones formales y eventos especiales.",
       price: 129.99,
@@ -19,6 +20,7 @@ export const womenShoesSection = {
       modelScale: 0.08
     },
     {
+      id: "low-heels",
       name: "Tacones Bajos",
       description: "Tacones de altura media, cómodos para uso prolongado con diseño versátil.",
       price: 99.99,
@@ -27,6 +29,7 @@ export const womenShoesSection = {
       modelRotation: [0, 0, -25]
     },
     {
+      id: "boot",
       name: "Botas de Moda",
       description: "Botas estilizadas con diseño contemporáneo para complementar diversos looks.",
       price: 149.99,
