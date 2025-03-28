@@ -43,7 +43,7 @@ const Door = ({
     colliders={false}
   >
     <CuboidCollider args={[0.05, 1.46, 0.53]} position={[0.03, 1.46, -0.52]} />
-    <Model name={`${side}Door`} isCritical={true} modelPath="/misc/door" />
+    <Model name={`${side}Door`} isCritical={true} modelPath="/models/misc/door.glb" />
   </RigidBody>
 );
 

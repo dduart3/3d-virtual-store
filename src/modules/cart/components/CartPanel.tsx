@@ -49,9 +49,9 @@ export const CartPanel = () => {
                   className="flex items-center gap-4 mb-4 text-white"
                 >
                   <div className="w-20 h-20 bg-white/10 rounded flex items-center justify-center overflow-hidden">
-                    {item.product.thumbnail_path ? (
+                    {item.product.thumbnail_url ? (
                       <img
-                        src={`/thumbnails/${item.product.thumbnail_path}`}
+                        src={item.product.thumbnail_url}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                       />

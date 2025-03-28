@@ -17,7 +17,6 @@ export const WARDROBE_IDS = new Set([
   'men-pants',
   'men-suits',
   'women-dresses'
-
 ]);
 
 // Get section type
@@ -32,8 +31,8 @@ export const SectionModel = ({
     modelPath, 
     isCritical = false,
     ...props 
-  }: ModelProps) => {
-    const sectionModelType = getSectionModelType(modelPath.split('/').pop()!);
+  }: ModelProps ) => {
+    const sectionModelType = getSectionModelType(modelPath.split('/').slice(-2)[0]);
   return (
     <group {...props}>
       {sectionModelType === 'table' && (

@@ -3,6 +3,25 @@ import { supabase } from '../../../../lib/supabase';
 import { parsePosition, parseRotation, parseScale } from '../../types/model';
 import { ProductWithModel } from '../types/product';
 
+export const getProductThumbnailUrl = (productId: string) => {
+    return supabase.storage
+      .from('store')
+      .getPublicUrl(`products/${productId}/thumbnail.webp`).data.publicUrl;
+  }
+  
+  
+  export const getProductModelUrl = (productId: string) => {
+    return supabase.storage
+      .from('store')
+      .getPublicUrl(`products/${productId}/model.glb`).data.publicUrl;
+  }
+  
+  
+  export const getSectionModelUrl = (sectionId: string) => {
+    return supabase.storage
+      .from('store')
+      .getPublicUrl(`sections/${sectionId}/model.glb`).data.publicUrl;
+  }
 
 // Fetch products for a specific section
 export function useSectionProducts(sectionId: string | undefined) {
@@ -10,36 +29,37 @@ export function useSectionProducts(sectionId: string | undefined) {
     queryKey: ['products', 'section', sectionId],
     queryFn: async () => {
       if (!sectionId) throw new Error('Section ID is required');
-      
+     
       // Get products for this section
       const { data: products, error: productsError } = await supabase
         .from('products')
         .select('*')
         .eq('section_id', sectionId);
-      
+     
       if (productsError) throw productsError;
-      
+     
       // Get models for these products
       const productIds = products.map(p => p.id);
       const { data: models, error: modelsError } = await supabase
         .from('models')
         .select('*')
         .in('product_id', productIds);
-      
+     
       if (modelsError) throw modelsError;
-      
+     
       // Join products with their models
       return products.map(product => {
         const model = models.find(m => m.product_id === product.id);
         if (!model) {
           throw new Error(`Model not found for product ${product.id}`);
         }
-        
+       
         return {
           ...product,
+          thumbnail_url: getProductThumbnailUrl(product.id),
           model: {
             id: model.id,
-            path: model.path,
+            path: getProductModelUrl(product.id), // Use the utility function
             position: parsePosition(model.position),
             rotation: parseRotation(model.rotation),
             scale: parseScale(model.scale),
@@ -58,30 +78,31 @@ export function useProduct(productId: string | undefined) {
     queryKey: ['product', productId],
     queryFn: async () => {
       if (!productId) throw new Error('Product ID is required');
-      
+     
       // Get product
       const { data: product, error: productError } = await supabase
         .from('products')
         .select('*')
         .eq('id', productId)
         .single();
-      
+     
       if (productError) throw productError;
-      
+     
       // Get product model
       const { data: model, error: modelError } = await supabase
         .from('models')
         .select('*')
         .eq('product_id', productId)
         .single();
-      
+     
       if (modelError) throw modelError;
-      
+     
       return {
         ...product,
+        thumbnail_url: getProductThumbnailUrl(product.id),
         model: {
           id: model.id,
-          path: model.path,
+          path: getProductModelUrl(product.id), // Use the utility function
           position: parsePosition(model.position),
           rotation: parseRotation(model.rotation),
           scale: parseScale(model.scale),

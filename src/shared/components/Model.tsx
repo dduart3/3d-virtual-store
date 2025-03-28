@@ -14,7 +14,6 @@ export const Model = ({
   isCritical = false,
   ...props 
 }: ModelProps) => {
-  const path = `/models/${modelPath}.glb`;
   const [, setCriticalLoading] = useAtom(criticalModelsLoadingAtom);
   const [, setCriticalProgress] = useAtom(criticalModelsProgressAtom);
   const progressUpdated = useRef(false);
@@ -53,10 +52,10 @@ export const Model = ({
   }, [modelPath, isCritical]);
 
   // Load the model with progress tracking
-  const { scene } = useGLTF(path, undefined, undefined, (loader) => {
+  const { scene } = useGLTF(modelPath, undefined, undefined, (loader) => {
     if (isCritical) {
       loader.load(
-        path,
+        modelPath,
         () => {
           // Model fully loaded (100%)
           setCriticalProgress(prev => ({

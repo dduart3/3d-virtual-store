@@ -107,7 +107,7 @@ export const StoreScene = (props: GroupProps) => {
       </EffectComposer>
 
       <group {...props}>
-        <Model isCritical={true} modelPath="scene" />
+        <Model isCritical={true} modelPath="/models/scene.glb" />
 
         {sections?.map((section) => {
           return (
