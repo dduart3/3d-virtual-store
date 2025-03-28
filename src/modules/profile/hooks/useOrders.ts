@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import { Order, OrderWithItems } from '../types/order';
+import { getProductThumbnailUrl } from '../../experience/store/utils/supabaseStorageUtils';
 
 export function useOrders() {
   return useQuery({
@@ -38,6 +39,8 @@ export function useOrderWithItems(orderId: string | null) {
       }
       
       if (!order) return null;
+
+
       
       // Fetch order items with product information
       const { data: items, error: itemsError } = await supabase
@@ -46,19 +49,28 @@ export function useOrderWithItems(orderId: string | null) {
           *,
           product:product_id (
             id,
-            name,
-            thumbnail_path
+            name
           )
         `)
         .eq('order_id', orderId);
-      
-      if (itemsError) {
-        throw new Error(`Error fetching order items: ${itemsError.message}`);
-      }
+        
+        if (itemsError) {
+          throw new Error(`Error cargando los productos de la compra: ${itemsError.message}`);
+        }
+
+        const itemsWithThumbnails = items?.map((item) => {
+          return {
+            ...item,
+            product: {
+              ...item.product,
+              thumbnail_url: getProductThumbnailUrl(item.product.id)
+            }
+          };
+        });
       
       return {
         ...order,
-        items: items || []
+        items: itemsWithThumbnails || []
       };
     },
     enabled: !!orderId

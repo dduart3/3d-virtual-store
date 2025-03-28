@@ -30,7 +30,6 @@ export function OrderHistory() {
 
   useEffect(() => {
     if(!orders) return;
-    console.log(orders);
   }, [orders]);
 
   const toggleOrderDetails = (orderId: string) => {
@@ -131,10 +130,10 @@ export function OrderHistory() {
                     {orderDetails.items.map((item) => (
                       <li key={item.id} className="flex justify-between items-center py-2 border-b border-white/5">
                         <div className="flex items-center">
-                          {item.product.thumbnail_path ? (
+                          {item.product.thumbnail_url ? (
                             <div className="w-12 h-12 bg-white/5 border rounded-lg border-white/10 mr-4 flex items-center justify-center overflow-hidden">
                               <img
-                                src={`/thumbnails/${item.product.thumbnail_path}`}
+                                src={item.product.thumbnail_url}
                                 alt={item.product.name}
                                 className="w-full h-full object-cover rounded-sm"
                               />

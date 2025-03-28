@@ -18,7 +18,6 @@ serve(async (req) => {
   try {
     const { amount, currency = 'usd' } = await req.json()
     
-    // Create a PaymentIntent with both card and PayPal options
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency,

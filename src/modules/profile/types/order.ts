@@ -36,6 +36,6 @@ export interface OrderItem {
   product: {
     id: string;
     name: string;
-    thumbnail_path?: string;
+    thumbnail_url?: string;
   };
 }
