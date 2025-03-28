@@ -2,26 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../../lib/supabase';
 import { parsePosition, parseRotation, parseScale } from '../../types/model';
 import { ProductWithModel } from '../types/product';
-
-export const getProductThumbnailUrl = (productId: string) => {
-    return supabase.storage
-      .from('store')
-      .getPublicUrl(`products/${productId}/thumbnail.webp`).data.publicUrl;
-  }
-  
-  
-  export const getProductModelUrl = (productId: string) => {
-    return supabase.storage
-      .from('store')
-      .getPublicUrl(`products/${productId}/model.glb`).data.publicUrl;
-  }
-  
-  
-  export const getSectionModelUrl = (sectionId: string) => {
-    return supabase.storage
-      .from('store')
-      .getPublicUrl(`sections/${sectionId}/model.glb`).data.publicUrl;
-  }
+import { getProductModelUrl, getProductThumbnailUrl } from '../utils/supabaseStorageUtils';
 
 // Fetch products for a specific section
 export function useSectionProducts(sectionId: string | undefined) {

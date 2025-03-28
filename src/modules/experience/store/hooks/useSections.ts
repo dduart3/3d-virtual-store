@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../../lib/supabase';
 import { parsePosition, parseRotation, parseScale } from '../../types/model';
 import { SectionWithModel } from '../types/section';
-import { getSectionModelUrl } from './useProducts';
-
+import { getSectionModelUrl } from '../utils/supabaseStorageUtils';
 // Fetch all sections with their models
 export function useSections() {
   return useQuery<SectionWithModel[]>({
