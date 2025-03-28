@@ -7,14 +7,9 @@ export interface Product {
     description: string;
     price: number;
     stock: number;
-    thumbnail_path: string;
     thumbnail_url: string;
-    stripe_product_id?: string;
-    stripe_price_id?: string;
   }
   
   export interface ProductWithModel extends Product {
     model: ModelWithParsedFields;
   }
-  
-  
