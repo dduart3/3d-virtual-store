@@ -10,14 +10,14 @@ let globalAudioInstance: HTMLAudioElement | null = null;
 
 // Constants
 const JUKEBOX_POSITION = new THREE.Vector3(-157.5, 0.5, -51.9);
-const MAX_DISTANCE = 50; // Maximum distance at which audio can be heard
+const MAX_DISTANCE = 30; // Maximum distance at which audio can be heard
 const MIN_DISTANCE = 1; // Distance at which audio is at full volume
 const OUTSIDE_VOLUME_FACTOR = 0.2;
 const DEFAULT_SONG_URL = "/music/default.mp3";
 
 // Store boundaries
 const STORE_BOUNDS = {
-  minX: -161,
+  minX: -159,
   maxX: -130,
   minZ: -70,
   maxZ: -40,
