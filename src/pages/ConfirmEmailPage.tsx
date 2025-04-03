@@ -13,6 +13,10 @@ export function ConfirmEmailPage() {
         // Get the hash from the URL
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
+
+        console.log(window.location.hash)
+        console.log(hash)
+        console.log(params)
         
         // Check if we have the necessary parameters
         if (!params.get('access_token') && !params.get('refresh_token')) {
