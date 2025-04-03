@@ -24,7 +24,7 @@ export function RouteWrapper() {
 
   // Redirect unauthenticated users away from protected routes
   if (!user && PROTECTED_ROUTES.some(route => currentPath.startsWith(route))) {
-    router.navigate({ to: '/login' });
+    router.navigate({ to: '/login', search:{message: ""}});
     return null;
   }
 

@@ -14,7 +14,7 @@ export function ForgotPasswordPage() {
         <ForgotPasswordForm />
         
         <div className="mt-6 text-center text-gray-400">
-          <Link to="/login" className="text-white hover:underline">
+          <Link search={{message:""}} to="/login" className="text-white hover:underline">
             Volver a iniciar sesión
           </Link>
         </div>

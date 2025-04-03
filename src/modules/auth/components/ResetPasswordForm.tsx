@@ -30,7 +30,7 @@ export function ResetPasswordForm() {
       onSuccess: () => {
         navigate({ 
           to: '/login', 
-          search: { from: 'password-reset-success' } 
+          search: { message: 'password-reset-success' } 
         });
       },
       onError: (error: any) => {

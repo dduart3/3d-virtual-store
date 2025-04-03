@@ -103,6 +103,7 @@ export function LandingPage() {
               </Link>
 
               <Link
+              search={{message:""}}
                 to="/login"
                 className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
               >

@@ -126,7 +126,7 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
           // Instead of directly navigating to the store, show a message about email confirmation
           navigate({
             to: "/login",
-            search: { from: "registration-email-confirmation" },
+            search: { message: "registration-email-confirmation" },
           });
         },
         onError: () => {

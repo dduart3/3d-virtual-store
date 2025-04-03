@@ -31,6 +31,11 @@ const landingRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
+  validateSearch: (search) =>{
+    return {
+      message: search?.message ?? ""
+    }
+  },
   component: LoginPage,
 });
 

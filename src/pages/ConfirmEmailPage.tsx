@@ -34,7 +34,7 @@ export function ConfirmEmailPage() {
         
         // Redirect to login after a delay
         setTimeout(() => {
-          navigate({ to: '/login', search: { from: 'email-confirmation-success' } });
+          navigate({ to: '/login', search: { message: 'email-confirmation-success' } });
         }, 5000);
       } catch (err) {
         setStatus('error');
@@ -74,7 +74,7 @@ export function ConfirmEmailPage() {
         )}
         
         <div className="mt-6 text-center">
-          <Link to="/login" className="text-white hover:underline">
+          <Link search={{message: ""}} to="/login" className="text-white hover:underline">
             Ir a iniciar sesión
           </Link>
         </div>
