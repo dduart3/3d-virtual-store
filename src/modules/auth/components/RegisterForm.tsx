@@ -2,11 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../hooks/useAuth";
 import { AvatarCreator } from "../../experience/avatar/components/AvatarCreator";
-import { useAtom } from "jotai";
-import {
-  avatarUrlAtom,
-  avatarIdAtom,
-} from "../../experience/avatar/state/avatar";
+
 import ReactDOM from "react-dom";
 import { isValidEmail } from "../../../shared/utils/validations";
 
@@ -40,8 +36,8 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
   const [lastName, setLastName] = useState("");
 
   // Step 3 data
-  const [avatarUrl] = useAtom(avatarUrlAtom);
-  const [avatarId] = useAtom(avatarIdAtom);
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarId, setAvatarId] = useState("");
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
 
   // For tracking the user ID when we need to update profile after auth
@@ -390,7 +386,13 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
       {/* Avatar Creator Modal */}
       {showAvatarCreator &&
         ReactDOM.createPortal(
-          <AvatarCreator onClose={() => setShowAvatarCreator(false)} />,
+          <AvatarCreator
+            onRegister={({ avatarId, avatarUrl }) => {
+              setAvatarId(avatarId);
+              setAvatarUrl(avatarUrl);
+            }}
+            onClose={() => setShowAvatarCreator(false)}
+          />,
           document.body
         )}
     </form>

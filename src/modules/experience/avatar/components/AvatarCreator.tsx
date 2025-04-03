@@ -7,7 +7,12 @@ import { avatarUrlAtom, avatarIdAtom } from "../state/avatar";
 import { useToast } from "../../../../shared/context/ToastContext";
 import { useAuth } from "../../../auth/hooks/useAuth";
 
-export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
+interface AvatarCreatorProps {
+  onClose: () => void,
+  onRegister?: ({avatarUrl, avatarId}: {avatarUrl: string, avatarId: string}) => void 
+}
+
+export const AvatarCreator = ({ onClose, onRegister }: AvatarCreatorProps) => {
   const [, setAvatarUrl] = useAtom(avatarUrlAtom);
   const [, setAvatarId] = useAtom(avatarIdAtom);
   const { showToast } = useToast();
@@ -21,6 +26,10 @@ export const AvatarCreator = ({ onClose }: { onClose: () => void }) => {
     if (user) {
       updateAvatar({ userId: user.id, avatarUrl: url });
       showToast("Avatar actualizado con éxito", "success");
+    }
+
+    if(onRegister){
+      onRegister({avatarId: id, avatarUrl: url});
     }
 
     setAvatarUrl(url);
