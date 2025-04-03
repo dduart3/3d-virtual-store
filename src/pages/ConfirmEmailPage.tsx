@@ -10,21 +10,6 @@ export function ConfirmEmailPage() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        // Get the hash from the URL
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-
-        console.log(window.location.hash)
-        console.log(hash)
-        console.log(params)
-        
-        // Check if we have the necessary parameters
-        if (!params.get('access_token') && !params.get('refresh_token')) {
-          setStatus('error');
-          setErrorMessage('No se encontró un token de confirmación válido.');
-          return;
-        }
-
         // The Supabase client will automatically handle the token exchange
         const { error } = await supabase.auth.getSession();
         
@@ -39,7 +24,7 @@ export function ConfirmEmailPage() {
         // Redirect to login after a delay
         setTimeout(() => {
           navigate({ to: '/login', search: { message: 'email-confirmation-success' } });
-        }, 5000);
+        }, 1000);
       } catch (err) {
         setStatus('error');
         setErrorMessage('Ocurrió un error al confirmar tu correo electrónico.');
