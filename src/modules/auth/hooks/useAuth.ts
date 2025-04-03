@@ -92,15 +92,23 @@ export function useSignUp() {
     mutationFn: async ({
       email,
       password,
+      profileData
     }: {
       email: string;
       password: string;
+      profileData: {
+        username: string,
+        first_name: string,
+        last_name: string,
+        avatar_url: string
+      }
     }) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          data: profileData
         }
       });
 
@@ -165,6 +173,8 @@ export function useUpdateProfile() {
         .from("profiles")
         .update(profileData)
         .eq("id", userId);
+        console.log(error)
+        
 
       if (error) throw error;
       return { success: true };

@@ -20,7 +20,6 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
   const {
     signUp,
     checkUsername,
-    updateProfile,
     isSigningUp,
     isCheckingUsername,
     isUpdatingProfile,
@@ -46,7 +45,6 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
   const [showAvatarCreator, setShowAvatarCreator] = useState(false);
 
   // For tracking the user ID when we need to update profile after auth
-  const [userId, setUserId] = useState<string | null>(null);
   const handleNextStep = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -76,21 +74,7 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
       }
     } else if (currentStep === 2) {
       // Register the user with Supabase Auth
-      signUp(
-        {
-          email,
-          password,
-        },
-        {
-          onSuccess: (data) => {
-            setUserId(data.user?.id || null);
-            onStepChange(3);
-          },
-          onError: (error: any) => {
-            setError(error.message || "Error durante el registro");
-          },
-        }
-      );
+      onStepChange(3);
     }
   };
 
@@ -103,36 +87,27 @@ export function RegisterForm({ currentStep, onStepChange }: RegisterFormProps) {
       return;
     }
 
-    if (!userId) {
-      setError("ID de usuario no disponible. Por favor, inténtalo de nuevo.");
-      return;
-    }
-
-    // In the handleCompleteRegistration function, after successful registration:
-
-    updateProfile(
+    signUp(
       {
-        userId,
+        email,
+        password,
         profileData: {
           username,
           first_name: firstName,
           last_name: lastName,
-          email: email,
           avatar_url: avatarUrl,
         },
       },
       {
         onSuccess: () => {
-          // Instead of directly navigating to the store, show a message about email confirmation
+          // Navigate to login with email confirmation message
           navigate({
             to: "/login",
             search: { message: "registration-email-confirmation" },
           });
         },
-        onError: () => {
-          setError(
-            "Error al actualizar el perfil. Por favor, inténtalo de nuevo."
-          );
+        onError: (error: any) => {
+          setError(error.message || "Error durante el registro");
         },
       }
     );
