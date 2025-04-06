@@ -2,14 +2,21 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import { Order, OrderWithItems } from '../types/order';
 import { getProductThumbnailUrl } from '../../experience/store/utils/supabaseStorageUtils';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 export function useOrders() {
+  const { user } = useAuth(); // Get the current authenticated user
+  
   return useQuery({
-    queryKey: ['orders'],
+    queryKey: ['orders', user?.id], // Include user ID in the query key for proper cache invalidation
     queryFn: async (): Promise<Order[]> => {
+      // If no user is authenticated, return an empty array
+      if (!user) return [];
+      
       const { data: orders, error } = await supabase
         .from('orders')
         .select('*')
+        .eq('user_id', user.id) // Filter orders by the current user's ID
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -17,7 +24,9 @@ export function useOrders() {
       }
       
       return orders || [];
-    }
+    },
+    // Only run the query if we have a user
+    enabled: !!user
   });
 }
 

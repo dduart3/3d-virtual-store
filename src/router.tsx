@@ -14,6 +14,8 @@ import { ConfirmEmailPage } from "./pages/ConfirmEmailPage";
 import { RouteWrapper } from "./shared/components/RouteWrapper";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ErrorPage } from "./pages/ErrorPage";
+import TermsPage from "./pages/Terms";
+import PrivacyPage from "./pages/Privacy";
 
 // Create routes
 const rootRoute = createRootRoute({
@@ -76,6 +78,18 @@ const confirmEmailRoute = createRoute({
   component: ConfirmEmailPage,
 });
 
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms",
+  component: TermsPage
+});
+
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy",
+  component: PrivacyPage
+});
+
 // Add it to your routeTree
 const routeTree = rootRoute.addChildren([
   landingRoute,
@@ -86,6 +100,8 @@ const routeTree = rootRoute.addChildren([
   confirmEmailRoute, // Add this line
   storeRoute,
   profileRoute,
+  termsRoute,
+  privacyRoute
 ]);
 
 export const router = createRouter({ routeTree });

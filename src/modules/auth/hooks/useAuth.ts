@@ -50,7 +50,8 @@ export function useProfile() {
         phone: profile?.phone || null,
         avatar_url: profile?.avatar_url || null,
         created_at: profile?.created_at || null,
-        updated_at: profile?.updated_at || null
+        updated_at: profile?.updated_at || null,
+        role_id: profile?.role_id || null
       };
     }
   });
