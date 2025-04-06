@@ -63,7 +63,7 @@ export function ConfirmEmailPage() {
         )}
         
         <div className="mt-6 text-center">
-          <Link search={{message: ""}} to="/login" className="text-white hover:underline">
+          <Link to="/login" className="text-white hover:underline">
             Ir a iniciar sesión
           </Link>
         </div>

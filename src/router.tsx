@@ -16,6 +16,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { ErrorPage } from "./pages/ErrorPage";
 import TermsPage from "./pages/Terms";
 import PrivacyPage from "./pages/Privacy";
+import {z} from 'zod'
 
 // Create routes
 const rootRoute = createRootRoute({
@@ -33,13 +34,12 @@ const landingRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
-  validateSearch: (search) =>{
-    return {
-      message: search?.message ?? ""
-    }
-  },
+  validateSearch: z.object({
+    message: z.string().optional()
+  }).partial(),
   component: LoginPage,
 });
+
 
 const registerRoute = createRoute({
   getParentRoute: () => rootRoute,

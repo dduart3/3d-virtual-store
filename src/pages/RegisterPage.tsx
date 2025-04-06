@@ -33,7 +33,7 @@ export function RegisterPage() {
         {step === 1 && (
           <p className="mt-6 text-center text-gray-400">
             Ya tienes una cuenta?{' '}
-            <Link search={{message: ""}} to="/login" className="text-white hover:underline">
+            <Link to="/login" className="text-white hover:underline">
               Iniciar sesión
             </Link>
           </p>

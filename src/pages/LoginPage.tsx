@@ -3,7 +3,7 @@ import { LoginForm } from "../modules/auth/components/LoginForm";
 
 export function LoginPage() {
   const search = useSearch({ from: "/login"});
-  const message = search.message as string | undefined;
+  const message = search?.message as string | undefined;
 
   return (
     <div className="h-screen w-full bg-gradient-to-b from-black to-gray-900 flex items-center justify-center text-white">

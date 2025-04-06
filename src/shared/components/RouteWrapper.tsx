@@ -40,7 +40,7 @@ export function RouteWrapper() {
     !user &&
     PROTECTED_ROUTES.some((route) => currentPath.startsWith(route))
   ) {
-    router.navigate({ to: "/login", search: { message: "" } });
+    router.navigate({ to: "/login"});
     return null;
   }
 
