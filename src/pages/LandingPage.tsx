@@ -65,7 +65,7 @@ export function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: loaded ? 1 : 0, y: loaded ? 0 : 20 }}
           transition={{ duration: 0.8, ease: [0.165, 0.84, 0.44, 1] }}
-          className="text-center mb-20"
+          className="text-center  mb-10"
         >
           {/* Stylized logo/icon */}
           <motion.div
@@ -97,77 +97,92 @@ export function LandingPage() {
           </p>
         </motion.div>
 
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: loaded ? 1 : 0, y: loaded ? 0 : 20 }}
-          transition={{
-            duration: 0.8,
-            delay: 0.4,
-            ease: [0.165, 0.84, 0.44, 1],
-          }}
-          className="flex flex-col md:flex-row gap-6 justify-center items-center"
+   {/* Action Buttons */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: loaded ? 1 : 0, y: loaded ? 0 : 20 }}
+  transition={{
+    duration: 0.8,
+    delay: 0.4,
+    ease: [0.165, 0.84, 0.44, 1],
+  }}
+  className="flex flex-col items-center"
+>
+  {/* Welcome message - Only shown when user is logged in */}
+  {user && profile?.first_name && (
+    <motion.p
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.6 }}
+      className="text-xl md:text-2xl font-light text-white/90 mb-8 mt-2 tracking-wide"
+    >
+      Bienvenido de nuevo, <span className="font-normal">{profile.first_name}</span>
+    </motion.p>
+  )}
+
+  {/* Buttons container */}
+  <div className="flex flex-col md:flex-row gap-6 justify-center items-center w-full">
+    {/* Conditional rendering based on auth state */}
+    {user ? (
+      <>
+        <Link
+          to="/store"
+          className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
         >
-          {/* Conditional rendering based on auth state */}
-          {user ? (
-            <>
-              <Link
-                to="/store"
-                className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-              >
-                <span className="relative z-10">Entrar a la Tienda</span>
-                <div className="absolute inset-0 bg-white transform translate-y-0 group-hover:translate-y-full transition-transform duration-300"></div>
-              </Link>
-              <Link
-                from="/"
-                to="/profile"
-                className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-              >
-                <span className="relative z-10">Mi Perfil</span>
-                <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              </Link>
-              {/* Admin Dashboard Button - Only shown to admins */}
-              {isAdmin && (
-                <a
-                  href={`${
-                    import.meta.env.VITE_ADMIN_DASHBOARD_URL
-                  }/otp?email=${profile.email}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-amber-100/0 text-amber-300 hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-                >
-                  {/* Elegant darker gold border */}
-                  <div className="absolute inset-0 border border-amber-400/60"></div>
-                  {/* Subtle corner accents in darker gold */}
-                  <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-amber-500/70"></div>
-                  <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-amber-500/70"></div>
-                  <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-amber-500/70"></div>
-                  <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-amber-500/70"></div>
-                  <span className="relative z-10">Panel de Administración</span>
-                  {/* Hover effect - light gold fill */}
-                  <div className="absolute inset-0 bg-amber-200/80 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                </a>
-              )}
-            </>
-          ) : (
-            <>
-              <Link
-                to="/register"
-                className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-              >
-                <span className="relative z-10">Crear Cuenta</span>
-                <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              </Link>
-              <Link
-                to="/login"
-                className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
-              >
-                <span className="relative z-10">Iniciar Sesión</span>
-                <div className="absolute inset-0 bg-white transform translate-y-0 group-hover:translate-y-full transition-transform duration-300"></div>
-              </Link>
-            </>
-          )}
-        </motion.div>
+          <span className="relative z-10">Entrar a la Tienda</span>
+          <div className="absolute inset-0 bg-white transform translate-y-0 group-hover:translate-y-full transition-transform duration-300"></div>
+        </Link>
+        <Link
+          from="/"
+          to="/profile"
+          className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+        >
+          <span className="relative z-10">Mi Perfil</span>
+          <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </Link>
+        {/* Admin Dashboard Button - Only shown to admins */}
+        {isAdmin && (
+          <a
+            href={`${
+              import.meta.env.VITE_ADMIN_DASHBOARD_URL
+            }/otp?email=${profile.email}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-amber-100/0 text-amber-300 hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+          >
+            {/* Elegant darker gold border */}
+            <div className="absolute inset-0 border border-amber-400/60"></div>
+            {/* Subtle corner accents in darker gold */}
+            <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-amber-500/70"></div>
+            <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-amber-500/70"></div>
+            <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-amber-500/70"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-amber-500/70"></div>
+            <span className="relative z-10">Panel de Administración</span>
+            {/* Hover effect - light gold fill */}
+            <div className="absolute inset-0 bg-amber-200/80 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </a>
+        )}
+      </>
+    ) : (
+      <>
+        <Link
+          to="/register"
+          className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+        >
+          <span className="relative z-10">Crear Cuenta</span>
+          <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </Link>
+        <Link
+          to="/login"
+          className="px-8 sm:px-10 py-4 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white rounded-none tracking-[0.2em] uppercase text-xs font-light transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+        >
+          <span className="relative z-10">Iniciar Sesión</span>
+          <div className="absolute inset-0 bg-white transform translate-y-0 group-hover:translate-y-full transition-transform duration-300"></div>
+        </Link>
+      </>
+    )}
+  </div>
+</motion.div>
 
                 {/* Features Section */}
                 <motion.div
