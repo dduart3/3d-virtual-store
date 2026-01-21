@@ -159,7 +159,7 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
         display: "none"
       });
 
-      let lastScrollState = false;
+
       let normalNavAnimation: gsap.core.Tween | null = null;
       let minimalNavAnimation: gsap.core.Tween | null = null;
       let headerAnimation: gsap.core.Tween | null = null;
@@ -176,7 +176,6 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             if (elements.onScrollChange) {
               elements.onScrollChange(true);
             }
-            lastScrollState = true;
 
             // Kill any existing animations
             if (normalNavAnimation) normalNavAnimation.kill();
@@ -184,7 +183,7 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             if (headerAnimation) headerAnimation.kill();
 
             // Normal nav fades out and moves up smoothly
-            normalNavAnimation = gsap.to(elements.normalNav, {
+            normalNavAnimation = gsap.to(elements.normalNav!, {
               opacity: 0,
               y: -30, // Move up as it fades
               duration: 0.7,
@@ -214,7 +213,7 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             }
 
             // Animate header background smoothly
-            headerAnimation = gsap.to(elements.header, {
+            headerAnimation = gsap.to(elements.header!, {
               backgroundColor: "rgba(255, 255, 255, 0.95)",
               boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
               duration: 0.7,
@@ -226,7 +225,6 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             if (elements.onScrollChange) {
               elements.onScrollChange(false);
             }
-            lastScrollState = false;
 
             // Kill any existing animations
             if (normalNavAnimation) normalNavAnimation.kill();
@@ -234,7 +232,7 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             if (headerAnimation) headerAnimation.kill();
 
             // Minimal nav fades out and moves up smoothly
-            minimalNavAnimation = gsap.to(elements.minimalNav, {
+            minimalNavAnimation = gsap.to(elements.minimalNav!, {
               opacity: 0,
               y: -30, // Move up as it fades
               duration: 0.7,
@@ -264,7 +262,7 @@ export function useLandingPageAnimations(elements: LandingPageAnimationElements)
             }
 
             // Animate header background back smoothly
-            headerAnimation = gsap.to(elements.header, {
+            headerAnimation = gsap.to(elements.header!, {
               backgroundColor: "transparent",
               boxShadow: "none",
               duration: 0.7,
