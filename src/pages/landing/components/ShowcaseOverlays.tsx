@@ -12,12 +12,12 @@ export const ExperimentOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivE
       </div>
       
       <div className="overflow-hidden">
-         <h2 className="text-5xl md:text-8xl font-serif leading-none tracking-tight text-center reveal-text translate-y-full drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]">
-             Experimento
+         <h2 className="text-4xl md:text-6xl lg:text-8xl font-serif leading-none tracking-tight text-center reveal-text translate-y-full drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]">
+             Experimenta
          </h2>
       </div>
       <div className="overflow-hidden">
-         <h2 className="text-5xl md:text-8xl font-serif leading-none tracking-tight text-center">
+         <h2 className="text-4xl md:text-6xl lg:text-8xl font-serif leading-none tracking-tight text-center">
              <span className="block italic font-light text-gray-200 reveal-text translate-y-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">Compras Inmersivas</span>
          </h2>
       </div>
@@ -35,12 +35,12 @@ export const FeaturesOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivEle
       
       <div className="feature-body flex flex-col items-center">
           <div className="overflow-hidden">
-             <h2 className="text-4xl md:text-7xl font-serif mb-2 text-center text-white leading-tight reveal-text translate-y-full drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]">
+             <h2 className="text-3xl md:text-5xl lg:text-7xl font-serif mb-2 text-center text-white leading-tight reveal-text translate-y-full drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]">
                    Rendimiento
              </h2>
           </div>
           <div className="overflow-hidden mb-8">
-             <h2 className="text-4xl md:text-7xl font-serif text-center text-white leading-tight">
+             <h2 className="text-3xl md:text-5xl lg:text-7xl font-serif text-center text-white leading-tight">
                  <span className="block italic font-light text-gray-200 reveal-text translate-y-full drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">Inigualable</span>
              </h2>
           </div>
@@ -67,13 +67,13 @@ export const FeaturesOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivEle
 
 // Luxury Text Content - Left Side (Initial)
 export const ProductLeftOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivElement> }) => (
-  <div ref={domRef} className="absolute inset-0 z-20 container max-w-6xl mx-auto px-6 md:px-12 flex items-center pointer-events-none">
-     <div className="max-w-xl pointer-events-auto">
+  <div ref={domRef} className="absolute inset-0 z-20 container max-w-6xl mx-auto px-6 md:px-12 flex items-center justify-center md:justify-start pointer-events-none">
+     <div className="w-full max-w-lg md:max-w-xl pointer-events-auto mt-20 md:mt-0">
         <div className="w-12 h-px bg-amber-500/80 mb-6"></div>
-        <h3 className="font-luxury text-amber-500/90 text-sm font-medium tracking-[0.3em] uppercase mb-4 pl-1">
+        <h3 className="font-luxury text-amber-500/90 text-xs md:text-sm font-medium tracking-[0.3em] uppercase mb-4 pl-1">
            Armonía Virtual
         </h3>
-        <h2 className="font-luxury text-5xl md:text-7xl font-medium text-white mb-6 leading-tight">
+        <h2 className="font-luxury text-4xl md:text-6xl lg:text-7xl font-medium text-white mb-6 leading-tight">
            Inmersión <br />
            <span className="italic font-light text-white/70">Digital</span>
         </h2>
@@ -113,8 +113,8 @@ export const ProductLeftOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDiv
 
 // Luxury Text Content - Top Center (Final State)
 export const ProductTopOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivElement> }) => (
-  <div ref={domRef} className="absolute inset-0 z-20 flex flex-col items-center pt-24 opacity-0 pointer-events-none">
-      <h2 className="font-luxury text-4xl md:text-6xl font-medium text-white mb-2 text-center">
+  <div ref={domRef} className="absolute inset-0 z-20 flex flex-col items-center pt-24 md:pt-32 opacity-0 pointer-events-none">
+      <h2 className="font-luxury text-3xl md:text-5xl lg:text-6xl font-medium text-white mb-2 text-center px-4">
            MÁS ALLÁ DE <br/> <span className="italic font-light text-white/70">LA REALIDAD</span>
       </h2>
   </div>
@@ -122,14 +122,14 @@ export const ProductTopOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivE
 
 // Sunglasses Text Content - Bottom Center (Final State)
 export const ProductBottomOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivElement> }) => (
-  <div ref={domRef} className="absolute inset-x-0 bottom-24 z-20 flex flex-col items-center opacity-0 pointer-events-none text-center">
-      <h3 className="font-luxury text-amber-500/90 text-sm font-medium tracking-[0.3em] uppercase mb-4">
+  <div ref={domRef} className="absolute inset-x-0 bottom-16 md:bottom-24 z-20 flex flex-col items-center opacity-0 pointer-events-none text-center">
+      <h3 className="font-luxury text-amber-500/90 text-xs md:text-sm font-medium tracking-[0.3em] uppercase mb-4">
            Identidad Virtual
       </h3>
-      <h2 className="font-luxury text-4xl md:text-6xl font-medium text-white mb-2">
+      <h2 className="font-luxury text-3xl md:text-5xl lg:text-6xl font-medium text-white mb-2">
            ESTÉTICA <br/> <span className="italic font-light text-white/70">DEL AVATAR</span>
       </h2>
-      <p className="font-body text-gray-300 text-sm font-light tracking-wider max-w-sm mt-4 px-4">
+      <p className="font-body text-gray-300 text-xs md:text-sm font-light tracking-wider max-w-sm mt-4 px-4 bg-black/40 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded p-2">
            Cura tu persona digital con accesorios de alta fidelidad. Tu estilo, tus reglas, renderizados en impresionante detalle 4K directamente en tu navegador.
       </p>
 
@@ -163,16 +163,16 @@ export const ProductBottomOverlay = ({ domRef }: { domRef: React.RefObject<HTMLD
 
 // Luxury Text Content - Right Side (Final State)
 export const ProductRightOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDivElement> }) => (
-  <div ref={domRef} className="absolute inset-y-0 right-0 z-20 w-1/2 flex flex-col justify-center items-end pr-12 md:pr-24 opacity-0 pointer-events-none translate-x-10 text-right">
+  <div ref={domRef} className="absolute inset-y-0 right-0 z-20 w-full md:w-3/4 lg:w-1/2 flex flex-col justify-center items-end pr-6 md:pr-12 lg:pr-24 opacity-0 pointer-events-none translate-x-0 md:translate-x-10 text-right mt-20 md:mt-0">
       <div className="w-12 h-px bg-amber-500/80 mb-6 mr-1"></div>
-      <h3 className="font-luxury text-amber-500/90 text-sm font-medium tracking-[0.3em] uppercase mb-4 pr-1">
+      <h3 className="font-luxury text-amber-500/90 text-xs md:text-sm font-medium tracking-[0.3em] uppercase mb-4 pr-1">
            Moda Interactiva
       </h3>
-      <h2 className="font-luxury text-5xl md:text-7xl font-medium text-white mb-6 leading-tight">
+      <h2 className="font-luxury text-4xl md:text-6xl lg:text-7xl font-medium text-white mb-6 leading-tight">
            Costura <br />
            <span className="italic font-light text-white/70">Digital</span>
       </h2>
-      <p className="font-body text-gray-300 text-lg font-light leading-relaxed max-w-sm mb-10 border-r border-white/10 pr-6 backdrop-blur-sm">
+      <p className="font-body text-gray-300 text-base md:text-lg font-light leading-relaxed max-w-sm mb-10 border-r border-white/10 pr-6 backdrop-blur-sm">
            Rompe los límites de la tela física. Experimenta la simulación de tela en tiempo real que da vida a cada prenda. Sin fricción, solo puro estilo.
       </p>
 

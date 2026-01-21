@@ -64,9 +64,9 @@ export function HeroSection({ isLoaded = true }: { isLoaded?: boolean }) {
               <GodRays
                 width={windowSize.width}
                 height={windowSize.height}
-                colors={["#a600ff6e", "#6200fff0", "#ffffff", "#33fff5"]}
+                colors={["#0055ff", "#0099ff", "#ffffff", "#0011ff"]}
                 colorBack="#000000"
-                colorBloom="#0000ff"
+                colorBloom="#0066ff"
                 bloom={0.4}
                 intensity={0.8}
                 density={0.3}
