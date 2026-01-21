@@ -7,6 +7,14 @@ canvas root {
   background-color: '#f0f0f0';
 }
 
+.font-luxury {
+  font-family: 'Cinzel', serif;
+}
+
+.font-body {
+  font-family: 'Lato', sans-serif;
+}
+
 button{
   cursor: pointer;
 }
@@ -47,3 +55,69 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 15s linear infinite reverse;
+}
+
+/* Floating Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* 3D Cube Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Cube face transforms - using 128px (half of 256px cube) */
+.cube-face-front {
+  transform: translateZ(128px);
+}
+
+.cube-face-back {
+  transform: rotateY(180deg) translateZ(128px);
+}
+
+.cube-face-right {
+  transform: rotateY(90deg) translateZ(128px);
+}
+
+.cube-face-left {
+  transform: rotateY(-90deg) translateZ(128px);
+}
+
+.cube-face-top {
+  transform: rotateX(90deg) translateZ(128px);
+}
+
+.cube-face-bottom {
+  transform: rotateX(-90deg) translateZ(128px);
+}
+

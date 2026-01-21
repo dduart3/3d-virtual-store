@@ -8,6 +8,7 @@ import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./router";
 import { AuthDataLoader } from "./shared/components/AuthDataLoader";
 import { SocketProvider } from "./modules/experience/multiplayer/context/SocketProvider";
+import { SmoothScroller } from "./shared/components/SmoothScroller";
 
 enum Controls {
   forward = "forward",
@@ -37,6 +38,7 @@ function App() {
           <AuthProvider>
             <SocketProvider>
               <AuthDataLoader />
+              <SmoothScroller />
               <RouterProvider router={router} />
             </SocketProvider>
           </AuthProvider>
