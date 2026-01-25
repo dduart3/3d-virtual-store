@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Environment, ContactShadows } from "@react-three/drei";
+import { GodRays } from '@paper-design/shaders-react';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -32,6 +33,8 @@ export function LandingPage() {
   const sunglassesTextBottomRef = useRef<HTMLDivElement>(null);
   const dressTextRightRef = useRef<HTMLDivElement>(null);
   const whiteOverlayRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null); // New ref for Hero
+  const godRaysRef = useRef<HTMLDivElement>(null); // New ref for GodRays
   
   const experimentTextRef = useRef<HTMLDivElement>(null);
   const featuresTextRef = useRef<HTMLDivElement>(null);
@@ -40,6 +43,16 @@ export function LandingPage() {
   const footerRef = useRef<HTMLDivElement>(null);
   const featuresBgRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<any>(null);
+
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -60,11 +73,42 @@ export function LandingPage() {
     <div className={`relative w-full min-h-screen bg-gray-950 text-white ${!isLoaded ? 'h-screen overflow-hidden' : ''}`}>
       <Preloader onComplete={() => setIsLoaded(true)} />
       
-      <HeroSection isLoaded={isLoaded} />
+
 
       {/* 3D Models Section - Luxury Watch Showcase */}
-      <section id="watch-section" ref={watchSectionRef} className="relative w-full h-screen bg-[#050505] text-white overflow-hidden">
-         {/* Background Visuals */}
+      <section id="watch-section" ref={watchSectionRef} className="relative w-full h-screen text-white overflow-hidden">
+         
+         {/* Background GodRays (z-0) - Now separate from HeroSection */}
+         <div ref={godRaysRef} className="absolute inset-0 z-0">
+             <div className="absolute inset-0 bg-black">
+                <GodRays
+                    width={windowSize.width}
+                    height={windowSize.height}
+                    colors={["#0055ff", "#0099ff", "#ffffff", "#0011ff"]}
+                    colorBack="#000000"
+                    colorBloom="#0066ff"
+                    bloom={0.4}
+                    intensity={0.8}
+                    density={0.3}
+                    spotty={0.3}
+                    midSize={0.2}
+                    midIntensity={0.4}
+                    speed={0.75}
+                    offsetY={-0.55}
+                />
+             </div>
+             {/* Dark Overlay for contrast (Optional, tweak opacities as needed) */}
+             <div className="absolute inset-0 bg-black/70 pointer-events-none"></div>
+             {/* Bottom Gradient for smooth transition */}
+             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-950 pointer-events-none"></div>
+         </div>
+
+         {/* Hero Section - Now part of the pinned section (z-50) */}
+         <div className="absolute inset-0 z-50 pointer-events-auto">
+             <HeroSection isLoaded={isLoaded} heroRef={heroRef} />
+         </div>
+
+         {/* Background Visuals - Overlays */}
          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black/80 pointer-events-none z-0"></div>
          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black/80 pointer-events-none z-0"></div>
          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_50%,rgba(50,50,50,0.1),transparent_50%)] z-0"></div>
@@ -83,6 +127,8 @@ export function LandingPage() {
                <spotLight position={[-5, 2, -2]} intensity={4} color="#3b82f6" angle={0.6} penumbra={0.5} />
                
                <ShowcaseScene 
+                  heroRef={heroRef}
+                  godRaysRef={godRaysRef}
                   textLeftRef={watchTextLeftRef} 
                   textTopRef={watchTextTopRef} 
                   textBottomRef={sunglassesTextBottomRef}

@@ -18,8 +18,12 @@ export const ShowcaseScene = ({
   carouselTrackRef,
   footerRef,
   featuresBgRef,
-  particlesRef
+  particlesRef,
+  heroRef,
+  godRaysRef // New ref
 }: { 
+  heroRef: React.RefObject<HTMLDivElement>,
+  godRaysRef: React.RefObject<HTMLDivElement>, // New ref type
   textLeftRef: React.RefObject<HTMLDivElement>, 
   textTopRef: React.RefObject<HTMLDivElement>,
   textBottomRef: React.RefObject<HTMLDivElement>,
@@ -43,6 +47,8 @@ export const ShowcaseScene = ({
      This keeps component clean and handles GSAP Context automatically.
   */
   useShowcaseTimeline({
+    hero: heroRef, 
+    godRays: godRaysRef, // Pass to hook
     watchGroup: watchGroupRef,
     sunglassesGroup: sunglassesGroupRef,
     dressGroup: dressGroupRef,
@@ -74,7 +80,7 @@ export const ShowcaseScene = ({
             noise={0.1}
         />
 
-        <group ref={watchGroupRef} position={[1.8, -1, 0]} rotation={[0, -0.8, 0.1]}>
+        <group ref={watchGroupRef} position={[5, -1, 0]} rotation={[0, 2, 0.1]}>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5} floatingRange={[-0.05, 0.05]}>
                 <Model 
                     modelPath="/models/products/men-accessories/seiko.glb" 

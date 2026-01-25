@@ -6,6 +6,8 @@ import * as THREE from 'three';
 gsap.registerPlugin(ScrollTrigger);
 
 interface ShowcaseRefs {
+  hero?: React.RefObject<HTMLElement | HTMLDivElement>; 
+  godRays?: React.RefObject<HTMLDivElement>; // NEW
   watchGroup: React.RefObject<THREE.Group>;
   sunglassesGroup: React.RefObject<THREE.Group>;
   dressGroup: React.RefObject<THREE.Group>;
@@ -53,7 +55,10 @@ export const useShowcaseTimeline = (refs: ShowcaseRefs) => {
     // 2. Context: Create a scope for easy cleanup
     const ctx = gsap.context(() => {
         // Initialize opacities
-        updateOpacity(refs.watchGroup.current, 1);
+        if (refs.hero?.current) gsap.set(refs.hero.current, { opacity: 1, pointerEvents: "auto" }); 
+        if (refs.godRays?.current) gsap.set(refs.godRays.current, { opacity: 1 }); 
+
+        updateOpacity(refs.watchGroup.current, 0); // Start Hidden
         updateOpacity(refs.sunglassesGroup.current, 0);
         updateOpacity(refs.dressGroup.current, 0);
         
@@ -61,8 +66,11 @@ export const useShowcaseTimeline = (refs: ShowcaseRefs) => {
         if (refs.sunglassesGroup.current) refs.sunglassesGroup.current.visible = true;
         if (refs.dressGroup.current) refs.dressGroup.current.visible = true;
 
+        // Reset Text Opacity - Start Hidden
+        if (refs.textLeft.current) gsap.set(refs.textLeft.current, { opacity: 0, x: -30 });
+
         // Proxy object for GSAP to animate
-        const opacityValues = { watch: 1, sunglasses: 0, dress: 0 };
+        const opacityValues = { watch: 0, sunglasses: 0, dress: 0 }; // Watch starts at 0
 
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -75,40 +83,89 @@ export const useShowcaseTimeline = (refs: ShowcaseRefs) => {
           }
         });
 
-        tl
+        if (refs.hero?.current) {
+           const cx = gsap.utils.selector(refs.hero.current);
+           
+           tl
+            // 0a. Hero Items Exit
+            .fromTo(cx('.hero-icon'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 0.5, ease: "power2.inOut", immediateRender: false }, "start")
+            .fromTo(cx('.hero-title'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.5")
+            .fromTo(cx('.hero-separator'), { opacity: 1, scaleX: 1 }, { opacity: 0, scaleX: 0, duration: 1, ease: "power2.inOut", immediateRender: false }, "start+=0.6")
+            .fromTo(cx('.hero-desc'), { opacity: 1, y: 0 }, { opacity: 0, y: -30, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.7")
+            .fromTo(cx('.hero-buttons'), { opacity: 1, y: 0 }, { opacity: 0, y: 20, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.8")
+            
+            // 0b. God Rays Fade OUT -> but stop at 0.3 opacity
+            .to(refs.godRays?.current || {}, { opacity: 0.3, duration: 2, ease: "power2.inOut" }, "start+=1.5")
+            
+            // Disable interactions
+            .set(refs.hero.current, { pointerEvents: "none" });
+        }
+        
+        // 0.5. Watch & Text Entrance (After Hero is gone)
+        tl.add("watchEntry", ">-0.5") // Slight overlap with end of hero fade
+        .to(opacityValues, {
+            watch: 1,
+            duration: 1.5,
+            ease: "power2.out",
+            onUpdate: () => updateOpacity(refs.watchGroup.current, opacityValues.watch)
+        }, "watchEntry")
+        .to(refs.watchGroup.current!.position, {
+            x: 1.2, // Move to visual center
+            duration: 1.5,
+            ease: "power2.out"
+        }, "watchEntry")
+        .to(refs.watchGroup.current!.rotation, {
+            y:-0.8,
+            duration: 1.5,
+            ease: "power2.out"
+        }, "watchEntry")
+
+
+        .to(refs.textLeft.current, {
+            opacity: 1,
+            x: 0,
+            duration: 1.5,
+            ease: "power2.out"
+        }, "watchEntry")
+        
+        // Hold for viewing
+        .to({}, { duration: 1 })
+
+        
+
         // 1. Move Watch to Center & Lay Down
+        .add("watchMove") // Mark entry point for watch animation
         .to(refs.watchGroup.current!.position, {
           x: 1.2,
           y: -0.28, 
           z: 0, 
-          duration: 2,
+          duration: 2.5,
           ease: "power2.inOut"
-        }, "start")
+        }, "watchMove")
         .to(refs.watchGroup.current!.rotation, {
           x: 0,          
           y: 0,             
           z: Math.PI / 2,  
-          duration: 2,
+          duration: 2.5,
           ease: "power2.inOut"
-        }, "start")
-        
-        // 2. Fade Out Left Text
+        }, "watchMove")
         
         // 2. Fade Out Left Text
         .to(refs.textLeft.current, {
           opacity: 0,
           x: -50,
-          duration: 1,
+          duration: 1.5,
           ease: "power2.out"
-        }, "start")
+        }, "watchMove")
 
-        // 3. Fade In Top Text (at the end of the movement)
+        // 3. Fade In Top Text (towards end of movement)
+        // Starts 1.5s into the 2.5s movement
         .to(refs.textTop.current, {
           opacity: 1,
           y: 0,
-          duration: 1,
+          duration: 1.5,
           ease: "power2.out"
-        }, "-=1")
+        }, "watchMove+=1")
         
         // --- Phase 2: Switch to Sunglasses ---
         
