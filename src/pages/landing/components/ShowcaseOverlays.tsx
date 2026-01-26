@@ -81,32 +81,9 @@ export const ProductLeftOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDiv
            Entra en una nueva era del retail donde el gaming se encuentra con el lujo. 
            Interactúa, explora y colecciona artículos exclusivos en un mundo 3D totalmente inmersivo construido para el nativo digital.
         </p>
-        <button className="font-luxury group flex items-center gap-3 text-white text-sm 2xl:text-lg tracking-[0.2em] uppercase border-b border-transparent hover:border-white pb-1 transition-all duration-300">
-           <span>Iniciar Experiencia</span>
-           <svg className="w-4 h-4 2xl:w-6 2xl:h-6 transform group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-           </svg>
-        </button>
 
-        {/* Watch Specs Card */}
-        <div className="mt-12 2xl:mt-16 flex items-center gap-6 2xl:gap-8 p-4 2xl:p-6 border border-white/10 bg-black/20 backdrop-blur-sm rounded w-full max-w-sm 2xl:max-w-lg">
-            {/* Product Preview Circle */}
-            <div className="w-16 h-16 2xl:w-24 2xl:h-24 rounded-full border border-amber-500/30 flex items-center justify-center bg-black/50 shrink-0 relative overflow-hidden">
-                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent"></div>
-                 <span className="text-amber-500 font-luxury text-xl 2xl:text-3xl">G.01</span>
-            </div>
-            
-            <div className="flex-1 grid grid-cols-2 gap-4">
-                <div>
-                    <h4 className="text-amber-500/80 text-[9px] 2xl:text-xs tracking-[0.2em] uppercase mb-1 font-body">Edición</h4>
-                    <p className="font-luxury text-white text-base 2xl:text-xl tracking-wide">Genesis.01</p>
-                </div>
-                <div>
-                     <h4 className="text-amber-500/80 text-[9px] 2xl:text-xs tracking-[0.2em] uppercase mb-1 font-body">Material</h4>
-                     <p className="font-luxury text-white text-base 2xl:text-xl tracking-wide">Oro Digital</p>
-                </div>
-            </div>
-        </div>
+
+
      </div>
   </div>
 );
@@ -133,31 +110,7 @@ export const ProductBottomOverlay = ({ domRef }: { domRef: React.RefObject<HTMLD
            Cura tu persona digital con accesorios de alta fidelidad. Tu estilo, tus reglas, renderizados en impresionante detalle 4K directamente en tu navegador.
       </p>
 
-      {/* Sunglasses Features Pill with Avatar */}
-      <div className="mt-8 2xl:mt-12 flex items-center gap-6 2xl:gap-8 bg-black/40 backdrop-blur-md pl-4 pr-8 2xl:pr-10 py-3 2xl:py-5 rounded-full border border-white/10 shadow-2xl">
-         {/* Avatar Circle */}
-         <div className="relative w-12 h-12 2xl:w-16 2xl:h-16 rounded-full border border-amber-500/50 overflow-hidden shrink-0 group hover:scale-110 transition-transform duration-300">
-             <img 
-                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" 
-                 alt="Avatar Preview" 
-                 className="w-full h-full object-cover"
-             />
-             <div className="absolute inset-0 bg-amber-500/20 mix-blend-overlay"></div>
-         </div>
 
-         <div className="h-8 2xl:h-10 w-px bg-white/10"></div>
-
-         <div className="flex gap-8 2xl:gap-12">
-             <div className="flex flex-col items-center">
-                 <span className="text-gray-400 text-[9px] 2xl:text-xs tracking-[0.2em] uppercase font-body">Fidelidad</span>
-                 <span className="text-white font-medium font-luxury tracking-wider text-sm 2xl:text-lg">Fotorealista</span>
-             </div>
-             <div className="flex flex-col items-center">
-                 <span className="text-gray-400 text-[9px] 2xl:text-xs tracking-[0.2em] uppercase font-body">Personalización</span>
-                 <span className="text-white font-medium font-luxury tracking-wider text-sm 2xl:text-lg">Infinita</span>
-             </div>
-         </div>
-      </div>
   </div>
 );
 
@@ -176,35 +129,6 @@ export const ProductRightOverlay = ({ domRef }: { domRef: React.RefObject<HTMLDi
            Rompe los límites de la tela física. Experimenta la simulación de tela en tiempo real que da vida a cada prenda. Sin fricción, solo puro estilo.
       </p>
 
-      {/* Dress Physics HUD */}
-      <div className="flex flex-col items-end gap-2">
-          <div className="bg-white/5 backdrop-blur-md p-5 2xl:p-7 border-r-2 border-amber-500 w-72 2xl:w-96 shadow-lg flex gap-4 2xl:gap-6">
-              {/* Simulation Visual */}
-              <div className="w-12 h-12 2xl:w-16 2xl:h-16 rounded bg-black/50 border border-white/10 relative overflow-hidden flex-shrink-0">
-                 <div className="absolute inset-0 opacity-50 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-                 <div className="absolute inset-0 border border-amber-500/30 rounded grid grid-cols-2 grid-rows-2">
-                     <div className="border-[0.5px] border-amber-500/20"></div>
-                     <div className="border-[0.5px] border-amber-500/20"></div>
-                     <div className="border-[0.5px] border-amber-500/20"></div>
-                     <div className="border-[0.5px] border-amber-500/20"></div>
-                 </div>
-              </div>
-              
-              <div className="flex-1">
-                 <div className="flex justify-between mb-2 items-end">
-                     <span className="text-gray-300 text-[10px] 2xl:text-xs uppercase tracking-[0.2em] font-body">Físicas Sim</span>
-                     <span className="text-amber-500 text-[9px] 2xl:text-xs font-bold animate-pulse">ACTIVO</span>
-                 </div>
-                 <div className="w-full bg-gray-800/50 h-1 rounded-full overflow-hidden mb-2">
-                       <div className="w-[98%] h-full bg-gradient-to-r from-amber-600 to-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.5)]"></div>
-                 </div>
-                 <div className="flex justify-between">
-                     <span className="text-gray-500 text-[9px] 2xl:text-xs uppercase tracking-wider">Fluidez</span>
-                     <span className="text-white text-[9px] 2xl:text-xs font-mono">Tiempo Real</span>
-                 </div>
-              </div>
-          </div>
-          <div className="text-gray-500 text-[9px] 2xl:text-xs uppercase tracking-[0.3em] font-mono mr-1">Simulación de Tela v2.4</div>
-      </div>
+
   </div>
 );
