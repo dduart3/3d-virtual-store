@@ -104,8 +104,8 @@ export function LandingPage() {
          </div>
 
          {/* Hero Section - Now part of the pinned section (z-[90]) */}
-         <div className="absolute inset-0 z-[90] pointer-events-auto">
-             <HeroSection isLoaded={isLoaded} heroRef={heroRef} />
+         <div ref={heroRef} className="absolute inset-0 z-[90] pointer-events-auto">
+             <HeroSection isLoaded={isLoaded} heroRef={useRef(null)} />
          </div>
 
          {/* Background Visuals - Overlays */}

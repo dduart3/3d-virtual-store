@@ -68,8 +68,8 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
               </div>
 
               {/* Title */}
-              <h1 ref={heroTitleRef} className="hero-title font-luxury text-4xl md:text-6xl lg:text-5xl xl:text-7xl 2xl:text-8xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
-                <span className="block text-2xl md:text-3xl lg:text-2xl xl:text-3xl 2xl:text-4xl tracking-[0.2em] text-gray-200 font-medium mb-4 drop-shadow-lg font-luxury">
+              <h1 ref={heroTitleRef} className="hero-title font-luxury text-4xl md:text-6xl lg:text-4xl xl:text-7xl 2xl:text-8xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
+                <span className="block text-2xl md:text-3xl lg:text-xl xl:text-3xl 2xl:text-4xl tracking-[0.2em] text-gray-200 font-medium mb-4 drop-shadow-lg font-luxury">
                   Uribe's
                 </span>
                 <span className="relative inline-block font-luxury">
