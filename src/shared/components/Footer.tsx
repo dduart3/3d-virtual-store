@@ -65,7 +65,7 @@ export function Footer() {
                Uribe's Boutique
            </div>
            <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-serif font-light leading-tight text-white/90">
-              Digital fashion that <span className="italic font-luxury text-gray-400">flourishes</span> with style and innovation.
+              Moda digital que <span className="italic font-luxury text-gray-400">florece</span> con estilo e innovación.
            </h2>
         </div>
 
@@ -73,29 +73,29 @@ export function Footer() {
         <div ref={columnsRef} className="grid grid-cols-2 md:grid-cols-3 gap-16 md:gap-24 2xl:gap-32 w-full md:w-auto">
            {/* Explore */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Explore</h4>
+              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Explorar</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Our Story</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Gallery</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Nuestra Historia</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Galería</Link></li>
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Blog</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Events</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Eventos</Link></li>
               </ul>
            </div>
 
            {/* Support */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Support</h4>
+              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Soporte</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Contact</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Contacto</Link></li>
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">FAQs</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Shipping</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Refund</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Envíos</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Reembolsos</Link></li>
               </ul>
            </div>
 
            {/* Quick Links */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Quick Links</h4>
+              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Enlaces Rápidos</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
                 <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Instagram</a></li>
                 <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Facebook</a></li>
@@ -112,7 +112,7 @@ export function Footer() {
            {/* Design Credit */}
            <div ref={creditRef} className="w-full text-center z-20 mb-4 md:mb-8">
                <p className="text-[10px] 2xl:text-xs text-gray-500 tracking-[0.3em] uppercase font-medium">
-                   Design by Onyx. All rights reserved.
+                   Diseñado por Onyx. Todos los derechos reservados.
                </p>
            </div>
            

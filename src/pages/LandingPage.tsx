@@ -103,8 +103,8 @@ export function LandingPage() {
              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-950 pointer-events-none"></div>
          </div>
 
-         {/* Hero Section - Now part of the pinned section (z-50) */}
-         <div className="absolute inset-0 z-50 pointer-events-auto">
+         {/* Hero Section - Now part of the pinned section (z-[90]) */}
+         <div className="absolute inset-0 z-[90] pointer-events-auto">
              <HeroSection isLoaded={isLoaded} heroRef={heroRef} />
          </div>
 
