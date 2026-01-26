@@ -12,7 +12,7 @@ export function FeaturesCarousel({ carouselRef, carouselTrackRef }: FeaturesCaro
          
          {/* Carousel Header (Enhanced Title, No Button) */}
          <div className="absolute top-12 left-0 w-full px-8 md:px-16 z-0 pointer-events-none">
-             <h1 className="text-white text-4xl md:text-9xl font-serif tracking-tighter opacity-20 leading-none">
+             <h1 className="text-white text-2xl md:text-6xl font-serif tracking-tighter opacity-20 leading-none">
                  CARACTERÍSTICAS
              </h1>
          </div>
@@ -40,8 +40,8 @@ export function FeaturesCarousel({ carouselRef, carouselTrackRef }: FeaturesCaro
                                  <span className="w-8 h-px bg-amber-500"></span>
                                  <span className="text-amber-500 text-[10px] md:text-xs tracking-[0.2em] uppercase">Sistema 0{i+1}</span>
                             </div>
-                            <h3 className="text-3xl md:text-6xl font-serif text-white mb-2 md:mb-4 leading-none">{item.title}</h3>
-                            <p className="text-gray-300 max-w-md font-light text-sm md:text-base leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100">{item.desc}</p>
+                            <h3 className="text-xl md:text-4xl font-serif text-white mb-2 md:mb-4 leading-none">{item.title}</h3>
+                            <p className="text-gray-300 max-w-md font-light text-xs md:text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100">{item.desc}</p>
                       </div>
                 </div>
             ))}
@@ -52,7 +52,7 @@ export function FeaturesCarousel({ carouselRef, carouselTrackRef }: FeaturesCaro
                   <div className="absolute inset-0 bg-black/40"></div>
                   
                   <div className="relative z-10 text-center p-8">
-                      <h3 className="text-4xl md:text-8xl font-serif text-white mb-6 md:mb-8 leading-tight">
+                      <h3 className="text-2xl md:text-5xl font-serif text-white mb-6 md:mb-8 leading-tight">
                           Explorar <br/> <span className="italic font-light text-white/70">Colección</span>
                       </h3>
                       <Link to="/store" className="inline-block px-8 py-4 md:px-12 md:py-5 bg-white text-black text-xs md:text-sm font-bold tracking-[0.2em] uppercase hover:bg-gray-200 transition-colors transform hover:scale-105 duration-300">

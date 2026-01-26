@@ -64,7 +64,7 @@ export function Footer() {
            <div className="inline-block px-4 py-1 rounded-full border border-white/20 text-[10px] 2xl:text-xs tracking-[0.2em] uppercase mb-8 text-gray-400">
                Uribe's Boutique
            </div>
-           <h2 className="text-3xl md:text-5xl 2xl:text-7xl font-serif font-light leading-tight text-white/90">
+           <h2 className="text-xl md:text-3xl 2xl:text-5xl font-serif font-light leading-tight text-white/90">
               Moda digital que <span className="italic font-luxury text-gray-400">florece</span> con estilo e innovación.
            </h2>
         </div>
@@ -75,10 +75,10 @@ export function Footer() {
            <div className="flex flex-col gap-6 2xl:gap-8">
               <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Explorar</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Nuestra Historia</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Galería</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Blog</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Eventos</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Nuestra Historia</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Galería</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Blog</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Eventos</Link></li>
               </ul>
            </div>
 
@@ -86,10 +86,10 @@ export function Footer() {
            <div className="flex flex-col gap-6 2xl:gap-8">
               <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Soporte</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Contacto</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">FAQs</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Envíos</Link></li>
-                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Reembolsos</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Contacto</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">FAQs</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Envíos</Link></li>
+                <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Reembolsos</Link></li>
               </ul>
            </div>
 
@@ -97,29 +97,29 @@ export function Footer() {
            <div className="flex flex-col gap-6 2xl:gap-8">
               <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Enlaces Rápidos</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Instagram</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Facebook</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Medium</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-lg font-light">Pinterest</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Instagram</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Facebook</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Medium</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Pinterest</a></li>
               </ul>
            </div>
         </div>
       </div>
 
       {/* Bottom Section - Giant Text & Logo */}
-      <div className="flex-1 flex flex-col justify-end items-center relative w-full overflow-hidden mt-12 2xl:mt-24 pb-8 md:pb-12">
+      <div className="flex-1 flex flex-col justify-end items-center relative w-full overflow-hidden mt-12 2xl:mt-24 pb-0">
            
            {/* Design Credit */}
-           <div ref={creditRef} className="w-full text-center z-20 mb-4 md:mb-8">
+           <div ref={creditRef} className="w-full text-center z-20 mb-12">
                <p className="text-[10px] 2xl:text-xs text-gray-500 tracking-[0.3em] uppercase font-medium">
                    Diseñado por Onyx. Todos los derechos reservados.
                </p>
            </div>
            
-           <div className="relative flex items-end justify-center w-full">
+           <div className="relative flex items-end justify-center w-full translate-y-[15%] md:translate-y-[12%]">
                {/* Logo to the left of text */}
-               <div ref={logoRef} className="hidden md:flex flex-col justify-center items-center mb-[2vw] mr-[3vw]">
-                    <div className="relative w-24 h-24 md:w-40 md:h-40 2xl:w-64 2xl:h-64">
+               <div ref={logoRef} className="hidden md:flex flex-col justify-center items-center mb-[4vw] mr-[2vw]">
+                    <div className="relative w-16 h-16 md:w-32 md:h-32 2xl:w-48 2xl:h-48">
                         <div className="absolute inset-0 border-[3px] border-gray-400/30 rounded-full"></div>
                         <div className="absolute inset-4 border-[3px] border-gray-400/40 rounded-full"></div>
                         <div className="absolute inset-8 border-[3px] border-gray-400/50 rounded-full"></div>
@@ -127,7 +127,7 @@ export function Footer() {
                     </div>
                </div>
 
-               <h1 ref={giantTextRef} className="font-luxury text-[18vw] md:text-[20vw] 2xl:text-[22vw] leading-[0.8] text-white tracking-tight select-none pointer-events-none">
+               <h1 ref={giantTextRef} className="font-luxury text-[19vw] md:text-[26vw] 2xl:text-[28vw] leading-[0.8] text-white tracking-tight select-none pointer-events-none">
                    Uribe's
                </h1>
            </div>

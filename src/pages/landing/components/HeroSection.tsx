@@ -68,8 +68,8 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
               </div>
 
               {/* Title */}
-              <h1 ref={heroTitleRef} className="hero-title font-luxury text-4xl md:text-6xl lg:text-4xl xl:text-7xl 2xl:text-8xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
-                <span className="block text-2xl md:text-3xl lg:text-xl xl:text-3xl 2xl:text-4xl tracking-[0.2em] text-gray-200 font-medium mb-4 drop-shadow-lg font-luxury">
+              <h1 ref={heroTitleRef} className="hero-title font-luxury text-2xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
+                <span className="block text-xl md:text-3xl lg:text-3xl xl:text-3xl 2xl:text-4xl tracking-[0.2em] text-gray-200 font-medium mb-4 drop-shadow-lg font-luxury">
                   Uribe's
                 </span>
                 <span className="relative inline-block font-luxury">
@@ -80,7 +80,7 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
               
               <div className="hero-separator w-20 md:w-24 lg:w-28 2xl:w-40 h-px bg-gray-500/50 mx-auto mb-8"></div>
               
-              <p ref={heroDescRef} className="hero-desc font-body text-base md:text-xl lg:text-base xl:text-xl 2xl:text-2xl text-gray-100 font-light tracking-wide max-w-2xl 2xl:max-w-4xl mx-auto leading-relaxed px-4 text-center opacity-0 drop-shadow-lg">
+              <p ref={heroDescRef} className="hero-desc font-body text-xs md:text-sm lg:text-sm xl:text-base 2xl:text-lg text-gray-100 font-light tracking-wide max-w-xl 2xl:max-w-3xl mx-auto leading-relaxed px-4 text-center opacity-0 drop-shadow-lg">
                 Descubre nuestra exclusiva experiencia de compra virtual con
                 colecciones seleccionadas de prendas de moda premium.
               </p>
@@ -90,7 +90,7 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
             <div ref={heroButtonsRef} className="hero-buttons flex flex-col items-center w-full justify-center opacity-0 pointer-events-auto relative z-50">
               {/* Welcome message */}
               {user && profile?.first_name && (
-                <p className="font-body text-xl md:text-2xl 2xl:text-3xl font-light text-white/90 mb-8 mt-2 tracking-wide text-center">
+                <p className="font-body text-lg md:text-xl 2xl:text-2xl font-light text-white/90 mb-8 mt-2 tracking-wide text-center">
                   Bienvenido de nuevo, <span className="font-medium">{profile.first_name}</span>
                 </p>
               )}
@@ -101,14 +101,14 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                   <>
                     <Link
                       to="/store"
-                      className="font-luxury px-8 sm:px-10 2xl:px-14 py-4 2xl:py-6 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white border border-transparent hover:border-white rounded-none tracking-[0.15em] uppercase text-sm 2xl:text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+                      className="font-luxury px-6 sm:px-8 2xl:px-10 py-3 2xl:py-5 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white border border-transparent hover:border-white rounded-none tracking-[0.15em] uppercase text-xs 2xl:text-base font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                     >
                       <span className="relative z-10">Entrar a la Tienda</span>
                     </Link>
                     <Link
                       from="/"
                       to="/profile"
-                      className="font-luxury px-8 sm:px-10 2xl:px-14 py-4 2xl:py-6 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-sm 2xl:text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+                      className="font-luxury px-6 sm:px-8 2xl:px-10 py-3 2xl:py-5 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-xs 2xl:text-base font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                     >
                       <span className="relative z-10">Mi Perfil</span>
                     </Link>
@@ -119,7 +119,7 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                         }/otp?email=${profile.email}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-luxury px-8 sm:px-10 2xl:px-14 py-4 2xl:py-6 w-full md:w-auto text-center bg-transparent text-amber-300 hover:text-amber-100 rounded-none tracking-[0.15em] uppercase text-sm 2xl:text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+                        className="font-luxury px-6 sm:px-8 2xl:px-10 py-3 2xl:py-5 w-full md:w-auto text-center bg-transparent text-amber-300 hover:text-amber-100 rounded-none tracking-[0.15em] uppercase text-xs 2xl:text-base font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                       >
                          <div className="absolute inset-0 border border-amber-400/60"></div>
                          <span className="relative z-10">Panel de Administración</span>
@@ -130,13 +130,13 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                   <>
                     <Link
                       to="/register"
-                      className="font-luxury px-8 sm:px-10 2xl:px-14 py-4 2xl:py-6 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-sm 2xl:text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+                      className="font-luxury px-6 sm:px-8 2xl:px-10 py-3 2xl:py-5 w-full md:w-auto text-center bg-transparent border border-white/30 text-white hover:bg-white hover:text-gray-900 rounded-none tracking-[0.15em] uppercase text-xs 2xl:text-base font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                     >
                       <span className="relative z-10">Crear Cuenta</span>
                     </Link>
                     <Link
                       to="/login"
-                      className="font-luxury px-8 sm:px-10 2xl:px-14 py-4 2xl:py-6 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white border border-transparent hover:border-white rounded-none tracking-[0.15em] uppercase text-sm 2xl:text-lg font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+                      className="font-luxury px-6 sm:px-8 2xl:px-10 py-3 2xl:py-5 w-full md:w-auto text-center bg-white text-gray-900 hover:bg-transparent hover:text-white border border-transparent hover:border-white rounded-none tracking-[0.15em] uppercase text-xs 2xl:text-base font-semibold transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
                     >
                       <span className="relative z-10">Iniciar Sesión</span>
                     </Link>
