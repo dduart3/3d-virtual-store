@@ -88,11 +88,11 @@ export const useShowcaseTimeline = (refs: ShowcaseRefs) => {
            
            tl
             // 0a. Hero Items Exit
-            .fromTo(cx('.hero-icon'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 0.5, ease: "power2.inOut", immediateRender: false }, "start")
-            .fromTo(cx('.hero-title'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.5")
-            .fromTo(cx('.hero-separator'), { opacity: 1, scaleX: 1 }, { opacity: 0, scaleX: 0, duration: 1, ease: "power2.inOut", immediateRender: false }, "start+=0.6")
-            .fromTo(cx('.hero-desc'), { opacity: 1, y: 0 }, { opacity: 0, y: -30, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.7")
-            .fromTo(cx('.hero-buttons'), { opacity: 1, y: 0 }, { opacity: 0, y: 20, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.8")
+            .fromTo(cx('.hero-exit-icon'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 0.5, ease: "power2.inOut", immediateRender: false }, "start")
+            .fromTo(cx('.hero-exit-title'), { opacity: 1, y: 0 }, { opacity: 0, y: -50, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.5")
+            .fromTo(cx('.hero-exit-separator'), { opacity: 1, scaleX: 1 }, { opacity: 0, scaleX: 0, duration: 1, ease: "power2.inOut", immediateRender: false }, "start+=0.6")
+            .fromTo(cx('.hero-exit-desc'), { opacity: 1, y: 0 }, { opacity: 0, y: -30, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.7")
+            .fromTo(cx('.hero-exit-buttons'), { opacity: 1, y: 0 }, { opacity: 0, y: 20, duration: 1.5, ease: "power2.inOut", immediateRender: false }, "start+=0.8")
             
             // 0b. God Rays Fade OUT -> but stop at 0.3 opacity
             .to(refs.godRays?.current || {}, { opacity: 0.3, duration: 2, ease: "power2.inOut" }, "start+=1.5")

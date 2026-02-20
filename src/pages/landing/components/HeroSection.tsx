@@ -58,17 +58,20 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
             {/* Hero Header */}
             <div className="text-center mb-10 flex flex-col items-center">
               {/* Hero Icon (Phantom Destination) - Initially opacity-0 */}
-              <div ref={heroIconRef} className="hero-icon mb-5 mx-auto opacity-0">
-                <div className="relative w-16 h-16 md:w-20 md:h-20 mx-auto">
-                    <div className="absolute inset-0 border-2 border-gray-500 rounded-full"></div>
-                    <div className="absolute inset-2 border-2 border-gray-400 rounded-full"></div>
-                    <div className="absolute inset-4 border-2 border-gray-300 rounded-full"></div>
-                    <div className="absolute inset-6 border-2 border-white rounded-full"></div>
+              <div className="hero-exit-icon">
+                <div ref={heroIconRef} className="mb-5 mx-auto opacity-0">
+                  <div className="relative w-16 h-16 md:w-20 md:h-20 mx-auto">
+                      <div className="absolute inset-0 border-2 border-gray-500 rounded-full"></div>
+                      <div className="absolute inset-2 border-2 border-gray-400 rounded-full"></div>
+                      <div className="absolute inset-4 border-2 border-gray-300 rounded-full"></div>
+                      <div className="absolute inset-6 border-2 border-white rounded-full"></div>
+                  </div>
                 </div>
               </div>
 
               {/* Title */}
-              <h1 ref={heroTitleRef} className="hero-title font-luxury text-2xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
+              <div className="hero-exit-title">
+                <h1 ref={heroTitleRef} className="font-luxury text-2xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium mb-8 tracking-[0.1em] uppercase text-white text-center opacity-0 drop-shadow-2xl">
                 <span className="block text-xl md:text-3xl lg:text-3xl xl:text-3xl 2xl:text-4xl tracking-[0.2em] text-gray-200 font-medium mb-4 drop-shadow-lg font-luxury">
                   Uribe's
                 </span>
@@ -77,17 +80,23 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                   <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 md:w-20 lg:w-24 2xl:w-32 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
                 </span>
               </h1>
+              </div>
               
-              <div className="hero-separator w-20 md:w-24 lg:w-28 2xl:w-40 h-px bg-gray-500/50 mx-auto mb-8"></div>
+              <div className="hero-exit-separator">
+                <div className="w-20 md:w-24 lg:w-28 2xl:w-40 h-px bg-gray-500/50 mx-auto mb-8"></div>
+              </div>
               
-              <p ref={heroDescRef} className="hero-desc font-body text-xs md:text-sm lg:text-sm xl:text-base 2xl:text-lg text-gray-100 font-light tracking-wide max-w-xl 2xl:max-w-3xl mx-auto leading-relaxed px-4 text-center opacity-0 drop-shadow-lg">
-                Descubre nuestra exclusiva experiencia de compra virtual con
-                colecciones seleccionadas de prendas de moda premium.
-              </p>
+              <div className="hero-exit-desc">
+                <p ref={heroDescRef} className="font-body text-xs md:text-sm lg:text-sm xl:text-base 2xl:text-lg text-gray-100 font-light tracking-wide max-w-xl 2xl:max-w-3xl mx-auto leading-relaxed px-4 text-center opacity-0 drop-shadow-lg">
+                  Descubre nuestra exclusiva experiencia de compra virtual con
+                  colecciones seleccionadas de prendas de moda premium.
+                </p>
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div ref={heroButtonsRef} className="hero-buttons flex flex-col items-center w-full justify-center opacity-0 pointer-events-auto relative z-50">
+            <div className="hero-exit-buttons w-full relative z-50 pointer-events-auto">
+              <div ref={heroButtonsRef} className="flex flex-col items-center w-full justify-center opacity-0">
               {/* Welcome message */}
               {user && profile?.first_name && (
                 <p className="font-body text-lg md:text-xl 2xl:text-2xl font-light text-white/90 mb-8 mt-2 tracking-wide text-center">
@@ -142,6 +151,7 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                     </Link>
                   </>
                 )}
+              </div>
               </div>
             </div>
         
