@@ -12,7 +12,6 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
   // Internal refs for entrance animation (kept separate or we can merge if needed)
   const heroIconRef = useRef<HTMLDivElement>(null);
   const heroTitleRef = useRef<HTMLHeadingElement>(null);
-  const heroDescRef = useRef<HTMLParagraphElement>(null);
   const heroButtonsRef = useRef<HTMLDivElement>(null);
 
 
@@ -21,11 +20,9 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    if (isLoaded && heroIconRef.current && heroTitleRef.current && heroDescRef.current && heroButtonsRef.current) {
-      // Reset initial state explicitely to avoid conflicts
+    if (isLoaded && heroIconRef.current && heroTitleRef.current && heroButtonsRef.current) {
       gsap.set(heroIconRef.current, { opacity: 0, scale: 0.5 });
       gsap.set(heroTitleRef.current, { opacity: 0, y: 30 });
-      gsap.set(heroDescRef.current, { opacity: 0, y: 20 });
       gsap.set(heroButtonsRef.current, { opacity: 0, y: 20 });
 
       tl.to(heroIconRef.current, 
@@ -34,10 +31,6 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
       .to(heroTitleRef.current,
         { opacity: 1, y: 0, duration: 0.8 },
         "-=0.5"
-      )
-      .to(heroDescRef.current,
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.6"
       )
       .to(heroButtonsRef.current,
         { opacity: 1, y: 0, duration: 0.8 },
@@ -80,17 +73,6 @@ export function HeroSection({ isLoaded = true, heroRef }: { isLoaded?: boolean; 
                   <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 md:w-20 lg:w-24 2xl:w-32 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"></div>
                 </span>
               </h1>
-              </div>
-              
-              <div className="hero-exit-separator">
-                <div className="w-20 md:w-24 lg:w-28 2xl:w-40 h-px bg-gray-500/50 mx-auto mb-8"></div>
-              </div>
-              
-              <div className="hero-exit-desc">
-                <p ref={heroDescRef} className="font-body text-xs md:text-sm lg:text-sm xl:text-base 2xl:text-lg text-gray-100 font-light tracking-wide max-w-xl 2xl:max-w-3xl mx-auto leading-relaxed px-4 text-center opacity-0 drop-shadow-lg">
-                  Descubre nuestra exclusiva experiencia de compra virtual con
-                  colecciones seleccionadas de prendas de moda premium.
-                </p>
               </div>
             </div>
 

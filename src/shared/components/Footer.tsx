@@ -57,23 +57,23 @@ export function Footer() {
     <footer ref={footerRef} className="w-full min-h-screen flex flex-col pt-32 bg-[#050505] text-white overflow-hidden relative border-t border-white/5">
       
       {/* Top Section */}
-      <div className="container mx-auto max-w-[90vw] px-6 md:px-12 flex flex-col md:flex-row justify-between items-start gap-20 relative z-10">
+      <div className="container mx-auto max-w-[90vw] px-6 md:px-12 flex flex-col md:flex-row justify-between items-start gap-16 md:gap-20 relative z-10">
         
         {/* Brand Headline (Left) */}
-        <div ref={headlineRef} className="w-full md:w-1/3">
-           <div className="inline-block px-4 py-1 rounded-full border border-white/20 text-[10px] 2xl:text-xs tracking-[0.2em] uppercase mb-8 text-gray-400">
+        <div ref={headlineRef} className="w-full md:max-w-md 2xl:max-w-lg">
+           <div className="font-accent inline-block px-4 py-1.5 rounded-full border border-white/20 text-[10px] 2xl:text-xs tracking-[0.12em] mb-9 text-gray-400/90">
                Uribe's Boutique
            </div>
-           <h2 className="text-xl md:text-3xl 2xl:text-5xl font-serif font-light leading-tight text-white/90">
-              Moda digital que <span className="italic font-luxury text-gray-400">florece</span> con estilo e innovación.
+           <h2 className="font-display text-2xl md:text-4xl 2xl:text-5xl font-light leading-tight-display text-white/92">
+              Moda real en un mundo virtual. Explora, elige y recibe.
            </h2>
         </div>
 
         {/* Links Columns (Right) */}
-        <div ref={columnsRef} className="grid grid-cols-2 md:grid-cols-3 gap-16 md:gap-24 2xl:gap-32 w-full md:w-auto">
+        <div ref={columnsRef} className="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-20 2xl:gap-24 w-full md:w-auto">
            {/* Explore */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Explorar</h4>
+              <h4 className="font-accent text-[10px] 2xl:text-xs font-medium text-gray-500 tracking-[0.12em]">Explorar</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Nuestra Historia</Link></li>
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Galería</Link></li>
@@ -84,7 +84,7 @@ export function Footer() {
 
            {/* Support */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Soporte</h4>
+              <h4 className="font-accent text-[10px] 2xl:text-xs font-medium text-gray-500 tracking-[0.12em]">Soporte</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Contacto</Link></li>
                 <li><Link to="/store" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">FAQs</Link></li>
@@ -95,7 +95,7 @@ export function Footer() {
 
            {/* Quick Links */}
            <div className="flex flex-col gap-6 2xl:gap-8">
-              <h4 className="text-[10px] 2xl:text-xs font-bold text-gray-500 uppercase tracking-[0.2em]">Enlaces Rápidos</h4>
+              <h4 className="font-accent text-[10px] 2xl:text-xs font-medium text-gray-500 tracking-[0.12em]">Enlaces Rápidos</h4>
               <ul className="flex flex-col gap-3 2xl:gap-4">
                 <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Instagram</a></li>
                 <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm 2xl:text-base font-light">Facebook</a></li>
@@ -111,23 +111,23 @@ export function Footer() {
            
            {/* Design Credit */}
            <div ref={creditRef} className="w-full text-center z-20 mb-12">
-               <p className="text-[10px] 2xl:text-xs text-gray-500 tracking-[0.3em] uppercase font-medium">
+               <p className="font-accent text-[10px] 2xl:text-xs text-gray-500 tracking-[0.12em]">
                    Diseñado por Onyx. Todos los derechos reservados.
                </p>
            </div>
            
            <div className="relative flex items-end justify-center w-full translate-y-[15%] md:translate-y-[12%]">
                {/* Logo to the left of text */}
-               <div ref={logoRef} className="hidden md:flex flex-col justify-center items-center mb-[4vw] mr-[2vw]">
+               <div ref={logoRef} className="hidden md:flex flex-col justify-center items-center mb-[4vw] mr-[2vw] opacity-70">
                     <div className="relative w-16 h-16 md:w-32 md:h-32 2xl:w-48 2xl:h-48">
-                        <div className="absolute inset-0 border-[3px] border-gray-400/30 rounded-full"></div>
-                        <div className="absolute inset-4 border-[3px] border-gray-400/40 rounded-full"></div>
-                        <div className="absolute inset-8 border-[3px] border-gray-400/50 rounded-full"></div>
-                        <div className="absolute inset-12 border-[3px] border-white/80 rounded-full"></div>
+                        <div className="absolute inset-0 border-[2px] border-gray-400/25 rounded-full"></div>
+                        <div className="absolute inset-4 border-[2px] border-gray-400/35 rounded-full"></div>
+                        <div className="absolute inset-8 border-[2px] border-gray-400/45 rounded-full"></div>
+                        <div className="absolute inset-12 border-[2px] border-white/70 rounded-full"></div>
                     </div>
                </div>
 
-               <h1 ref={giantTextRef} className="font-luxury text-[19vw] md:text-[26vw] 2xl:text-[28vw] leading-[0.8] text-white tracking-tight select-none pointer-events-none">
+               <h1 ref={giantTextRef} className="font-display text-[19vw] md:text-[26vw] 2xl:text-[28vw] leading-[0.85] text-white tracking-tight select-none pointer-events-none font-medium">
                    Uribe's
                </h1>
            </div>
