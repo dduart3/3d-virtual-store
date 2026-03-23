@@ -11,7 +11,7 @@ import { useAvatarCamera } from "../hooks/useAvatarCamera";
 import { useAvatarAnimations } from "../hooks/useAvatarAnimations";
 import { useFrame } from "@react-three/fiber";
 import { useAtom } from "jotai";
-import { avatarUrlAtom } from "../state/avatar";
+//import { avatarUrlAtom } from "../state/avatar";
 import { isSceneReadyAtom } from "../../../../shared/state/loading";
 import { useAvatarMultiplayer } from "../hooks/useAvatarMultiplayer";
 import { jukeboxModeAtom } from "../../jukebox/state/jukebox";
@@ -29,7 +29,7 @@ export const Avatar = () => {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<Group>(null);
   const [, get] = useKeyboardControls<Controls>();
-  const [avatarUrl] = useAtom(avatarUrlAtom);
+  //const [avatarUrl] = useAtom(avatarUrlAtom);
   const [isSceneReady] = useAtom(isSceneReadyAtom);
   const [jukeboxMode] = useAtom(jukeboxModeAtom);
 
