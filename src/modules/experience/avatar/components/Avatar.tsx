@@ -34,8 +34,9 @@ export const Avatar = () => {
   const [jukeboxMode] = useAtom(jukeboxModeAtom);
 
   // Load character model
+  // change when i get a new provider avatarUrl || "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb" 
   const { scene } = useGLTF(
-     "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb" || avatarUrl
+     "https://readyplayerme-assets.s3.amazonaws.com/animations/visage/male.glb"
   );
 
   // Let the hook handle position, rotation and movement
